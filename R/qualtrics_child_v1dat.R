@@ -74,6 +74,8 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
                                    139, 148, 157:335)]
 
 
+  ## remove all 999 participants
+
   # re-label and organize
   ## order ideas: 1) child information (sex, dob, h/w, bmi, screen out), freddies, food VAS, intakes (preMeal, EAH, meal duration), wanting, PSD, PSS, notes/etc
 
