@@ -19,7 +19,7 @@
 #' and \code{\link{Quad_n2ll}}.
 #'
 #' @export
-LODE_n2ll <- function(cebq_dat, parID_var, reverse_scored) {
+cebq_score <- function(cebq_dat, parID_var, reverse_scored) {
 
   ####             1. Set up/initial checks             #####
   # make sure parameters are numeric
