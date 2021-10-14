@@ -11,9 +11,9 @@
 #' 7) re-ordering factor levels to start with value 0
 #' 8) random fixes to factor level base::names and variable descriptions
 #'
-#' @param date_str the date used in the name of the .sav file (e.g., for file 'Child_V1_2021-10-11.sav',
+#' @param date_str the date used in the name of the .sav file (e.g., for file 'Child_V1_Home_2021-10-11.sav',
 #' the string '2021-10-11' would be entered)
-#' @param data_path (optional) the full path to the V1 Child Qualtircs database EXCLUDING the .sav file name (e.g., '.../b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/').
+#' @param data_path (optional) the full path to the V1 Child Qualtircs database EXCLUDING /Final_CovidAtHome/ and the .sav file name (e.g., '.../b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/').
 #'
 #'
 #' @return A list containing: 1) data: data.frame with raw, cleaned data from child visit 1 Qualtrics
