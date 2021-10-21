@@ -1,6 +1,6 @@
-#' qualtrics_child_v1dat: Process raw qualtrics visit 1 data for the child
+#' qualtrics_child_v1dat: Process raw qualtrics visit 1_lab data for the child
 #'
-#' This function loads the .sav raw data file for the child visit 1 data that was
+#' This function loads the .sav raw data file for the child visit 1_lab data that was
 #' collected via Qualtrics and cleans the data. Cleaning the data involves:
 #' 1) extracting all variable descriptions,
 #' 2) selecting relevant data columns,
@@ -11,9 +11,9 @@
 #' 7) re-ordering factor levels to start with value 0
 #' 8) random fixes to factor level base::names and variable descriptions
 #'
-#' @param date_str the date used in the name of the .sav file (e.g., for file 'Child_V1_2021-10-11.sav',
+#' @param date_str the date used in the name of the .sav file (e.g., for file 'Child_V1_Lab_2021-10-11.sav',
 #' the string '2021-10-11' would be entered)
-#' @param data_path (optional) the full path to the V1 Child Qualtircs database EXCLUDING the .sav file name (e.g., '.../b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/').
+#' @param data_path (optional) the full path to the V1 Child Qualtircs database EXCLUDING /Final_CovidAtHome/ and the .sav file name (e.g., '.../b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/').
 #'
 #'
 #' @return A list containing: 1) data: data.frame with raw, cleaned data from child visit 1 Qualtrics
@@ -35,7 +35,7 @@
 #'
 #' @export
 #'
-qualtrics_child_v1dat <- function(date_str, data_path) {
+qualtrics_child_v1dat_lab <- function(date_str, data_path) {
 
     #### 1. Set up/initial checks #####
 
@@ -62,10 +62,10 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
     #### 2. Load Data #####
 
     if (isTRUE(datapath_arg)) {
-        qv1_child_path <- base::paste0(data_path, "/", "Child_V1_", date_str,
-            ".sav")
+        qv1_child_path <- base::paste0(data_path, "/Final_CovidAtHome/Child_V1_Lab_", date_str,
+                                       ".sav")
     } else {
-        qv1_child_path <- base::paste0("Child_V1_", date_str, ".sav")
+        qv1_child_path <- base::paste0("Final_CovidAtHome/Child_V1_Lab", date_str, ".sav")
     }
 
     # check if file exists
@@ -89,12 +89,10 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
     qv1_child_labels <- lapply(qv1_child_dat, function(x) base::attributes(x)$label)
 
     # 2) selecting relevant data columns
-    qv1_child_clean <- qv1_child_dat[c(1, 11:13, 20:39, 44:46, 54:81, 92:103,
-        112, 121, 130, 139, 148, 157:335)]
+    qv1_child_clean <- qv1_child_dat[c(1, 18:20, 27:46, 52:54, 62:89, 100:203)]
 
     ## update labels
-    qv1_child_clean_labels <- qv1_child_labels[c(1, 11:13, 20:39, 44:46, 54:81, 92:103,
-        112, 121, 130, 139, 148, 157:335)]
+    qv1_child_clean_labels <- qv1_child_labels[c(1, 18:20, 27:46, 52:54, 62:89, 100:203)]
 
 
     # 3) removing all practice events (e.g., 999)
@@ -102,15 +100,13 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
         999, ]
 
     # 4) re-ordering and re-name data columns general order: 1) child
-    # information (sex, dob, h/w, bmi, screen out), 2) freddies, 3) food
+    # information (id, startdate, sex, dob, h/w, bmi, screen out), 2) freddies, 3) food
     # VAS 4) intakes (preMeal, EAH, meal duration), 5) wanting, PSD, PSS,
     # etc 6) notes
 
-    qv1_child_clean <- qv1_child_clean[c(2, 1, 3:4, 148:156, 157:158, 161,
-        159:160, 5:24, 25:27, 162:249, 28:147, 250:251)]
+    qv1_child_clean <- qv1_child_clean[c(2, 1, 3:4, 56:64, 65:66, 69, 67:68, 5:24, 25:27, 70:157, 28:55, 158:159)]
 
-    qv1_child_clean_labels <- qv1_child_clean_labels[c(2, 1, 3:4, 148:156, 157:158, 161,
-        159:160, 5:24, 25:27, 162:249, 28:147, 250:251)]
+    qv1_child_clean_labels <- qv1_child_clean_labels[c(2, 1, 3:4, 56:64, 65:66, 69, 67:68, 5:24, 25:27, 70:157, 28:55, 158:159)]
 
     ## re-name variables
     base::names(qv1_child_clean) <- c("id", "start_date", "sex", "dob",
@@ -153,31 +149,7 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
         "want_icecream", "want_jenga", "want_legos", "want_elephant", "want_oreos",
         "want_pbj_sndwch", "want_popcorn", "want_chips", "want_pretzels",
         "want_skittles", "want_trains", "want_trucks", "want_starbursts",
-        "want_turkey_sndwch", "psd_practice1", "psd_practice2", "psd_1",
-        "psd_2", "psd_3", "psd_4", "psd_5", "psd_6", "psd_7", "psd_8",
-        "psd_9", "psd_10", "psd_practice8", "psd_11", "psd_12", "psd_13",
-        "psd_14", "psd_15", "pss_practice1", "pss_vas_hunger", "pss_vas_couldeat",
-        "pss_vas_fullness", "pss_practice2", "pss_apple_eat", "pss_apple_much",
-        "pss_apple_like", "pss_broccoli_eat", "pss_broccoli_much", "pss_broccoli_like",
-        "pss_cake_eat", "pss_cake_much", "pss_cake_like", "pss_candy_eat",
-        "pss_candy_much", "pss_candy_like", "pss_carrot_eat", "pss_carrot_much",
-        "pss_carrot_like", "pss_cornflakes_eat", "pss_ccornflakes_much",
-        "pss_cornflakes_like", "pss_cheese_brgr_eat", "pss_cheese_brgr_much",
-        "pss_cheese_brgr_like", "pss_chkn_nug_eat", "pss_chkn_nug_much",
-        "pss_chkn_nug_like", "pss_fries_eat", "pss_fries_much", "pss_fries_like",
-        "pss_garlic_bread_eat", "pss_garlic_bread_much", "pss_garlic_bread_like",
-        "pss_goldfish_eat", "pss_goldfish_much", "pss_goldfish_like", "pss_grapes_eat",
-        "pss_grapes_much", "pss_grapes_like", "pss_choc_icecream_eat",
-        "pss_choc_icecream_much", "pss_choc_icecream_like", "pss_mac_cheese_eat",
-        "pss_mac_cheese_much", "pss_mac_cheese_like", "pss_milk_eat", "pss_milk_much",
-        "pss_milk_like", "pss_orangejuice_eat", "pss_orangejuice_much",
-        "pss_orangejuice_like", "pss_pbj_sndwch_eat", "pss_pbj_sndwch_much",
-        "pss_pbj_sndwch_like", "pss_peas_eat", "pss_peas_much", "pss_peas_like",
-        "pss_pizza_eat", "pss_pizza_much", "pss_pizza_like", "pss_soda_eat",
-        "pss_soda_much", "pss_soda_like", "pss_soup_eat", "pss_soup_much",
-        "pss_soup_like", "pss_tomatoes_eat", "pss_tomatoes_much", "pss_tomatoes_like",
-        "pss_yogurt_eat", "pss_yogurt_much", "pss_yogurt_like", "food_initials",
-        "child_notes")
+        "want_turkey_sndwch", "food_initials", "child_notes")
 
     ## update data labels
     base::names(qv1_child_clean_labels) <- base::names(qv1_child_clean)
@@ -238,9 +210,9 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
     qv1_child_clean_labels[["bmi_z"]] <- "BMI-z/sds calculated using childsds R package"
 
     # re-organize variables and labels with newly added variables
-    qv1_child_clean <- qv1_child_clean[c(1:4, 251:252, 5:12, 253, 13:250)]
-    qv1_child_clean_labels <- qv1_child_clean_labels[c(1:4, 251:252, 5:12,
-        253, 13:250)]
+    qv1_child_clean <- qv1_child_clean[c(1:4, 159:161, 5:13, 162, 14:158)]
+
+    qv1_child_clean_labels <- qv1_child_clean_labels[c(1:4, 159:161, 5:13, 162, 14:158)]
 
     # re-calculate all intake values (should we write subfunction to call??)
 
@@ -250,37 +222,12 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
     base::attributes(qv1_child_clean$sex)$labels <- c(0, 1)
 
     # 8) random fixes to factor level base::names and variable descriptions
-    # fix psd value labes
-    psd_names <- base::names(qv1_child_clean)[160:177]
-
-    for (var in 1:length(psd_names)) {
-        var_name <- as.character(psd_names[var])
-        if (base::attributes(qv1_child_clean[[var_name]])$labels[1] ==
-            1) {
-            base::names(base::attributes(qv1_child_clean[[var_name]])$labels) <- c("Correct",
-                "Incorrect")
-        } else {
-            base::names(base::attributes(qv1_child_clean[[var_name]])$labels) <- c("Incorrect",
-                "Correct")
-        }
-
-        ## update variable descriptions for pps to distinguish same/different
-        ## from more/less
-        orig_label <- qv1_child_clean_labels[[var_name]]
-        if (var < 13) {
-            qv1_child_clean_labels[[var_name]] <- base::paste0(orig_label,
-                " : same or different?")
-        } else {
-            qv1_child_clean_labels[[var_name]] <- base::paste0(orig_label,
-                " : which has more, first or second?")
-        }
-    }
 
     ## add meal/EAH to intake descriptions
-    intake_vars <- base::names(qv1_child_clean)[45:132]
+    intake_vars <- base::names(qv1_child_clean)[46:133]
     for (var in 1:length(intake_vars)) {
         var_name <- as.character(intake_vars[var])
-        if (var < 49) {
+        if (var < 94) {
             qv1_child_clean_labels[[var_name]] <- base::paste0("Meal ",
                 qv1_child_clean_labels[[var_name]])
         } else {
@@ -288,9 +235,6 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
                 qv1_child_clean_labels[[var_name]])
         }
     }
-
-    ## make ever eat yogurt formatted same as others
-    qv1_child_clean_labels[["pss_yogurt_eat"]] <- "PSS Child Strawberry Yogurt - Ever Eat"
 
     ## remove trailing '... - 1' from labels
     for (var in 1:length(base::names(qv1_child_clean))) {
