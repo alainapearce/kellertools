@@ -184,10 +184,10 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
 
     # 5) reformatting dates to be appropriate and computer readable:
     # YYYY-MM-DD
-    qv1_child_clean$start_date <- ymd(as.Date(qv1_child_clean$start_date))
+    qv1_child_clean$start_date <- lubridate::ymd(as.Date(qv1_child_clean$start_date))
     qv1_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
-    qv1_child_clean$dob <- as.Date(qv1_child_clean$dob, format = "%m/%d/%Y")
+    qv1_child_clean$dob <- base::as.Date(qv1_child_clean$dob, format = "%m/%d/%Y")
     qv1_child_clean_labels[["dob"]] <- "date of birth converted to format yyyy-mm-dd in R"
 
     # 6) re-calculate manual variables
@@ -238,9 +238,8 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
     qv1_child_clean_labels[["bmi_z"]] <- "BMI-z/sds calculated using childsds R package"
 
     # re-organize variables and labels with newly added variables
-    qv1_child_clean <- qv1_child_clean[c(1:4, 251:252, 5:12, 253, 13:250)]
-    qv1_child_clean_labels <- qv1_child_clean_labels[c(1:4, 251:252, 5:12,
-        253, 13:250)]
+    qv1_child_clean <- qv1_child_clean[c(1:4, 251:253, 5:13, 14:250)]
+    qv1_child_clean_labels <- qv1_child_clean_labels[c(1:4, 251:253, 5:13, 14:250)]
 
     # re-calculate all intake values (should we write subfunction to call??)
 
@@ -251,7 +250,7 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
 
     # 8) random fixes to factor level base::names and variable descriptions
     # fix psd value labes
-    psd_names <- base::names(qv1_child_clean)[160:177]
+    psd_names <- base::names(qv1_child_clean)[161:178]
 
     for (var in 1:length(psd_names)) {
         var_name <- as.character(psd_names[var])
