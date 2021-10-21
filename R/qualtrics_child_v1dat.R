@@ -89,12 +89,12 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
     qv1_child_labels <- lapply(qv1_child_dat, function(x) base::attributes(x)$label)
 
     # 2) selecting relevant data columns
-    qv1_child_clean <- qv1_child_dat[c(1, 11:13, 20:39, 44:46, 55:81, 92:103,
+    qv1_child_clean <- qv1_child_dat[c(1, 11:13, 20:39, 44:46, 54:81, 92:103,
         112, 121, 130, 139, 148, 157:335)]
 
     ## update labels
-    qv1_child_clean_labels <- qv1_child_labels[c(1, 11:13, 20:39, 44:46,
-        55:81, 92:103, 112, 121, 130, 139, 148, 157:335)]
+    qv1_child_clean_labels <- qv1_child_labels[c(1, 11:13, 20:39, 44:46, 54:81, 92:103,
+        112, 121, 130, 139, 148, 157:335)]
 
 
     # 3) removing all practice events (e.g., 999)
@@ -106,11 +106,11 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
     # VAS 4) intakes (preMeal, EAH, meal duration), 5) wanting, PSD, PSS,
     # etc 6) notes
 
-    qv1_child_clean <- qv1_child_clean[c(2, 1, 3:4, 147:155, 156:157, 160,
-        158:159, 5:24, 25:27, 161:248, 28:146, 249:250)]
+    qv1_child_clean <- qv1_child_clean[c(2, 1, 3:4, 148:156, 157:158, 161,
+        159:160, 5:24, 25:27, 162:249, 28:147, 250:251)]
 
-    qv1_child_clean_labels <- qv1_child_clean_labels[c(2, 1, 3:4, 147:155,
-        156:157, 160, 158:159, 5:24, 25:27, 161:248, 28:146, 249:250)]
+    qv1_child_clean_labels <- qv1_child_clean_labels[c(2, 1, 3:4, 148:156, 157:158, 161,
+        159:160, 5:24, 25:27, 162:249, 28:147, 250:251)]
 
     ## re-name variables
     base::names(qv1_child_clean) <- c("id", "start_date", "sex", "dob",
@@ -147,7 +147,7 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
         "noplate_skittles_g", "plate_skittles_g", "post_skittles_g", "consumed_skittles_g",
         "noplate_starbursts_g", "plate_starbursts_g", "post_starbursts_g",
         "consumed_starbursts_g", "noplate_water_g", "plate_water_g", "post_water_g",
-        "consumed_water_g", "want_brownies", "want_applesauce", "want_carrots",
+        "consumed_water_g", "want_water","want_brownies", "want_applesauce", "want_carrots",
         "want_cars", "want_cheese", "want_cookies", "want_cornchip", "want_toy",
         "want_connect4", "want_crayons", "want_ham", "want_dino", "want_hershey",
         "want_icecream", "want_jenga", "want_legos", "want_elephant", "want_oreos",
