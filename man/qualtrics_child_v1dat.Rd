@@ -10,7 +10,7 @@ qualtrics_child_v1dat(date_str, data_path)
 \item{date_str}{the date used in the name of the .sav file (e.g., for file 'Child_V1_2021-10-11.sav',
 the string '2021-10-11' would be entered)}
 
-\item{data_path}{(optional)}
+\item{data_path}{(optional) the full path to the V1 Child Qualtircs database EXCLUDING the .sav file name (e.g., '.../b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/').}
 }
 \value{
 A list containing: 1) data: data.frame with raw, cleaned data from child visit 1 Qualtrics
@@ -29,9 +29,10 @@ collected via Qualtrics and cleans the data. Cleaning the data involves:
 8) random fixes to factor level base::names and variable descriptions
 }
 \examples{
+#if in same working directory as data:
 ch_v1_dat <- qualtrics_child_v1dat('2021-10-11')
 
-#' \dontrun{
+\dontrun{
 #date must be a string. The following will not run:
 ch_v1_dat <- qualtrics_child_v1dat(2021-10-11)
 

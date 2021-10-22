@@ -9,7 +9,7 @@
 #' 5) reformatting dates to be appropriate and computer readable: YYYY-MM-DD
 #' 6) re-calculate manual variables
 #' 7) re-ordering factor levels to start with value 0
-#' 8) random fixes to factor level base::names and variable descriptions
+#' 8) random fixes to factor level names and variable descriptions
 #'
 #' @param date_str the date used in the name of the .sav file (e.g., for file 'Child_V1_2021-10-11.sav',
 #' the string '2021-10-11' would be entered)
@@ -62,14 +62,14 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
     #### 2. Load Data #####
 
     if (isTRUE(datapath_arg)) {
-        qv1_child_path <- base::paste0(data_path, "/", "Child_V1_", date_str,
+        qv1_child_path <- paste0(data_path, "/", "Child_V1_", date_str,
             ".sav")
     } else {
-        qv1_child_path <- base::paste0("Child_V1_", date_str, ".sav")
+        qv1_child_path <- paste0("Child_V1_", date_str, ".sav")
     }
 
     # check if file exists
-    qv1_child_exists <- base::file.exists(qv1_child_path)
+    qv1_child_exists <- file.exists(qv1_child_path)
 
     # load data if it exists
     if (isTRUE(qv1_child_exists)) {
@@ -86,7 +86,7 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
     #### 3. Clean Data #####
 
     # 1) extract variable labels/descriptions
-    qv1_child_labels <- lapply(qv1_child_dat, function(x) base::attributes(x)$label)
+    qv1_child_labels <- lapply(qv1_child_dat, function(x) attributes(x)$label)
 
     # 2) selecting relevant data columns
     qv1_child_clean <- qv1_child_dat[c(1, 11:13, 20:39, 44:46, 54:81, 92:103,
@@ -113,7 +113,7 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
         159:160, 5:24, 25:27, 162:249, 28:147, 250:251)]
 
     ## re-name variables
-    base::names(qv1_child_clean) <- c("id", "start_date", "sex", "dob",
+    names(qv1_child_clean) <- c("id", "start_date", "sex", "dob",
         "height1", "height2", "weight1", "weight2", "height_avg", "weight_avg",
         "bmi", "bmi_percentile", "bmi_screenout", "freddy_pre_meal", "freddy_post_meal",
         "freddy_pre_want", "freddy_pre_eah", "freddy_post_eah", "vas_practice",
@@ -180,17 +180,17 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
         "child_notes")
 
     ## update data labels
-    base::names(qv1_child_clean_labels) <- base::names(qv1_child_clean)
+    names(qv1_child_clean_labels) <- names(qv1_child_clean)
 
-    # 5) reformatting dates to be appropriate and computer readable:
+    # 5) reformatting dates to be appropriate and computer readable ####
     # YYYY-MM-DD
     qv1_child_clean$start_date <- lubridate::ymd(as.Date(qv1_child_clean$start_date))
     qv1_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
-    qv1_child_clean$dob <- base::as.Date(qv1_child_clean$dob, format = "%m/%d/%Y")
+    qv1_child_clean$dob <- as.Date(qv1_child_clean$dob, format = "%m/%d/%Y")
     qv1_child_clean_labels[["dob"]] <- "date of birth converted to format yyyy-mm-dd in R"
 
-    # 6) re-calculate manual variables
+    # 6) re-calculate manual variables ####
 
     # avg child height, update label
     qv1_child_clean$height_avg <- ifelse(is.na(qv1_child_clean$height1) |
@@ -243,23 +243,28 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
 
     # re-calculate all intake values (should we write subfunction to call??)
 
-    # 7) re-ordering factor levels to start with value 0
+    # 7) re-ordering factor levels to start with value 0 ####
 
-    ## sex
-    base::attributes(qv1_child_clean$sex)$labels <- c(0, 1)
+    ## sex - make sure always matches across parent/child and visits
+    qv1_child_clean$sex <- sjlabelled::set_labels(qv1_child_clean$sex, labels = c("Male" = 0, 'Female' = 1))
+    set_attr <- attributes(qv1_child_clean$sex)
+    qv1_child_clean$sex <- ifelse(is.na(qv1_child_clean$sex), NA,
+                                   ifelse(qv1_child_clean$sex == 1, 0, 1))
+    attributes(qv1_child_clean$sex) <- set_attr
+    qv1_child_clean_labels[["sex"]] <- paste0(qv1_child_clean_labels[["sex"]], " re-leveled in R to start with 0")
 
-    # 8) random fixes to factor level base::names and variable descriptions
+    # 8) random fixes to factor level names and variable descriptions
     # fix psd value labes
-    psd_names <- base::names(qv1_child_clean)[161:178]
+    psd_names <- names(qv1_child_clean)[161:178]
 
     for (var in 1:length(psd_names)) {
         var_name <- as.character(psd_names[var])
-        if (base::attributes(qv1_child_clean[[var_name]])$labels[1] ==
+        if (attributes(qv1_child_clean[[var_name]])$labels[1] ==
             1) {
-            base::names(base::attributes(qv1_child_clean[[var_name]])$labels) <- c("Correct",
+            names(attributes(qv1_child_clean[[var_name]])$labels) <- c("Correct",
                 "Incorrect")
         } else {
-            base::names(base::attributes(qv1_child_clean[[var_name]])$labels) <- c("Incorrect",
+            names(attributes(qv1_child_clean[[var_name]])$labels) <- c("Incorrect",
                 "Correct")
         }
 
@@ -267,23 +272,23 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
         ## from more/less
         orig_label <- qv1_child_clean_labels[[var_name]]
         if (var < 13) {
-            qv1_child_clean_labels[[var_name]] <- base::paste0(orig_label,
+            qv1_child_clean_labels[[var_name]] <- paste0(orig_label,
                 " : same or different?")
         } else {
-            qv1_child_clean_labels[[var_name]] <- base::paste0(orig_label,
+            qv1_child_clean_labels[[var_name]] <- paste0(orig_label,
                 " : which has more, first or second?")
         }
     }
 
     ## add meal/EAH to intake descriptions
-    intake_vars <- base::names(qv1_child_clean)[45:132]
+    intake_vars <- names(qv1_child_clean)[45:132]
     for (var in 1:length(intake_vars)) {
         var_name <- as.character(intake_vars[var])
         if (var < 49) {
-            qv1_child_clean_labels[[var_name]] <- base::paste0("Meal ",
+            qv1_child_clean_labels[[var_name]] <- paste0("Meal ",
                 qv1_child_clean_labels[[var_name]])
         } else {
-            qv1_child_clean_labels[[var_name]] <- base::paste0("EAH ",
+            qv1_child_clean_labels[[var_name]] <- paste0("EAH ",
                 qv1_child_clean_labels[[var_name]])
         }
     }
@@ -292,8 +297,8 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
     qv1_child_clean_labels[["pss_yogurt_eat"]] <- "PSS Child Strawberry Yogurt - Ever Eat"
 
     ## remove trailing '... - 1' from labels
-    for (var in 1:length(base::names(qv1_child_clean))) {
-        var_name <- as.character(base::names(qv1_child_clean)[var])
+    for (var in 1:length(names(qv1_child_clean))) {
+        var_name <- as.character(names(qv1_child_clean)[var])
         if (grepl(" - 1", qv1_child_clean_labels[[var_name]], fixed = TRUE)) {
             qv1_child_clean_labels[[var_name]] <- gsub("\\ - 1.*", "",
                 qv1_child_clean_labels[[var_name]])

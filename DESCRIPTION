@@ -23,6 +23,7 @@ Imports:
     stats,
     methods,
     haven,
+    sjlabelled,
     childsds,
     lubridate,
     ggplot2
