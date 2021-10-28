@@ -210,9 +210,13 @@ qualtrics_child_v1dat_home <- function(date_str, data_path) {
         }
     }
 
+    #make sure the variable labels match in the dataset
+    qv1_child_clean = sjlabelled::set_label(qv1_child_clean, label = matrix(unlist(qv1_child_clean_labels, use.names = FALSE)))
+
     # make list of data frame and associated labels
     qv1_child_clean <- qv1_child_home_clean
     qv1_child_home_clean_labels <- qv1_child_clean_labels
+
     qv1_child <- list(data = qv1_child_home_clean, dict = qv1_child_home_clean_labels)
 
     ## want an export options??

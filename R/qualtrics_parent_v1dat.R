@@ -6,7 +6,7 @@
 #' 2) selecting relevant data columns,
 #' 3) removing all practice events (e.g., 999)
 #' 4) re-ordering and re-name data columns
-#' 5) general fixes to variable labels (add visit, remove ' - 1')
+#' 5) general fixes to variable labels (remove ' - 1')
 #' 6) fix variables with 99 issue for 'prefer not to answer'
 #' 7) reformatting dates to be appropriate and computer readable: YYYY-MM-DD
 #' 8) re-calculate manual variables
@@ -18,8 +18,8 @@
 #' @param data_path (optional) the full path to the V1 Parent Qualtrics database EXCLUDING the .sav file name (e.g., '.../b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/').
 #'
 #'
-#' @return A list containing: 1) data: data.frame with raw, cleaned data from parent visit 1 Qualtrics
-#' and 2) dict: all variable descriptions
+#' @return A list containing: 1) data: data.frame with raw, cleaned data from parent visit 1 Qualtrics;
+#'  2) dict: all variable descriptions; 3) pna_data: data.frame marking participants who 'prefered not to answer' (pna) specific questions; and 4) pna_dict: all variable descriptions for pna_data
 #'
 #' @examples
 #' #if in same working directory as data:
@@ -233,7 +233,7 @@ qualtrics_parent_v1dat <- function(date_str, data_path) {
     ## update data labels
     names(qv1_parent_clean_labels) <- names(qv1_parent_clean)
 
-    ## 5) general fixes to labels (add visit, remove '- 1') ####
+    ## 5) general fixes to labels (remove '- 1') ####
 
     ## remove formatting errors
     for (var in 1:length(names(qv1_parent_clean))) {
@@ -315,7 +315,7 @@ qualtrics_parent_v1dat <- function(date_str, data_path) {
             names(qv1_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv1_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable", pvar, ": ", qv1_parent_clean_labels[[pvar]])
+            qv1_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar, ": ", qv1_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
             qv1_parent_clean_labels[[pvar]] <- paste0(qv1_parent_clean_labels[[pvar]],
@@ -340,7 +340,7 @@ qualtrics_parent_v1dat <- function(date_str, data_path) {
     ## 6b) PA time data with 99's and odd anchor categories ####
     pa_vars <- names(qv1_parent_clean)[c(316:375)]
 
-    # loop through to fix 99's and lb 119's and 400's
+    # loop through to fix 99's
     for (v in 1:length(pa_vars)) {
 
         # get variable name
@@ -493,7 +493,7 @@ qualtrics_parent_v1dat <- function(date_str, data_path) {
             names(qv1_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv1_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable",
+            qv1_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ",
                 pvar, ": ", qv1_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
@@ -533,7 +533,7 @@ qualtrics_parent_v1dat <- function(date_str, data_path) {
             names(qv1_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv1_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable", pvar, ": ", qv1_parent_clean_labels[[pvar]])
+            qv1_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar, ": ", qv1_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
             qv1_parent_clean_labels[[pvar]] <- paste0(qv1_parent_clean_labels[[pvar]],
@@ -580,7 +580,7 @@ qualtrics_parent_v1dat <- function(date_str, data_path) {
             names(qv1_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv1_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable", pvar, ": ", qv1_parent_clean_labels[[pvar]])
+            qv1_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar, ": ", qv1_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
             qv1_parent_clean_labels[[pvar]] <- paste0(qv1_parent_clean_labels[[pvar]],
@@ -614,7 +614,7 @@ qualtrics_parent_v1dat <- function(date_str, data_path) {
         }
 
         # add label to pna database
-        qv1_parent_pna_labels[['birth_order_pna']] <- paste0("prefer not to answer marked for variable", pvar, ": ", qv1_parent_clean_labels[['birth_order']])
+        qv1_parent_pna_labels[['birth_order_pna']] <- paste0("prefer not to answer marked for variable ", pvar, ": ", qv1_parent_clean_labels[['birth_order']])
 
         # update true data label (only want to pna label if needed)
         qv1_parent_clean_labels[['birth_order']] <- paste0(qv1_parent_clean_labels[['birth_order']],
@@ -785,6 +785,10 @@ qualtrics_parent_v1dat <- function(date_str, data_path) {
     ## 10d) final re-order/clean of data
     qv1_parent_clean <- qv1_parent_clean[c(1:12, 402, 13:43, 378, 44:46, 379, 403:408, 47:73, 400, 74:76, 401, 77:316, 380, 317:319, 381, 320, 382, 321:327, 383, 328, 384, 329:331, 385, 332, 386, 333:339, 387, 340, 388, 341:343, 389, 344, 390, 345:351, 391, 352, 392, 353:355, 393, 356, 394, 357:363, 395, 364, 396, 365:367, 397, 368, 398, 369:375, 399, 376:377)]
     qv1_parent_clean_labels <- qv1_parent_clean_labels[c(1:12, 402, 13:43, 378, 44:46, 379, 403:408, 47:73, 400, 74:76, 401, 77:316, 380, 317:319, 381, 320, 382, 321:327, 383, 328, 384, 329:331, 385, 332, 386, 333:339, 387, 340, 388, 341:343, 389, 344, 390, 345:351, 391, 352, 392, 353:355, 393, 356, 394, 357:363, 395, 364, 396, 365:367, 397, 368, 398, 369:375, 399, 376:377)]
+
+    #make sure the variable labels match in the dataset
+    qv1_parent_clean = sjlabelled::set_label(qv1_parent_clean, label = matrix(unlist(qv1_parent_clean_labels, use.names = FALSE)))
+    qv1_parent_pna = sjlabelled::set_label(qv1_parent_pna, label = matrix(unlist(qv1_parent_pna_labels, use.names = FALSE)))
 
     # make list of data frame and associated labels
     qv1_parent <- list(data = qv1_parent_clean, dict = qv1_parent_clean_labels, pna_data = qv1_parent_pna, pna_dict = qv1_parent_pna_labels)

@@ -205,6 +205,9 @@ qualtrics_child_v2dat <- function(date_str, data_path) {
     ### FINISH ADDING THE REST OF THESE
 
 
+    #make sure the variable labels match in the dataset
+    qv2_child_clean = sjlabelled::set_label(qv2_child_clean, label = matrix(unlist(qv2_child_clean_labels, use.names = FALSE)))
+
     ## make list of data frame and associated labels
     qv2_child <- list(data = qv2_child_clean, dict = qv2_child_clean_labels)
 
