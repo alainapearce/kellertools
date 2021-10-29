@@ -59,14 +59,15 @@ qualtrics_child_v1dat_lab <- function(date_str, data_path) {
         }
     }
 
-
+    
     #### 2. Load Data #####
 
     if (isTRUE(datapath_arg)) {
-        qv1_child_path <- paste0(data_path, "/Final_CovidAtHome/Child_V1_Lab_", date_str,
-                                       ".sav")
+        qv1_child_path <- paste0(data_path, "/Final_CovidAtHome/Child_V1_Lab_", 
+            date_str, ".sav")
     } else {
-        qv1_child_path <- paste0("Final_CovidAtHome/Child_V1_Lab", date_str, ".sav")
+        qv1_child_path <- paste0("Final_CovidAtHome/Child_V1_Lab", 
+            date_str, ".sav")
     }
 
     # check if file exists
@@ -90,73 +91,82 @@ qualtrics_child_v1dat_lab <- function(date_str, data_path) {
     qv1_child_labels <- lapply(qv1_child_dat, function(x) attributes(x)$label)
 
     # 2) selecting relevant data columns
-    qv1_child_clean <- qv1_child_dat[c(1, 18:20, 27:46, 52:54, 62:89, 100:203)]
+    qv1_child_clean <- qv1_child_dat[c(1, 18:20, 27:46, 52:54, 62:89, 
+        100:203)]
 
     ## update labels
-    qv1_child_clean_labels <- qv1_child_labels[c(1, 18:20, 27:46, 52:54, 62:89, 100:203)]
+    qv1_child_clean_labels <- qv1_child_labels[c(1, 18:20, 27:46, 
+        52:54, 62:89, 100:203)]
 
-
+    
     # 3) removing all practice events (e.g., 999)
-    qv1_child_clean <- qv1_child_clean[!is.na(qv1_child_clean$ID) & qv1_child_clean$ID <
-        999, ]
+    qv1_child_clean <- qv1_child_clean[!is.na(qv1_child_clean$ID) & 
+        qv1_child_clean$ID < 999, ]
 
-    # 4) re-ordering and re-name data columns general order ####
-    # 1) child information (id, startdate, sex, dob, h/w, bmi, screen out), 2) freddies, 3) food
-    # VAS 4) intakes (preMeal, EAH, meal duration), 5) wanting, PSD, PSS,
-    # etc 6) notes
+    # 4) re-ordering and re-name data columns general order #### 1)
+    # child information (id, startdate, sex, dob, h/w, bmi, screen
+    # out), 2) freddies, 3) food VAS 4) intakes (preMeal, EAH, meal
+    # duration), 5) wanting, PSD, PSS, etc 6) notes
 
-    qv1_child_clean <- qv1_child_clean[c(2, 1, 3:4, 56:64, 65:66, 69, 67:68, 5:24, 25:27, 70:157, 28:55, 158:159)]
+    qv1_child_clean <- qv1_child_clean[c(2, 1, 3:4, 56:64, 65:66, 
+        69, 67:68, 5:24, 25:27, 70:157, 28:55, 158:159)]
 
-    qv1_child_clean_labels <- qv1_child_clean_labels[c(2, 1, 3:4, 56:64, 65:66, 69, 67:68, 5:24, 25:27, 70:157, 28:55, 158:159)]
+    qv1_child_clean_labels <- qv1_child_clean_labels[c(2, 1, 3:4, 
+        56:64, 65:66, 69, 67:68, 5:24, 25:27, 70:157, 28:55, 158:159)]
 
     ## re-name variables
-    names(qv1_child_clean) <- c("id", "start_date", "sex", "dob",
-        "height1", "height2", "weight1", "weight2", "height_avg", "weight_avg",
-        "bmi", "bmi_percentile", "bmi_screenout", "freddy_pre_meal", "freddy_post_meal",
-        "freddy_pre_want", "freddy_pre_eah", "freddy_post_eah", "vas_practice",
-        "vas_popcorn", "vas_pretzle", "vas_cornchip", "vas_cookie", "vas_brownie",
-        "vas_starburst", "vas_skittle", "vas_hershey", "vas_icecream",
-        "vas_pbj_sndwch", "vas_ham_sndwch", "vas_turkey_sndwch", "vas_cheese_sndwch",
-        "vas_applesauce", "vas_potatoechip", "vas_babycarrot", "vash_oreo",
-        "vas_milk", "vas_water", "meal_start", "meal_end", "meal_dur",
-        "noplate_applesauce_g", "plate_applesauce_g", "post_applesauce_g",
-        "consumed_applesauce_g", "noplate_carrot_g", "plate_carrot_g",
-        "post_carrot_g", "consumed_carrot_sndwch_g", "noplate_cheese_sndwch_g",
-        "plate_cheese_sndwch_g", "post_cheese_sndwch_g", "consumed_cheese_sndwch_g",
-        "noplate_cookies_g", "plate_cookies_g", "post_cookies_g", "consumed_cookies_g",
-        "noplate_ham_sndwch_g", "plate_ham_sndwch_g", "post_ham_sndwch_g",
-        "consumed_ham_sndwch_g", "noplate_milk_g", "plate_milk_g", "post_milk_g",
-        "consumed_milk_g", "noplate_pbj_sndwch_g", "plate_pbj_sndwch_g",
-        "post_pbj_sndwch_g", "consumed_pbj_sndwch_g", "noplate_potatochip_g",
-        "plate_potatochip_g", "post_potatochip_g", "consumed_potatochip_g",
-        "noplate_turkey_sndwch_g", "plate_turkey_sndwch_g", "post_turkey_sndwch_g",
-        "consumed_turkey_sndwch_g", "noplate_ketchup_g", "plate_ketchup_g",
-        "post_ketchup_g", "consumed_ketchup_g", "noplate_mayo_g", "plate_mayo_g",
-        "post_mayo_g", "consumed_mayo_g", "noplate_mustard_g", "plate_mustard_g",
-        "post_mustard_g", "consumed_mustard_g", "noplate_brownies_g", "plate_brownies_g",
-        "post_brownies_g", "consumed_brownies_g", "noplate_cornchips_g",
-        "plate_cornchips_g", "post_cornchips_g", "consumed_cornchips_g",
-        "noplate_hersheys_g", "plate_hersheys_g", "post_hersheys_g", "consumed_hersheys_g",
-        "noplate_icecream_g", "plate_icecream_g", "post_icecream_g", "consumed_icecream_g",
-        "noplate_oreos_g", "plate_oreos_g", "post_oreos_g", "consumed_oreos_g",
-        "noplate_popcorn_g", "plate_popcorn_g", "post_popcorn_g", "consumed_popcorn_g",
-        "noplate_pretzels_g", "plate_pretzels_g", "post_pretzels_g", "consumed_pretzels_g",
-        "noplate_skittles_g", "plate_skittles_g", "post_skittles_g", "consumed_skittles_g",
-        "noplate_starbursts_g", "plate_starbursts_g", "post_starbursts_g",
-        "consumed_starbursts_g", "noplate_water_g", "plate_water_g", "post_water_g",
-        "consumed_water_g", "want_water","want_brownies", "want_applesauce", "want_carrots",
-        "want_cars", "want_cheese", "want_cookies", "want_cornchip", "want_toy",
-        "want_connect4", "want_crayons", "want_ham", "want_dino", "want_hershey",
-        "want_icecream", "want_jenga", "want_legos", "want_elephant", "want_oreos",
-        "want_pbj_sndwch", "want_popcorn", "want_chips", "want_pretzels",
-        "want_skittles", "want_trains", "want_trucks", "want_starbursts",
-        "want_turkey_sndwch", "food_initials", "child_notes")
+    names(qv1_child_clean) <- c("id", "start_date", "sex", "dob", 
+        "height1", "height2", "weight1", "weight2", "height_avg", 
+        "weight_avg", "bmi", "bmi_percentile", "bmi_screenout", "freddy_pre_meal", 
+        "freddy_post_meal", "freddy_pre_want", "freddy_pre_eah", 
+        "freddy_post_eah", "vas_practice", "vas_popcorn", "vas_pretzle", 
+        "vas_cornchip", "vas_cookie", "vas_brownie", "vas_starburst", 
+        "vas_skittle", "vas_hershey", "vas_icecream", "vas_pbj_sndwch", 
+        "vas_ham_sndwch", "vas_turkey_sndwch", "vas_cheese_sndwch", 
+        "vas_applesauce", "vas_potatoechip", "vas_babycarrot", "vash_oreo", 
+        "vas_milk", "vas_water", "meal_start", "meal_end", "meal_dur", 
+        "noplate_applesauce_g", "plate_applesauce_g", "post_applesauce_g", 
+        "consumed_applesauce_g", "noplate_carrot_g", "plate_carrot_g", 
+        "post_carrot_g", "consumed_carrot_sndwch_g", "noplate_cheese_sndwch_g", 
+        "plate_cheese_sndwch_g", "post_cheese_sndwch_g", "consumed_cheese_sndwch_g", 
+        "noplate_cookies_g", "plate_cookies_g", "post_cookies_g", 
+        "consumed_cookies_g", "noplate_ham_sndwch_g", "plate_ham_sndwch_g", 
+        "post_ham_sndwch_g", "consumed_ham_sndwch_g", "noplate_milk_g", 
+        "plate_milk_g", "post_milk_g", "consumed_milk_g", "noplate_pbj_sndwch_g", 
+        "plate_pbj_sndwch_g", "post_pbj_sndwch_g", "consumed_pbj_sndwch_g", 
+        "noplate_potatochip_g", "plate_potatochip_g", "post_potatochip_g", 
+        "consumed_potatochip_g", "noplate_turkey_sndwch_g", "plate_turkey_sndwch_g", 
+        "post_turkey_sndwch_g", "consumed_turkey_sndwch_g", "noplate_ketchup_g", 
+        "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", 
+        "noplate_mayo_g", "plate_mayo_g", "post_mayo_g", "consumed_mayo_g", 
+        "noplate_mustard_g", "plate_mustard_g", "post_mustard_g", 
+        "consumed_mustard_g", "noplate_brownies_g", "plate_brownies_g", 
+        "post_brownies_g", "consumed_brownies_g", "noplate_cornchips_g", 
+        "plate_cornchips_g", "post_cornchips_g", "consumed_cornchips_g", 
+        "noplate_hersheys_g", "plate_hersheys_g", "post_hersheys_g", 
+        "consumed_hersheys_g", "noplate_icecream_g", "plate_icecream_g", 
+        "post_icecream_g", "consumed_icecream_g", "noplate_oreos_g", 
+        "plate_oreos_g", "post_oreos_g", "consumed_oreos_g", "noplate_popcorn_g", 
+        "plate_popcorn_g", "post_popcorn_g", "consumed_popcorn_g", 
+        "noplate_pretzels_g", "plate_pretzels_g", "post_pretzels_g", 
+        "consumed_pretzels_g", "noplate_skittles_g", "plate_skittles_g", 
+        "post_skittles_g", "consumed_skittles_g", "noplate_starbursts_g", 
+        "plate_starbursts_g", "post_starbursts_g", "consumed_starbursts_g", 
+        "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g", 
+        "want_water", "want_brownies", "want_applesauce", "want_carrots", 
+        "want_cars", "want_cheese", "want_cookies", "want_cornchip", 
+        "want_toy", "want_connect4", "want_crayons", "want_ham", 
+        "want_dino", "want_hershey", "want_icecream", "want_jenga", 
+        "want_legos", "want_elephant", "want_oreos", "want_pbj_sndwch", 
+        "want_popcorn", "want_chips", "want_pretzels", "want_skittles", 
+        "want_trains", "want_trucks", "want_starbursts", "want_turkey_sndwch", 
+        "food_initials", "child_notes")
 
     ## update data labels
     names(qv1_child_clean_labels) <- names(qv1_child_clean)
 
-    # 5) reformatting dates to be appropriate and computer readable ####
-    # YYYY-MM-DD
+    # 5) reformatting dates to be appropriate and computer readable
+    # #### YYYY-MM-DD
     qv1_child_clean$start_date <- ymd(as.Date(qv1_child_clean$start_date))
     qv1_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
@@ -166,14 +176,14 @@ qualtrics_child_v1dat_lab <- function(date_str, data_path) {
     # 6) re-calculate manual variables ####
 
     # avg child height, update label
-    qv1_child_clean$height_avg <- ifelse(is.na(qv1_child_clean$height1) |
-        is.na(qv1_child_clean$height2), NA, rowSums(qv1_child_clean[c("height1",
+    qv1_child_clean$height_avg <- ifelse(is.na(qv1_child_clean$height1) | 
+        is.na(qv1_child_clean$height2), NA, rowSums(qv1_child_clean[c("height1", 
         "height2")], na.rm = TRUE)/2)
     qv1_child_clean_labels[["height_avg"]] <- "average height calculated in R"
 
     # avg child weight, update label
-    qv1_child_clean$weight_avg <- ifelse(is.na(qv1_child_clean$weight1) |
-        is.na(qv1_child_clean$weight2), NA, rowSums(qv1_child_clean[c("weight1",
+    qv1_child_clean$weight_avg <- ifelse(is.na(qv1_child_clean$weight1) | 
+        is.na(qv1_child_clean$weight2), NA, rowSums(qv1_child_clean[c("weight1", 
         "weight2")], na.rm = TRUE)/2)
     qv1_child_clean_labels[["weight_avg"]] <- "average weight calculated in R"
 
@@ -182,62 +192,70 @@ qualtrics_child_v1dat_lab <- function(date_str, data_path) {
         qv1_child_clean$bmi <- as.numeric(qv1_child_clean$bmi)
     }
 
-    qv1_child_clean$bmi <- ifelse(is.na(qv1_child_clean$height_avg) | is.na(qv1_child_clean$weight_avg),
-        NA, round(qv1_child_clean$weight_avg/((qv1_child_clean$height_avg/100)^2),
-            digits = 2))
+    qv1_child_clean$bmi <- ifelse(is.na(qv1_child_clean$height_avg) | 
+        is.na(qv1_child_clean$weight_avg), NA, round(qv1_child_clean$weight_avg/((qv1_child_clean$height_avg/100)^2), 
+        digits = 2))
     qv1_child_clean_labels[["bmi"]] <- "bmi calculated in R package using scripted average height and weight"
 
-
+    
     # child age - new variables so need to add to labels
-    qv1_child_clean$age_yr <- round((qv1_child_clean$dob %--% qv1_child_clean$start_date)/years(1),
+    qv1_child_clean$age_yr <- round((qv1_child_clean$dob %--% qv1_child_clean$start_date)/years(1), 
         digits = 2)
     qv1_child_clean_labels[["age_yr"]] <- "Age in years calculated from dob and start_date"
 
-    qv1_child_clean$age_mo <- round((qv1_child_clean$dob %--% qv1_child_clean$start_date)/months(1),
+    qv1_child_clean$age_mo <- round((qv1_child_clean$dob %--% qv1_child_clean$start_date)/months(1), 
         digits = 1)
     qv1_child_clean_labels[["age_mo"]] <- "Age in months calculated from dob and start_date"
 
     # child bmi percentile, update label
-    qv1_child_clean$bmi_percentile <- round((childsds::sds(value = qv1_child_clean$bmi,
-        age = qv1_child_clean$age_yr, sex = qv1_child_clean$sex, item = "bmi",
-        ref = cdc.ref, type = "perc", male = 1, female = 2)) * 100, digits = 2)
+    qv1_child_clean$bmi_percentile <- round((childsds::sds(value = qv1_child_clean$bmi, 
+        age = qv1_child_clean$age_yr, sex = qv1_child_clean$sex, 
+        item = "bmi", ref = cdc.ref, type = "perc", male = 1, female = 2)) * 
+        100, digits = 2)
     qv1_child_clean_labels[["bmi_percentile"]] <- "BMI percentile updated: calculated using childsds R package and scripted average height and weight"
 
-    # child bmi z score : sds (standard deviations away from center/50th
-    # centile) - new variable so need to add to labels
-    qv1_child_clean$bmi_z <- round(childsds::sds(value = qv1_child_clean$bmi,
-        age = qv1_child_clean$age_yr, sex = qv1_child_clean$sex, item = "bmi",
-        ref = cdc.ref, type = "SDS", male = 1, female = 2), digits = 2)
+    # child bmi z score : sds (standard deviations away from
+    # center/50th centile) - new variable so need to add to labels
+    qv1_child_clean$bmi_z <- round(childsds::sds(value = qv1_child_clean$bmi, 
+        age = qv1_child_clean$age_yr, sex = qv1_child_clean$sex, 
+        item = "bmi", ref = cdc.ref, type = "SDS", male = 1, female = 2), 
+        digits = 2)
     qv1_child_clean_labels[["bmi_z"]] <- "BMI-z/sds calculated using childsds R package"
 
     # re-organize variables and labels with newly added variables
-    qv1_child_clean <- qv1_child_clean[c(1:4, 159:161, 5:13, 162, 14:158)]
+    qv1_child_clean <- qv1_child_clean[c(1:4, 159:161, 5:13, 162, 
+        14:158)]
 
-    qv1_child_clean_labels <- qv1_child_clean_labels[c(1:4, 159:161, 5:13, 162, 14:158)]
+    qv1_child_clean_labels <- qv1_child_clean_labels[c(1:4, 159:161, 
+        5:13, 162, 14:158)]
 
-    # re-calculate all intake values (should we write subfunction to call??)
+    # re-calculate all intake values (should we write subfunction to
+    # call??)
 
     # 7) re-ordering factor levels to start with value 0 ####
 
     ## sex- make sure always matches across parent/child and visits
-    qv1_child_clean$sex <- sjlabelled::set_labels(qv1_child_clean$sex, labels = c("Male" = 0, 'Female' = 1))
+    qv1_child_clean$sex <- sjlabelled::set_labels(qv1_child_clean$sex, 
+        labels = c(Male = 0, Female = 1))
     set_attr <- attributes(qv1_child_clean$sex)
-    qv1_child_clean$sex <- ifelse(is.na(qv1_child_clean$sex), NA,
-                                  ifelse(qv1_child_clean$sex == 1, 0, 1))
+    qv1_child_clean$sex <- ifelse(is.na(qv1_child_clean$sex), NA, 
+        ifelse(qv1_child_clean$sex == 1, 0, 1))
     attributes(qv1_child_clean$sex) <- set_attr
-    qv1_child_clean_labels[["sex"]] <- paste0(qv1_child_clean_labels[["sex"]], " re-leveled in R to start with 0")
+    qv1_child_clean_labels[["sex"]] <- paste0(qv1_child_clean_labels[["sex"]], 
+        " re-leveled in R to start with 0")
 
-    # 8) random fixes to factor level names and variable descriptions ####
+    # 8) random fixes to factor level names and variable descriptions
+    # ####
 
     ## add meal/EAH to intake descriptions
     intake_vars <- names(qv1_child_clean)[46:133]
     for (var in 1:length(intake_vars)) {
         var_name <- as.character(intake_vars[var])
         if (var < 94) {
-            qv1_child_clean_labels[[var_name]] <- paste0("Meal ",
+            qv1_child_clean_labels[[var_name]] <- paste0("Meal ", 
                 qv1_child_clean_labels[[var_name]])
         } else {
-            qv1_child_clean_labels[[var_name]] <- paste0("EAH ",
+            qv1_child_clean_labels[[var_name]] <- paste0("EAH ", 
                 qv1_child_clean_labels[[var_name]])
         }
     }
@@ -246,13 +264,19 @@ qualtrics_child_v1dat_lab <- function(date_str, data_path) {
     for (var in 1:length(names(qv1_child_clean))) {
         var_name <- as.character(names(qv1_child_clean)[var])
         if (grepl(" - 1", qv1_child_clean_labels[[var_name]], fixed = TRUE)) {
-            qv1_child_clean_labels[[var_name]] <- gsub("\\ - 1.*", "",
-                qv1_child_clean_labels[[var_name]])
+            qv1_child_clean_labels[[var_name]] <- gsub("\\ - 1.*", 
+                "", qv1_child_clean_labels[[var_name]])
         }
     }
 
-    #make sure the variable labels match in the dataset
-    qv1_child_clean = sjlabelled::set_label(qv1_child_clean, label = matrix(unlist(qv1_child_clean_labels, use.names = FALSE)))
+    #### 9) Format for export #### put data in order of participant ID
+    #### for ease
+    qv1_child_clean <- qv1_child_clean[order(qv1_child_clean$id), 
+        ]
+
+    # make sure the variable labels match in the dataset
+    qv1_child_clean = sjlabelled::set_label(qv1_child_clean, label = matrix(unlist(qv1_child_clean_labels, 
+        use.names = FALSE)))
 
     # make list of data frame and associated labels
     qv1_child_lab_clean <- qv1_child_clean

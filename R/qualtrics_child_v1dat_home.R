@@ -59,14 +59,15 @@ qualtrics_child_v1dat_home <- function(date_str, data_path) {
         }
     }
 
-
+    
     #### 2. Load Data #####
 
     if (isTRUE(datapath_arg)) {
-        qv1_child_path <- paste0(data_path, "/Final_CovidAtHome/Child_V1_Home_", date_str,
-            ".sav")
+        qv1_child_path <- paste0(data_path, "/Final_CovidAtHome/Child_V1_Home_", 
+            date_str, ".sav")
     } else {
-        qv1_child_path <- paste0("Final_CovidAtHome/Child_V1_Home", date_str, ".sav")
+        qv1_child_path <- paste0("Final_CovidAtHome/Child_V1_Home", 
+            date_str, ".sav")
     }
 
     # check if file exists
@@ -91,55 +92,59 @@ qualtrics_child_v1dat_home <- function(date_str, data_path) {
 
     # 2) selecting relevant data columns
 
-    qv1_child_clean <- qv1_child_dat[c(1, 18:32, 41, 50, 59, 68, 77, 86:157)]
+    qv1_child_clean <- qv1_child_dat[c(1, 18:32, 41, 50, 59, 68, 
+        77, 86:157)]
 
     ## update labels
-    qv1_child_clean_labels <- qv1_child_labels[c(1, 18:32, 41, 50, 59, 68, 77, 86:157)]
+    qv1_child_clean_labels <- qv1_child_labels[c(1, 18:32, 41, 50, 
+        59, 68, 77, 86:157)]
 
-
+    
     # 3) removing all practice events (e.g., 999)
-    qv1_child_clean <- qv1_child_clean[!is.na(qv1_child_clean$ID) & qv1_child_clean$ID <
-        999, ]
+    qv1_child_clean <- qv1_child_clean[!is.na(qv1_child_clean$ID) & 
+        qv1_child_clean$ID < 999, ]
 
-    # 4) re-ordering and re-name data columns general order ####
-    # 1) child id, 2) start date, (3) child information (sex, dob, h/w, bmi, screen out),
-    # (4)PSD, PSS
+    # 4) re-ordering and re-name data columns general order #### 1)
+    # child id, 2) start date, (3) child information (sex, dob, h/w,
+    # bmi, screen out), (4)PSD, PSS
 
     qv1_child_clean <- qv1_child_clean[c(2, 1, 3:93)]
 
     qv1_child_clean_labels <- qv1_child_clean_labels[c(2, 1, 3:93)]
 
     ## re-name variables
-    names(qv1_child_clean) <- c("id", "start_date", "sex", "dob",
-        "psd_practice1", "psd_practice2", "psd_1",
-        "psd_2", "psd_3", "psd_4", "psd_5", "psd_6", "psd_7", "psd_8",
-        "psd_9", "psd_10", "psd_practice8", "psd_11", "psd_12", "psd_13",
-        "psd_14", "psd_15", "pss_practice1", "pss_vas_hunger", "pss_vas_couldeat",
-        "pss_vas_fullness", "pss_practice2", "pss_apple_eat", "pss_apple_much",
-        "pss_apple_like", "pss_broccoli_eat", "pss_broccoli_much", "pss_broccoli_like",
-        "pss_cake_eat", "pss_cake_much", "pss_cake_like", "pss_candy_eat",
-        "pss_candy_much", "pss_candy_like", "pss_carrot_eat", "pss_carrot_much",
-        "pss_carrot_like", "pss_cornflakes_eat", "pss_ccornflakes_much",
-        "pss_cornflakes_like", "pss_cheese_brgr_eat", "pss_cheese_brgr_much",
-        "pss_cheese_brgr_like", "pss_chkn_nug_eat", "pss_chkn_nug_much",
-        "pss_chkn_nug_like", "pss_fries_eat", "pss_fries_much", "pss_fries_like",
-        "pss_garlic_bread_eat", "pss_garlic_bread_much", "pss_garlic_bread_like",
-        "pss_goldfish_eat", "pss_goldfish_much", "pss_goldfish_like", "pss_choc_icecream_eat",
-        "pss_choc_icecream_much", "pss_choc_icecream_like", "pss_mac_cheese_eat",
-        "pss_mac_cheese_much", "pss_mac_cheese_like", "pss_milk_eat", "pss_milk_much",
-        "pss_milk_like", "pss_orangejuice_eat", "pss_orangejuice_much",
-        "pss_orangejuice_like", "pss_pbj_sndwch_eat", "pss_pbj_sndwch_much",
-        "pss_pbj_sndwch_like", "pss_peas_eat", "pss_peas_much", "pss_peas_like",
-        "pss_pizza_eat", "pss_pizza_much", "pss_pizza_like", "pss_soda_eat",
-        "pss_soda_much", "pss_soda_like", "pss_tomatoes_eat", "pss_tomatoes_much",
-        "pss_tomatoes_like","pss_grapes_eat","pss_grapes_much", "pss_grapes_like",
-        "pss_yogurt_eat", "pss_yogurt_much", "pss_yogurt_like")
+    names(qv1_child_clean) <- c("id", "start_date", "sex", "dob", 
+        "psd_practice1", "psd_practice2", "psd_1", "psd_2", "psd_3", 
+        "psd_4", "psd_5", "psd_6", "psd_7", "psd_8", "psd_9", "psd_10", 
+        "psd_practice8", "psd_11", "psd_12", "psd_13", "psd_14", 
+        "psd_15", "pss_practice1", "pss_vas_hunger", "pss_vas_couldeat", 
+        "pss_vas_fullness", "pss_practice2", "pss_apple_eat", "pss_apple_much", 
+        "pss_apple_like", "pss_broccoli_eat", "pss_broccoli_much", 
+        "pss_broccoli_like", "pss_cake_eat", "pss_cake_much", "pss_cake_like", 
+        "pss_candy_eat", "pss_candy_much", "pss_candy_like", "pss_carrot_eat", 
+        "pss_carrot_much", "pss_carrot_like", "pss_cornflakes_eat", 
+        "pss_ccornflakes_much", "pss_cornflakes_like", "pss_cheese_brgr_eat", 
+        "pss_cheese_brgr_much", "pss_cheese_brgr_like", "pss_chkn_nug_eat", 
+        "pss_chkn_nug_much", "pss_chkn_nug_like", "pss_fries_eat", 
+        "pss_fries_much", "pss_fries_like", "pss_garlic_bread_eat", 
+        "pss_garlic_bread_much", "pss_garlic_bread_like", "pss_goldfish_eat", 
+        "pss_goldfish_much", "pss_goldfish_like", "pss_choc_icecream_eat", 
+        "pss_choc_icecream_much", "pss_choc_icecream_like", "pss_mac_cheese_eat", 
+        "pss_mac_cheese_much", "pss_mac_cheese_like", "pss_milk_eat", 
+        "pss_milk_much", "pss_milk_like", "pss_orangejuice_eat", 
+        "pss_orangejuice_much", "pss_orangejuice_like", "pss_pbj_sndwch_eat", 
+        "pss_pbj_sndwch_much", "pss_pbj_sndwch_like", "pss_peas_eat", 
+        "pss_peas_much", "pss_peas_like", "pss_pizza_eat", "pss_pizza_much", 
+        "pss_pizza_like", "pss_soda_eat", "pss_soda_much", "pss_soda_like", 
+        "pss_tomatoes_eat", "pss_tomatoes_much", "pss_tomatoes_like", 
+        "pss_grapes_eat", "pss_grapes_much", "pss_grapes_like", "pss_yogurt_eat", 
+        "pss_yogurt_much", "pss_yogurt_like")
 
     ## update data labels
     names(qv1_child_clean_labels) <- names(qv1_child_clean)
 
-    # 5) reformatting dates to be appropriate and computer readable ####
-    # YYYY-MM-DD
+    # 5) reformatting dates to be appropriate and computer readable
+    # #### YYYY-MM-DD
     qv1_child_clean$start_date <- lubridate::ymd(as.Date(qv1_child_clean$start_date))
     qv1_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
@@ -149,51 +154,54 @@ qualtrics_child_v1dat_home <- function(date_str, data_path) {
     # 6) re-calculate manual variables ####
 
     # child age - new variables so need to add to labels
-    qv1_child_clean$age_yr <- round((qv1_child_clean$dob %--% qv1_child_clean$start_date)/years(1),
+    qv1_child_clean$age_yr <- round((qv1_child_clean$dob %--% qv1_child_clean$start_date)/years(1), 
         digits = 2)
     qv1_child_clean_labels[["age_yr"]] <- "Age in years calculated from dob and start_date"
 
-    qv1_child_clean$age_mo <- round((qv1_child_clean$dob %--% qv1_child_clean$start_date)/months(1),
+    qv1_child_clean$age_mo <- round((qv1_child_clean$dob %--% qv1_child_clean$start_date)/months(1), 
         digits = 1)
     qv1_child_clean_labels[["age_mo"]] <- "Age in months calculated from dob and start_date"
 
     # re-organize variables and labels with newly added variables
     qv1_child_clean <- qv1_child_clean[c(1:4, 94:95, 5:93)]
-    qv1_child_clean_labels <- qv1_child_clean_labels[c(1:4, 94:95, 5:93)]
+    qv1_child_clean_labels <- qv1_child_clean_labels[c(1:4, 94:95, 
+        5:93)]
 
     # 7) re-ordering factor levels to start with value 0 ####
 
     ## sex - make sure always matches across parent/child and visits
-    qv1_child_clean$sex <- sjlabelled::set_labels(qv1_child_clean$sex, labels = c("Male" = 0, 'Female' = 1))
+    qv1_child_clean$sex <- sjlabelled::set_labels(qv1_child_clean$sex, 
+        labels = c(Male = 0, Female = 1))
     set_attr <- attributes(qv1_child_clean$sex)
-    qv1_child_clean$sex <- ifelse(is.na(qv1_child_clean$sex), NA,
-                                  ifelse(qv1_child_clean$sex == 1, 0, 1))
+    qv1_child_clean$sex <- ifelse(is.na(qv1_child_clean$sex), NA, 
+        ifelse(qv1_child_clean$sex == 1, 0, 1))
     attributes(qv1_child_clean$sex) <- set_attr
-    qv1_child_clean_labels[["sex"]] <- paste0(qv1_child_clean_labels[["sex"]], " re-leveled in R to start with 0")
+    qv1_child_clean_labels[["sex"]] <- paste0(qv1_child_clean_labels[["sex"]], 
+        " re-leveled in R to start with 0")
 
-    # 8) random fixes to factor level names and variable descriptions ####
-    # fix psd value labes
+    # 8) random fixes to factor level names and variable descriptions
+    # #### fix psd value labes
     psd_names <- names(qv1_child_clean)[7:24]
 
     for (var in 1:length(psd_names)) {
         var_name <- as.character(psd_names[var])
-        if (attributes(qv1_child_clean[[var_name]])$labels[1] ==
+        if (attributes(qv1_child_clean[[var_name]])$labels[1] == 
             1) {
-            names(attributes(qv1_child_clean[[var_name]])$labels) <- c("Correct",
+            names(attributes(qv1_child_clean[[var_name]])$labels) <- c("Correct", 
                 "Incorrect")
         } else {
-            names(attributes(qv1_child_clean[[var_name]])$labels) <- c("Incorrect",
+            names(attributes(qv1_child_clean[[var_name]])$labels) <- c("Incorrect", 
                 "Correct")
         }
 
-        ## update variable descriptions for pps to distinguish same/different
-        ## from more/less
+        ## update variable descriptions for pps to distinguish
+        ## same/different from more/less
         orig_label <- qv1_child_clean_labels[[var_name]]
         if (var < 13) {
-            qv1_child_clean_labels[[var_name]] <- paste0(orig_label,
+            qv1_child_clean_labels[[var_name]] <- paste0(orig_label, 
                 " : same or different?")
         } else {
-            qv1_child_clean_labels[[var_name]] <- paste0(orig_label,
+            qv1_child_clean_labels[[var_name]] <- paste0(orig_label, 
                 " : which has more, first or second?")
         }
     }
@@ -205,13 +213,19 @@ qualtrics_child_v1dat_home <- function(date_str, data_path) {
     for (var in 1:length(names(qv1_child_clean))) {
         var_name <- as.character(names(qv1_child_clean)[var])
         if (grepl(" - 1", qv1_child_clean_labels[[var_name]], fixed = TRUE)) {
-            qv1_child_clean_labels[[var_name]] <- gsub("\\ - 1.*", "",
-                qv1_child_clean_labels[[var_name]])
+            qv1_child_clean_labels[[var_name]] <- gsub("\\ - 1.*", 
+                "", qv1_child_clean_labels[[var_name]])
         }
     }
 
-    #make sure the variable labels match in the dataset
-    qv1_child_clean = sjlabelled::set_label(qv1_child_clean, label = matrix(unlist(qv1_child_clean_labels, use.names = FALSE)))
+    #### 9) Format for export #### put data in order of participant ID
+    #### for ease
+    qv1_child_clean <- qv1_child_clean[order(qv1_child_clean$id), 
+        ]
+
+    # make sure the variable labels match in the dataset
+    qv1_child_clean = sjlabelled::set_label(qv1_child_clean, label = matrix(unlist(qv1_child_clean_labels, 
+        use.names = FALSE)))
 
     # make list of data frame and associated labels
     qv1_child_clean <- qv1_child_home_clean
