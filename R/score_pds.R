@@ -26,10 +26,10 @@
 #'
 #' @examples
 #' #default male/female
-#' pds_tanner_data <- pds_data(pds_data, respondant = 'parent', parID = 'ID')
+#' pds_tanner_data <- pds_data(pds_data, respondent = 'parent', parID = 'ID')
 #'
 #' #specify male/female
-#' pds_tanner_data <- pds_data(pds_data, respondant = 'parent', male = 'male', female = 'female', parID = 'ID')
+#' pds_tanner_data <- pds_data(pds_data, respondent = 'parent', male = 'male', female = 'female', parID = 'ID')
 #'
 #' \dontrun{
 #' }
@@ -38,7 +38,7 @@
 #'
 #' @export
 
-score_pds <- function(pds_data, respondant, male = 0, female = 1, parID) {
+score_pds <- function(pds_data, respondent, male = 0, female = 1, parID) {
 
     #### 1. Set up/initial checks #####
 
@@ -210,11 +210,23 @@ score_pds <- function(pds_data, respondant, male = 0, female = 1, parID) {
 
     pds_score_dat_labels[['sex']] <- 'Child sex coded as male = 0, female = 1'
     pds_score_dat_labels[['pds_score']] <- 'Pubertal Development Scale score: average of all responses for each sex with menarche yes = 4 points and menarche no = 1 point'
-    pds_score_dat_labels[['pds_tanner_cat']] <- 'Tanner equivaluent category'
+    pds_score_dat_labels[['pds_tanner']] <- 'Tanner equivaluent category'
 
     ## add attributes to for tanner category to data
     pds_score_dat[['pds_tanner_cat']] <- sjlabelled::add_labels(pds_score_dat[['pds_tanner_cat']], labels = c('Prepubertal' = 1, 'Early Puberty' = 2, 'Mid-Puberty' = 3, 'Late Puberty' = 4, 'Postpubertal' = 5))
     pds_score_dat[['pds_tanner_cat']] <- sjlabelled::as_numeric(pds_score_dat[['pds_tanner_cat']])
+
+    ##set names based on respondent
+    if (respondent == 'child'){
+        child_names <-
+        if (isTRUE(ID_arg)){
+            names(pds_score_dat)[3:4] <- c('pds_score_self', 'pds_tanner_self')
+            names(pds_score_dat_labels)[2:3] <- c('pds_score_self', 'pds_tanner_self')
+        } else {
+            names(pds_score_dat)[2:3] <- c('pds_score_self', 'pds_tanner_self')
+            names(pds_score_dat_labels)[2:3] <- c('pds_score_self', 'pds_tanner_self')
+        }
+    }
 
     ## make sure the variable labels match in the dataset
     pds_score_dat = sjlabelled::set_label(pds_score_dat, label = matrix(unlist(pds_score_dat_labels,

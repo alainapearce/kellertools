@@ -137,8 +137,48 @@ qualtrics_child_v3dat <- function(date_str, data_path) {
 
     # 6) re-calculate manual variables ####
 
-    # re-calculate all intake values (should we write subfunction to
-    # call??)
+    ## re-calculate all intake values
+
+    #get all intake variables
+    intake_vars <- names(qv3_child_clean)[c(17:41)]
+
+    #make all intake variables numeric
+    for (var in 1:length(intake_vars)){
+        var_name <- intake_vars[[var]]
+
+        qv3_child_clean[[var_name]] <- ifelse(qv3_child_clean[[var_name]] == '-' | qv3_child_clean[[var_name]] == 'n/a', NA,
+                ifelse(qv3_child_clean[[var_name]] == '312.92*', '312.92',
+                        ifelse(qv3_child_clean[[var_name]] == '490.92*', '490.92',
+                                ifelse(qv3_child_clean[[var_name]] == '69.59*', '69.59',
+                                       ifelse(qv3_child_clean[[var_name]] == '667,83', '667.83', qv3_child_clean[[var_name]])))))
+
+        if (is.character(qv3_child_clean[[var_name]])){
+            qv3_child_clean[[var_name]] <- as.numeric(qv3_child_clean[[var_name]])
+        }
+    }
+
+    #get all foods served - extract prefix and thne postfix in name
+    food_strs_g <- unique(sapply(intake_vars, function(x) gsub(".*plate_|.*post_|.*consumed_", "\\1", x), USE.NAMES = FALSE))
+    food_strs <- unique(sapply(food_strs_g, function(x) gsub("_g.*", "\\1", x), USE.NAMES = FALSE))
+
+    #loop through foods
+    for (f in 1:length(food_strs)){
+
+        #no post weights for margerine
+        if (food_strs[f] != 'margerine'){
+            #get variable names for plate* and post* weights
+            plate_var <- paste0('plate_', food_strs[f], '_g')
+            post_var <- paste0('post_', food_strs[f], '_g')
+            consumed_var <- paste0('consumed_', food_strs[f], '_g')
+
+            #calculate amount consumed
+            qv3_child_clean[[consumed_var]] <- qv3_child_clean[[plate_var]] -  qv3_child_clean[[post_var]]
+            qv3_child_clean[[consumed_var]] <- ifelse(qv3_child_clean[[consumed_var]] < 0, 0, qv3_child_clean[[consumed_var]])
+
+            #update labels
+            qv3_child_clean_labels[[consumed_var]] <- paste0(qv3_child_clean_labels[[consumed_var]], ' - recalcuated difference in R with values < 0 set to 0')
+        }
+    }
 
     # 7) re-ordering factor levels to start with value 0 ####
     ## no levels to reorder
