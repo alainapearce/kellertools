@@ -1,4 +1,4 @@
-#' qualtrics_child_v4dat: Process raw qualtrics visit 4 data for the child
+#' qualtrics_child_v4dat_lab: Process raw qualtrics visit 4 data for the child
 #'
 #' This function loads the .sav raw data file for the child visit 4 data that was
 #' collected via Qualtrics and cleans the data. Cleaning the data involves:
@@ -13,7 +13,7 @@
 #'
 #' @param date_str the date used in the name of the .sav file (e.g., for file 'Child_V4_2021-10-11.sav',
 #' the string '2021-10-11' would be entered)
-#' @param data_path (optional) the full path to the V4 Child Qualtircs database EXCLUDING the .sav file name (e.g., '.../b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/').
+#' @param data_path (optional) the full path to the V4 Child Qualtrics database EXCLUDING the .sav file name (e.g., '.../b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/').
 #'
 #'
 #' @return A list containing: 1) data: data.frame with raw, cleaned data from child visit 4 Qualtrics
@@ -35,7 +35,7 @@
 #'
 #' @export
 #'
-qualtrics_child_v2dat_lab <- function(date_str, data_path) {
+qualtrics_child_v4dat_lab <- function(date_str, data_path) {
 
     #### 1. Set up/initial checks #####
 
@@ -83,17 +83,16 @@ qualtrics_child_v2dat_lab <- function(date_str, data_path) {
         }
     }
 
-    ### UPDATE EVERYTHING BELOW HERE ####
     #### 3. Clean Data #####
 
     # 1) extract variable labels/descriptions
     qv4_child_labels <- lapply(qv4_child_dat, function(x) attributes(x)$label)
 
     # 2) selecting relevant data columns
-    qv4_child_clean <- qv4_child_dat[c(1, 18, 22:30, 36:38, 41:69)]
+    qv4_child_clean <- qv4_child_dat[c(1, 18, 25:33, 39:41, 45, 47:75, 187)]
 
     ## update labels
-    qv4_child_clean_labels <- qv4_child_labels[c(1, 18, 22:30, 36:38, 41:69)]
+    qv4_child_clean_labels <- qv4_child_labels[c(1, 18, 25:33, 39:41, 45, 47:75, 187)]
 
     # 3) removing all practice events (e.g., 999)
     qv4_child_clean <- qv4_child_clean[!is.na(qv4_child_clean$ID) &
@@ -103,9 +102,9 @@ qualtrics_child_v2dat_lab <- function(date_str, data_path) {
     # information (ID, date), 2) freddies, 3) food VAS 4) intakes (meal,
     # meal duration) 5) notes
 
-    qv4_child_clean <- qv4_child_clean[c(2, 1, 15:16, 3:14, 17:43)]
+    qv4_child_clean <- qv4_child_clean[c(2, 1, 17:18, 3:14, 19:43, 15:16, 44:45)]
 
-    qv4_child_clean_labels <- qv4_child_clean_labels[c(2, 1, 15:16, 3:14, 17:43)]
+    qv4_child_clean_labels <- qv4_child_clean_labels[c(2, 1, 17:18, 3:14, 19:43, 15:16, 44:45)]
 
     ## re-name variables
     names(qv4_child_clean) <- c("id", "start_date", "freddy_pre_meal",
@@ -119,7 +118,8 @@ qualtrics_child_v2dat_lab <- function(date_str, data_path) {
         "noplate_broccoli_g", "plate_broccoli_g", "post_broccoli_g",
         "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g",
         "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g",
-        "plate_water_g", "post_water_g", "consumed_water_g", "food_initials", "child_notes")
+        "plate_water_g", "post_water_g", "consumed_water_g", "spacegame_reward",
+        "mockscan1_complete", "food_initials", "child_notes")
 
     ## update data labels
     names(qv4_child_clean_labels) <- names(qv4_child_clean)
@@ -130,8 +130,6 @@ qualtrics_child_v2dat_lab <- function(date_str, data_path) {
     qv4_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
     # 6) re-calculate manual variables ####
-
-    ## re-calculate all intake values - EDIT INDEXES WHEN GET HERE
 
     #get all intake variables
     intake_vars <- names(qv4_child_clean)[c(17:41)]
@@ -174,8 +172,11 @@ qualtrics_child_v2dat_lab <- function(date_str, data_path) {
     ## no levels to reorder
 
     # 8) random fixes to factor level names and variable descriptions
-    qv4_child_clean_labels[["meal_start"]] <- "V3 meal start time"
-    qv4_child_clean_labels[["meal_end"]] <- "V3 meal end time"
+    qv4_child_clean_labels[["meal_start"]] <- "V4 meal start time"
+    qv4_child_clean_labels[["meal_end"]] <- "V4 meal end time"
+    qv4_child_clean_labels[["spacegame_reward"]] <- "Type of candy selected for Space Game reward"
+    qv4_child_clean_labels[["mockscan1_complete"]] <- "Completion of Mock Scan Training 1 (viewing mock MRI environment)"
+
 
     #### 9) Format for export #### put data in order of participant ID
     #### for ease
