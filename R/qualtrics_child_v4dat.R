@@ -177,11 +177,9 @@ qualtrics_child_v4dat <- function(date_str, data_path) {
         }
     }
 
-    #7a) fix 99's and other poor categories ####
+    # 6) fix 99's ####
 
-    ### UPDATE EVERYTHING BELOW HERE ###
-
-    ## check for labels/99 option: 1) if 99's exist, make a 'prefere
+    ## check for labels/99 option: 1) if 99's exist, make a 'prefer
     ## not to answer' (pna) variable to go in pna database, 2) replace
     ## 99's with NA and make variable numeric
 
@@ -190,26 +188,57 @@ qualtrics_child_v4dat <- function(date_str, data_path) {
     qv4_child_pna_labels <- lapply(qv4_child_pna, function(x) attributes(x)$label)
     qv4_child_pna_labels[["id"]] <- qv4_child_pna_labels[["id"]]
 
-
     pna_label <- "Note: prefer not to answer (pna) marked NA - see pna database for which were pna rather than missing NA"
 
-    ## Fix 99/Don't want to answer in CBIS
+    ## Fix 99/Don't want to answer in CWC, CBIS, PSI - Parent Responsiveness (levels are OK starting with 1; all are categorical variables)
+    level99_issue_catvars <- names(qv4_child_clean)[c(42:60)]
 
-    ## Fix 99/Don't want to answer in CWC
+    for (v in 1:length(level99_issue_catvars)) {
+        # get variable name
+        pvar <- level99_issue_catvars[v]
 
-    ## Fix 99/Don't want to answer in PSI - Parent Responsiveness
+        # if has '99' value, create new pna variable marking pna == 1
+        if (is.element(99, qv4_child_clean[[pvar]])) {
+            pna_dat <- ifelse(is.na(qv4_child_clean[[pvar]]), 0,
+                              ifelse(qv4_child_clean[[pvar]] == 99, 1, 0))
 
+            new_pna <- length(names(qv4_child_pna)) + 1
+            qv4_child_pna[[new_pna]] <- pna_dat
 
-    # 7b) re-ordering factor levels to start with value 0 ####
-    ## no levels to reorder
+            names(qv4_child_pna)[new_pna] <- paste0(pvar, "_pna")
+
+            # add label to pna database
+            qv4_child_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ",
+                                                                    pvar, ": ", qv4_child_clean_labels[[pvar]])
+
+            # update true data label (only want to pna label if needed)
+            qv4_child_clean_labels[[pvar]] <- paste0(qv4_child_clean_labels[[pvar]],
+                                                      " -- ", pna_label)
+
+        }
+
+        # drop 99 level label labels only update if had 99 - done in if
+        # statement above
+        qv4_child_clean[[pvar]] <- sjlabelled::remove_labels(qv4_child_clean[[pvar]],
+                                                              labels = "Don't want to answer")
+
+        # extract variable attributes
+        pvar_attr <- attributes(qv4_child_clean[[pvar]])
+
+        # replace 99 values
+        qv4_child_clean[[pvar]] <- ifelse(is.na(qv4_child_clean[[pvar]]) |
+                                              qv4_child_clean[[pvar]] == 99, NA, qv4_child_clean[[pvar]])
+
+        # replace attributes
+        attributes(qv4_child_clean[[pvar]]) <- pvar_attr
+    }
+
 
     # 8) random fixes to factor level names and variable descriptions
-    qv4_child_clean_labels[["meal_start"]] <- "V3 meal start time"
-    qv4_child_clean_labels[["meal_end"]] <- "V3 meal end time"
+    qv4_child_clean_labels[["meal_start"]] <- "V4 meal start time"
+    qv4_child_clean_labels[["meal_end"]] <- "V4 meal end time"
 
-
-    #### 8) Format for export #### put data in order of participant ID
-    #### for ease
+    # 9) Format for export #### put data in order of participant ID for ease
     qv4_child_clean <- qv4_child_clean[order(qv4_child_clean$id),
         ]
 
