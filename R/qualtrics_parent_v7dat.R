@@ -63,8 +63,7 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
     #### 2. Load Data #####
 
     if (isTRUE(datapath_arg)) {
-        qv7_parent_path <- paste0(data_path, "/Parent_V7_", date_str, 
-            ".sav")
+        qv7_parent_path <- paste0(data_path, "/Parent_V7_", date_str, ".sav")
     } else {
         qv7_parent_path <- paste0("Parent_V7_", date_str, ".sav")
     }
@@ -90,30 +89,23 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
     qv7_parent_labels <- lapply(qv7_parent_dat, function(x) attributes(x)$label)
 
     # 3b) selecting relevant data columns
-    qv7_parent_clean <- qv7_parent_dat[c(1, 11, 15:135, 137:449, 
-        452:533)]
+    qv7_parent_clean <- qv7_parent_dat[c(1, 11, 15:135, 137:449, 452:533)]
 
     ## update labels
-    qv7_parent_clean_labels <- qv7_parent_labels[c(1, 11, 15:135, 
-        137:449, 452:533)]
+    qv7_parent_clean_labels <- qv7_parent_labels[c(1, 11, 15:135, 137:449, 452:533)]
 
     # 3c) removing all practice events (e.g., 999)
-    qv7_parent_clean <- qv7_parent_clean[!is.na(qv7_parent_clean$ID) & 
-        qv7_parent_clean$ID < 999, ]
+    qv7_parent_clean <- qv7_parent_clean[!is.na(qv7_parent_clean$ID) & qv7_parent_clean$ID < 999, ]
 
-    # 4) re-ordering and re-name data columns general order #### 1)
-    # child information 2) anthro - h/w, puberty,parent measured h/w,
-    # PA, sleep, 3) general demographics, 4) Fasting procedure, 5)
-    # meal related Q's - ranking, eat out, PSS, feeding strategies,
-    # 6) child function - BRIEF; 7) notes
+    # 4) re-ordering and re-name data columns general order #### 1) child information 2) anthro - h/w,
+    # puberty,parent measured h/w, PA, sleep, 3) general demographics, 4) Fasting procedure, 5) meal related Q's -
+    # ranking, eat out, PSS, feeding strategies, 6) child function - BRIEF; 7) notes
 
-    qv7_parent_clean <- qv7_parent_clean[c(2, 1, 124:197, 419:436, 
-        30:31, 512:518, 209:214, 16:29, 32:48, 122:123, 502:511, 
+    qv7_parent_clean <- qv7_parent_clean[c(2, 1, 124:197, 419:436, 30:31, 512:518, 209:214, 16:29, 32:48, 122:123, 502:511,
         49:121, 202:208, 198:201, 215:418, 437:501, 3:15)]
 
-    qv7_parent_clean_labels <- qv7_parent_clean_labels[c(2, 1, 124:197, 
-        419:436, 30:31, 512:518, 209:214, 16:29, 32:48, 122:123, 
-        502:511, 49:121, 202:208, 198:201, 215:418, 437:501, 3:15)]
+    qv7_parent_clean_labels <- qv7_parent_clean_labels[c(2, 1, 124:197, 419:436, 30:31, 512:518, 209:214, 16:29, 32:48,
+        122:123, 502:511, 49:121, 202:208, 198:201, 215:418, 437:501, 3:15)]
 
     ## re-name variables make lower case
     names(qv7_parent_clean) <- tolower(names(qv7_parent_clean))
@@ -129,8 +121,7 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
 
         # remove trailing 'v7' from names
         if (grepl("vcebq", var_name, fixed = TRUE)) {
-            names(qv7_parent_clean)[var] <- gsub("vcebq", "cebq", 
-                var_name)
+            names(qv7_parent_clean)[var] <- gsub("vcebq", "cebq", var_name)
         }
 
         # remove trailing '_7' from names
@@ -144,115 +135,70 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
 
     }
 
-    names(qv7_parent_clean)[2:76] <- c("start_date", "prs_1", "prs_2", 
-        "prs_3", "prs_4m", "prs_5m", "prs_6m", "prs_4f", "prs_5f_a", 
-        "prs_5f_b", "prs_5f_c", "prs_5f_d", "prs_6f", "tanner_male", 
-        "tanner_female", "pa_m_wakeup", "pa_m_travel_school", "pa_m_traveltime_school", 
-        "pa_m_arriveschool", "pa_m_leaveschool", "pa_m_travel_home", 
-        "pa_m_traveltime_home", "pa_m_indoor_lowintensity", "pa_m_indoor_highintensity", 
-        "pa_m_outdoor_lowintensity", "pa_m_outdoor_highintensity", 
-        "pa_m_bedtime", "pa_t_wakeup", "pa_t_travel_school", "pa_t_traveltime_school", 
-        "pa_t_arriveschool", "pa_t_leaveschool", "pa_t_travel_home", 
-        "pa_t_traveltime_home", "pa_t_indoor_lowintensity", "pa_t_indoor_highintensity", 
-        "pa_t_outdoor_lowintensity", "pa_t_outdoor_highintensity", 
-        "pa_t_bedtime", "pa_w_wakeup", "pa_w_travel_school", "pa_w_traveltime_school", 
-        "pa_w_arriveschool", "pa_w_leaveschool", "pa_w_travel_home", 
-        "pa_w_traveltime_home", "pa_w_indoor_lowintensity", "pa_w_indoor_highintensity", 
-        "pa_w_outdoor_lowintensity", "pa_w_outdoor_highintensity", 
-        "pa_w_bedtime", "pa_th_wakeup", "pa_th_travel_school", "pa_th_traveltime_school", 
-        "pa_th_arriveschool", "pa_th_leaveschool", "pa_th_travel_home", 
-        "pa_th_traveltime_home", "pa_th_indoor_lowintensity", "pa_th_indoor_highintensity", 
-        "pa_th_outdoor_lowintensity", "pa_th_outdoor_highintensity", 
-        "pa_th_bedtime", "pa_f_wakeup", "pa_f_travel_school", "pa_f_traveltime_school", 
-        "pa_f_arriveschool", "pa_f_leaveschool", "pa_f_travel_home", 
-        "pa_f_traveltime_home", "pa_f_indoor_lowintensity", "pa_f_indoor_highintensity", 
-        "pa_f_outdoor_lowintensity", "pa_f_outdoor_highintensity", 
-        "pa_f_bedtime")
+    names(qv7_parent_clean)[2:76] <- c("start_date", "prs_1", "prs_2", "prs_3", "prs_4m", "prs_5m", "prs_6m", "prs_4f",
+        "prs_5f_a", "prs_5f_b", "prs_5f_c", "prs_5f_d", "prs_6f", "tanner_male", "tanner_female", "pa_m_wakeup", "pa_m_travel_school",
+        "pa_m_traveltime_school", "pa_m_arriveschool", "pa_m_leaveschool", "pa_m_travel_home", "pa_m_traveltime_home",
+        "pa_m_indoor_lowintensity", "pa_m_indoor_highintensity", "pa_m_outdoor_lowintensity", "pa_m_outdoor_highintensity",
+        "pa_m_bedtime", "pa_t_wakeup", "pa_t_travel_school", "pa_t_traveltime_school", "pa_t_arriveschool", "pa_t_leaveschool",
+        "pa_t_travel_home", "pa_t_traveltime_home", "pa_t_indoor_lowintensity", "pa_t_indoor_highintensity", "pa_t_outdoor_lowintensity",
+        "pa_t_outdoor_highintensity", "pa_t_bedtime", "pa_w_wakeup", "pa_w_travel_school", "pa_w_traveltime_school",
+        "pa_w_arriveschool", "pa_w_leaveschool", "pa_w_travel_home", "pa_w_traveltime_home", "pa_w_indoor_lowintensity",
+        "pa_w_indoor_highintensity", "pa_w_outdoor_lowintensity", "pa_w_outdoor_highintensity", "pa_w_bedtime", "pa_th_wakeup",
+        "pa_th_travel_school", "pa_th_traveltime_school", "pa_th_arriveschool", "pa_th_leaveschool", "pa_th_travel_home",
+        "pa_th_traveltime_home", "pa_th_indoor_lowintensity", "pa_th_indoor_highintensity", "pa_th_outdoor_lowintensity",
+        "pa_th_outdoor_highintensity", "pa_th_bedtime", "pa_f_wakeup", "pa_f_travel_school", "pa_f_traveltime_school",
+        "pa_f_arriveschool", "pa_f_leaveschool", "pa_f_travel_home", "pa_f_traveltime_home", "pa_f_indoor_lowintensity",
+        "pa_f_indoor_highintensity", "pa_f_outdoor_lowintensity", "pa_f_outdoor_highintensity", "pa_f_bedtime")
 
-    names(qv7_parent_clean)[95:142] <- c("parent_respondant", "parent_dob", 
-        "parent_height1", "parent_height2", "parent_weight1", "parent_weight2", 
-        "parent_height_avg", "parent_weight_avg", "parent_bmi", "sr_dad_height_ft", 
-        "sr_dad_height_in", "sr_dad_weight_lb", "sr_mom_height_ft", 
-        "sr_mom_height_in", "sr_mom_weight_lb", "household_n_mom", 
-        "household_n_dad", "household_n_stepmom", "household_n_stepdad", 
-        "household_n_brother", "household_n_sister", "household_n_stepbrother", 
-        "household_n_stepsister", "household_n_grandmom", "household_n_grandad", 
-        "household_n_aunt", "household_n_uncle", "household_n_cousin", 
-        "household_n_other", "n_parental_separations", "n_fostercare_placements", 
-        "living_with_partner", "maritalstatus", "maritalstatus_other", 
-        "income", "parent_ed", "parent_ed_other", "partner_ed", "partner_ed_other", 
-        "parent_employed", "parent_retired", "parent_wk_workhr", 
-        "partner_employed", "partner_retired", "partner_wk_workhr", 
+    names(qv7_parent_clean)[95:142] <- c("parent_respondant", "parent_dob", "parent_height1", "parent_height2", "parent_weight1",
+        "parent_weight2", "parent_height_avg", "parent_weight_avg", "parent_bmi", "sr_dad_height_ft", "sr_dad_height_in",
+        "sr_dad_weight_lb", "sr_mom_height_ft", "sr_mom_height_in", "sr_mom_weight_lb", "household_n_mom", "household_n_dad",
+        "household_n_stepmom", "household_n_stepdad", "household_n_brother", "household_n_sister", "household_n_stepbrother",
+        "household_n_stepsister", "household_n_grandmom", "household_n_grandad", "household_n_aunt", "household_n_uncle",
+        "household_n_cousin", "household_n_other", "n_parental_separations", "n_fostercare_placements", "living_with_partner",
+        "maritalstatus", "maritalstatus_other", "income", "parent_ed", "parent_ed_other", "partner_ed", "partner_ed_other",
+        "parent_employed", "parent_retired", "parent_wk_workhr", "partner_employed", "partner_retired", "partner_wk_workhr",
         "mom_weightgain_10lb", "allowance", "allowance_amount")
 
-    names(qv7_parent_clean)[153:375] <- c("feedschild", "feedschild_other", 
-        "buysfood", "buysfood_other", "feq_eatout", "freq_familydinner", 
-        "freq_homelunch", "family_foodcond", "snap", "wic", "tanf", 
-        "medicaid", "liheap", "partial_lunch_assistance", "full_lunch_assistance", 
-        "other_program", "other_program_freetxt", "foodpantry_use", 
-        "freq_foodpantry", "foodbudget_mo", "prefered_grocerystore", 
-        "rank_packagedbread", "rank_bakerybread", "rank_saltysnack", 
-        "rank_sweetsnack", "rank_cheese", "rank_milk", "rank_yogurt", 
-        "rank_butter", "rank_eggs", "rank_otherdairy", "rank_coffeetea", 
-        "rank_carbonated_drink", "rank_fruitjuice_drink", "rank_sports_drink", 
-        "rank_alcohol_drink", "rank_redmeat", "rank_poultry", "rank_seafood", 
-        "rank_pasta_rice", "rank_soup", "rank_nuts_seeds", "rank_nutjelly_spread", 
-        "rank_breakfast_cereal", "rank_breakfast_replacement", "rank_meal_replacement", 
-        "rank_freshprep_foods", "rank_fresh_veg", "rank_fresh_fruit", 
-        "rank_can_veg", "rank_can_fruit", "rank_frozen_veg", "rank_frozen_fruit", 
-        "rank_frozen_dinner", "rank_frozen_breakfast", "rank_frozen_desert", 
-        "rank_candygum", "rank_bakingsupplies", "rank_condiments", 
-        "rank_dips_spreads", "rank_salad_dressings", "rank_spice_seasoning", 
-        "rank_cooking_oil", "grow_fruits", "grow_veg", "grow_jellyspreads", 
-        "grow_nuts_seeds", "grow_milk", "grow_cheese", "grow_butter", 
-        "grow_eggs", "grow_redmeat", "grow_poultry", "encourage_plateclean_vas", 
-        "child_plateclean_vas", "percieved_child_kcal", "pcent_parent_portionchoice", 
-        "pcent_partner_portionchoice", "pcent_child_portionchoice", 
-        "pcent_other_portionchoice", "pss_practice1", "pss_vas_hunger", 
-        "pss_vas_couldeat", "pss_vas_fullness", "pss_practice2", 
-        "pss_apple_eat", "pss_apple_freq", "pss_apple_much", "pss_apple_like", 
-        "pss_apple_portion", "pss_apple_nutrition", "pss_broccoli_eat", 
-        "pss_broccoli_freq", "pss_broccoli_much", "pss_broccoli_like", 
-        "pss_broccoli_portion", "pss_broccoli_nutrition", "pss_cake_eat", 
-        "pss_cake_freq", "pss_cake_much", "pss_cake_like", "pss_cake_portion", 
-        "pss_cake_nutrition", "pss_candy_eat", "pss_candy_freq", 
-        "pss_candy_much", "pss_candy_like", "pss_candy_potion", "pss_candy_nutrition", 
-        "pss_carrot_eat", "pss_carrot_freq", "pss_carrot_much", "pss_carrot_like", 
-        "pss_carrot_portion", "pss_carrot_nutrition", "pss_cornflakes_eat", 
-        "pss_cornflakes_freq", "pss_ccornflakes_much", "pss_cornflakes_like", 
-        "pss_cornflakes_portion", "pss_cornflakes_nutrition", "pss_cheese_brgr_eat", 
-        "pss_cheese_brgr_freq", "pss_cheese_brgr_much", "pss_cheese_brgr_like", 
-        "pss_cheese_brgr_portion", "pss_cheese_brgr_nutrition", "pss_chkn_nug_eat", 
-        "pss_chkn_nug_freq", "pss_chkn_nug_much", "pss_chkn_nug_like", 
-        "pss_chkn_nug_portion", "pss_chkn_nug_nutrition", "pss_fries_eat", 
-        "pss_fries_freq", "pss_fries_much", "pss_fries_like", "pss_fries_portion", 
-        "pss_fries_nutrition", "pss_garlic_bread_eat", "pss_garlic_bread_freq", 
-        "pss_garlic_bread_much", "pss_garlic_bread_like", "pss_garlic_bread_portion", 
-        "pss_garlic_bread_nutrition", "pss_goldfish_eat", "pss_goldfish_freq", 
-        "pss_goldfish_much", "pss_goldfish_like", "pss_goldfish_portion", 
-        "pss_goldfish_nutrition", "pss_grapes_eat", "pss_grapes_freq", 
-        "pss_grapes_much", "pss_grapes_like", "pss_grapes_portion", 
-        "pss_grapes_nutrition", "pss_choc_icecream_eat", "pss_choc_icecream_freq", 
-        "pss_choc_icecream_much", "pss_choc_icecream_like", "pss_choc_icecream_portion", 
-        "pss_choc_icecream_nutrition", "pss_mac_cheese_eat", "pss_mac_cheese_freq", 
-        "pss_mac_cheese_much", "pss_mac_cheese_like", "pss_mac_cheese_portion", 
-        "pss_mac_cheese_nutrition", "pss_milk_eat", "pss_milk_freq", 
-        "pss_milk_much", "pss_milk_like", "pss_milk_portion", "pss_milk_nutrition", 
-        "pss_orangejuice_eat", "pss_orangejuice_freq", "pss_orangejuice_much", 
-        "pss_orangejuice_like", "pss_orangejuice_portion", "pss_orangejuice_nutrition", 
-        "pss_pbj_sndwch_eat", "pss_pbj_sndwch_freq", "pss_pbj_sndwch_much", 
-        "pss_pbj_sndwch_like", "pss_pbj_sndwch_portion", "pss_pbj_sndwch_nutrition", 
-        "pss_peas_eat", "pss_peas_freq", "pss_peas_much", "pss_peas_like", 
-        "pss_peas_portion", "pss_peas_nutrition", "pss_pizza_eat", 
-        "pss_pizza_freq", "pss_pizza_much", "pss_pizza_like", "pss_pizza_portion", 
-        "pss_pizza_nutrition", "pss_soda_eat", "pss_soda_freq", "pss_soda_much", 
-        "pss_soda_like", "pss_soda_portion", "pss_soda_nutrition", 
-        "pss_soup_eat", "pss_soup_freq", "pss_soup_much", "pss_soup_like", 
-        "pss_soup_portion", "pss_soup_nutrition", "pss_tomatoes_eat", 
-        "pss_tomatoes_freq", "pss_tomatoes_much", "pss_tomatoes_like", 
-        "pss_tomatoes_portion", "pss_tomatoes_nutrition", "pss_yogurt_eat", 
-        "pss_yogurt_freq", "pss_yogurt_much", "pss_yogurt_like", 
-        "pss_yogurt_portion", "pss_yogurt_nutrition")
+    names(qv7_parent_clean)[153:375] <- c("feedschild", "feedschild_other", "buysfood", "buysfood_other", "feq_eatout",
+        "freq_familydinner", "freq_homelunch", "family_foodcond", "snap", "wic", "tanf", "medicaid", "liheap", "partial_lunch_assistance",
+        "full_lunch_assistance", "other_program", "other_program_freetxt", "foodpantry_use", "freq_foodpantry", "foodbudget_mo",
+        "prefered_grocerystore", "rank_packagedbread", "rank_bakerybread", "rank_saltysnack", "rank_sweetsnack", "rank_cheese",
+        "rank_milk", "rank_yogurt", "rank_butter", "rank_eggs", "rank_otherdairy", "rank_coffeetea", "rank_carbonated_drink",
+        "rank_fruitjuice_drink", "rank_sports_drink", "rank_alcohol_drink", "rank_redmeat", "rank_poultry", "rank_seafood",
+        "rank_pasta_rice", "rank_soup", "rank_nuts_seeds", "rank_nutjelly_spread", "rank_breakfast_cereal", "rank_breakfast_replacement",
+        "rank_meal_replacement", "rank_freshprep_foods", "rank_fresh_veg", "rank_fresh_fruit", "rank_can_veg", "rank_can_fruit",
+        "rank_frozen_veg", "rank_frozen_fruit", "rank_frozen_dinner", "rank_frozen_breakfast", "rank_frozen_desert",
+        "rank_candygum", "rank_bakingsupplies", "rank_condiments", "rank_dips_spreads", "rank_salad_dressings", "rank_spice_seasoning",
+        "rank_cooking_oil", "grow_fruits", "grow_veg", "grow_jellyspreads", "grow_nuts_seeds", "grow_milk", "grow_cheese",
+        "grow_butter", "grow_eggs", "grow_redmeat", "grow_poultry", "encourage_plateclean_vas", "child_plateclean_vas",
+        "percieved_child_kcal", "pcent_parent_portionchoice", "pcent_partner_portionchoice", "pcent_child_portionchoice",
+        "pcent_other_portionchoice", "pss_practice1", "pss_vas_hunger", "pss_vas_couldeat", "pss_vas_fullness", "pss_practice2",
+        "pss_apple_eat", "pss_apple_freq", "pss_apple_much", "pss_apple_like", "pss_apple_portion", "pss_apple_nutrition",
+        "pss_broccoli_eat", "pss_broccoli_freq", "pss_broccoli_much", "pss_broccoli_like", "pss_broccoli_portion", "pss_broccoli_nutrition",
+        "pss_cake_eat", "pss_cake_freq", "pss_cake_much", "pss_cake_like", "pss_cake_portion", "pss_cake_nutrition",
+        "pss_candy_eat", "pss_candy_freq", "pss_candy_much", "pss_candy_like", "pss_candy_potion", "pss_candy_nutrition",
+        "pss_carrot_eat", "pss_carrot_freq", "pss_carrot_much", "pss_carrot_like", "pss_carrot_portion", "pss_carrot_nutrition",
+        "pss_cornflakes_eat", "pss_cornflakes_freq", "pss_ccornflakes_much", "pss_cornflakes_like", "pss_cornflakes_portion",
+        "pss_cornflakes_nutrition", "pss_cheese_brgr_eat", "pss_cheese_brgr_freq", "pss_cheese_brgr_much", "pss_cheese_brgr_like",
+        "pss_cheese_brgr_portion", "pss_cheese_brgr_nutrition", "pss_chkn_nug_eat", "pss_chkn_nug_freq", "pss_chkn_nug_much",
+        "pss_chkn_nug_like", "pss_chkn_nug_portion", "pss_chkn_nug_nutrition", "pss_fries_eat", "pss_fries_freq", "pss_fries_much",
+        "pss_fries_like", "pss_fries_portion", "pss_fries_nutrition", "pss_garlic_bread_eat", "pss_garlic_bread_freq",
+        "pss_garlic_bread_much", "pss_garlic_bread_like", "pss_garlic_bread_portion", "pss_garlic_bread_nutrition", "pss_goldfish_eat",
+        "pss_goldfish_freq", "pss_goldfish_much", "pss_goldfish_like", "pss_goldfish_portion", "pss_goldfish_nutrition",
+        "pss_grapes_eat", "pss_grapes_freq", "pss_grapes_much", "pss_grapes_like", "pss_grapes_portion", "pss_grapes_nutrition",
+        "pss_choc_icecream_eat", "pss_choc_icecream_freq", "pss_choc_icecream_much", "pss_choc_icecream_like", "pss_choc_icecream_portion",
+        "pss_choc_icecream_nutrition", "pss_mac_cheese_eat", "pss_mac_cheese_freq", "pss_mac_cheese_much", "pss_mac_cheese_like",
+        "pss_mac_cheese_portion", "pss_mac_cheese_nutrition", "pss_milk_eat", "pss_milk_freq", "pss_milk_much", "pss_milk_like",
+        "pss_milk_portion", "pss_milk_nutrition", "pss_orangejuice_eat", "pss_orangejuice_freq", "pss_orangejuice_much",
+        "pss_orangejuice_like", "pss_orangejuice_portion", "pss_orangejuice_nutrition", "pss_pbj_sndwch_eat", "pss_pbj_sndwch_freq",
+        "pss_pbj_sndwch_much", "pss_pbj_sndwch_like", "pss_pbj_sndwch_portion", "pss_pbj_sndwch_nutrition", "pss_peas_eat",
+        "pss_peas_freq", "pss_peas_much", "pss_peas_like", "pss_peas_portion", "pss_peas_nutrition", "pss_pizza_eat",
+        "pss_pizza_freq", "pss_pizza_much", "pss_pizza_like", "pss_pizza_portion", "pss_pizza_nutrition", "pss_soda_eat",
+        "pss_soda_freq", "pss_soda_much", "pss_soda_like", "pss_soda_portion", "pss_soda_nutrition", "pss_soup_eat",
+        "pss_soup_freq", "pss_soup_much", "pss_soup_like", "pss_soup_portion", "pss_soup_nutrition", "pss_tomatoes_eat",
+        "pss_tomatoes_freq", "pss_tomatoes_much", "pss_tomatoes_like", "pss_tomatoes_portion", "pss_tomatoes_nutrition",
+        "pss_yogurt_eat", "pss_yogurt_freq", "pss_yogurt_much", "pss_yogurt_like", "pss_yogurt_portion", "pss_yogurt_nutrition")
 
     ## update data labels
     names(qv7_parent_clean_labels) <- names(qv7_parent_clean)
@@ -265,24 +211,19 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
 
         # remove trailing '... - 1' from labels
         if (grepl(" - 1", qv7_parent_clean_labels[[var_name]], fixed = TRUE)) {
-            qv7_parent_clean_labels[[var_name]] <- gsub("\\ - 1.*", 
-                "", qv7_parent_clean_labels[[var_name]])
+            qv7_parent_clean_labels[[var_name]] <- gsub("\\ - 1.*", "", qv7_parent_clean_labels[[var_name]])
         }
 
         # remove ' \' ' from apostrophes
         if (grepl("'s", qv7_parent_clean_labels[[var_name]], fixed = TRUE)) {
-            qv7_parent_clean_labels[[var_name]] <- gsub("\\'s", "", 
-                qv7_parent_clean_labels[[var_name]])
+            qv7_parent_clean_labels[[var_name]] <- gsub("\\'s", "", qv7_parent_clean_labels[[var_name]])
         }
 
         # remove trailing 'V7 ' from labels
         if (grepl("V7", qv7_parent_clean_labels[[var_name]], fixed = TRUE)) {
-            qv7_parent_clean_labels[[var_name]] <- gsub("\\V7 - ", 
-                "", qv7_parent_clean_labels[[var_name]])
-            qv7_parent_clean_labels[[var_name]] <- gsub("\\V7 ", 
-                "", qv7_parent_clean_labels[[var_name]])
-            qv7_parent_clean_labels[[var_name]] <- gsub("\\V7", "", 
-                qv7_parent_clean_labels[[var_name]])
+            qv7_parent_clean_labels[[var_name]] <- gsub("\\V7 - ", "", qv7_parent_clean_labels[[var_name]])
+            qv7_parent_clean_labels[[var_name]] <- gsub("\\V7 ", "", qv7_parent_clean_labels[[var_name]])
+            qv7_parent_clean_labels[[var_name]] <- gsub("\\V7", "", qv7_parent_clean_labels[[var_name]])
         }
     }
 
@@ -317,26 +258,24 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
     ## 5d) fix ever eat yogurt variable label
     qv7_parent_clean_labels[["pss_yogurt_eat"]] <- "PSS Strawberry Yogurt - Ever Eat"
 
-    
+
     #### 6) fix 99's and other poor categories ####
 
-    ## check for labels/99 option: 1) if 99's exist, make a 'prefere
-    ## not to answer' (pna) variable to go in pna database, 2) replace
-    ## 99's with NA and make variable numeric
+    ## check for labels/99 option: 1) if 99's exist, make a 'prefere not to answer' (pna) variable to go in pna
+    ## database, 2) replace 99's with NA and make variable numeric
 
     ## make pna database
     qv7_parent_pna <- data.frame(id = qv7_parent_clean$id)
     qv7_parent_pna_labels <- lapply(qv7_parent_pna, function(x) attributes(x)$label)
     qv7_parent_pna_labels[["id"]] <- qv7_parent_clean_labels[["id"]]
 
-    
+
     pna_label <- "Note: prefer not to answer (pna) marked NA - see pna database for which were pna rather than missing NA"
 
     ## 6a) self-reported heights/weights data ####
     parent_anthro_vars <- names(qv7_parent_clean)[104:109]
 
-    ## duplicate self-reported weights because set 119 = <120 lb and
-    ## 400 = 400+
+    ## duplicate self-reported weights because set 119 = <120 lb and 400 = 400+
     qv7_parent_clean$sr_dad_weight_lb_cat <- qv7_parent_clean$sr_dad_weight_lb
     qv7_parent_clean_labels[["sr_dad_weight_lb_cat"]] <- "categorical parent-reported father weight in pounds: category per pound increment with 119 = '<120 pounds' and 400 = '400+ pounds'"
 
@@ -359,8 +298,7 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
 
         # if has '99' value, create new pna variable marking pna == 1
         if (is.element(99, qv7_parent_clean[[pvar]])) {
-            pna_dat <- ifelse(is.na(qv7_parent_clean[[pvar]]), 0, 
-                ifelse(qv7_parent_clean[[pvar]] == 99, 1, 0))
+            pna_dat <- ifelse(is.na(qv7_parent_clean[[pvar]]), 0, ifelse(qv7_parent_clean[[pvar]] == 99, 1, 0))
 
             new_pna <- length(names(qv7_parent_pna)) + 1
             qv7_parent_pna[[new_pna]] <- pna_dat
@@ -368,26 +306,21 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
             names(qv7_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", 
-                pvar, ": ", qv7_parent_clean_labels[[pvar]])
+            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,
+                ": ", qv7_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
-            qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], 
-                " -- ", pna_label)
+            qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], " -- ", pna_label)
         }
 
         if (grepl("lb", pvar, fixed = TRUE)) {
-            # check for values '119' and '400' as they indicate < 119 and
-            # 400+, respectively (values are kept in the categorical version
-            # of this variable - see above) labels were updated above
-            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]), 
-                NA, ifelse(qv7_parent_clean[[pvar]] == 119, NA, ifelse(qv7_parent_clean[[pvar]] == 
-                  400, NA, as.numeric(qv7_parent_clean[[pvar]]))))
+            # check for values '119' and '400' as they indicate < 119 and 400+, respectively (values are kept in
+            # the categorical version of this variable - see above) labels were updated above
+            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]), NA, ifelse(qv7_parent_clean[[pvar]] ==
+                119, NA, ifelse(qv7_parent_clean[[pvar]] == 400, NA, as.numeric(qv7_parent_clean[[pvar]]))))
         } else {
-            # convert 99 to NA and make numeric variable labels only update
-            # if had 99 - done in if statement above
-            qv7_parent_clean[[pvar]] <- ifelse(qv7_parent_clean[[pvar]] == 
-                99, NA, as.numeric(qv7_parent_clean[[pvar]]))
+            # convert 99 to NA and make numeric variable labels only update if had 99 - done in if statement above
+            qv7_parent_clean[[pvar]] <- ifelse(qv7_parent_clean[[pvar]] == 99, NA, as.numeric(qv7_parent_clean[[pvar]]))
         }
     }
 
@@ -402,8 +335,7 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
 
         # if has '99' value, create new pna variable marking pna == 1
         if (is.element(99, qv7_parent_clean[[pvar]])) {
-            pna_dat <- ifelse(is.na(qv7_parent_clean[[pvar]]), 0, 
-                ifelse(qv7_parent_clean[[pvar]] == 99, 1, 0))
+            pna_dat <- ifelse(is.na(qv7_parent_clean[[pvar]]), 0, ifelse(qv7_parent_clean[[pvar]] == 99, 1, 0))
 
             new_pna <- length(names(qv7_parent_pna)) + 1
             qv7_parent_pna[[new_pna]] <- pna_dat
@@ -412,12 +344,11 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
             names(qv7_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", 
-                pvar, ": ", qv7_parent_clean_labels[[pvar]])
+            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,
+                ": ", qv7_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
-            qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], 
-                " -- ", pna_label)
+            qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], " -- ", pna_label)
         }
 
         if (grepl("wakeup", pvar, fixed = TRUE)) {
@@ -427,19 +358,17 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
             names(qv7_parent_clean)[[nvar + 1]] <- paste0(pvar, "_cat")
 
             # update label
-            qv7_parent_clean_labels[[paste0(pvar, "_cat")]] <- paste0("categorical ", 
-                qv7_parent_clean_labels[[pvar]], " -note: 1 = 'Before 5 AM' and 15 = 'After 8 AM'")
+            qv7_parent_clean_labels[[paste0(pvar, "_cat")]] <- paste0("categorical ", qv7_parent_clean_labels[[pvar]],
+                " -note: 1 = 'Before 5 AM' and 15 = 'After 8 AM'")
 
             # convert to factor label values
             qv7_parent_clean[[pvar]] <- haven::as_factor(qv7_parent_clean[[pvar]])
 
-            # check for values 'Before 5 am', 'After 8:00 am', and 'Don't
-            # want to answer' (values are kept in the categorical version of
-            # this variable)
-            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | 
-                qv7_parent_clean[[pvar]] == "Before 5:00 AM" | qv7_parent_clean[[pvar]] == 
-                "After 8:00 AM" | qv7_parent_clean[[pvar]] == "Don't want to answer", 
-                NA, as.character(qv7_parent_clean[[pvar]]))
+            # check for values 'Before 5 am', 'After 8:00 am', and 'Don't want to answer' (values are kept in the
+            # categorical version of this variable)
+            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == "Before 5:00 AM" |
+                qv7_parent_clean[[pvar]] == "After 8:00 AM" | qv7_parent_clean[[pvar]] == "Don't want to answer", NA,
+                as.character(qv7_parent_clean[[pvar]]))
 
         } else if (grepl("arriveschool", pvar, fixed = TRUE)) {
             # duplicate to make categorical variable
@@ -448,17 +377,16 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
             names(qv7_parent_clean)[[nvar + 1]] <- paste0(pvar, "_cat")
 
             # update label
-            qv7_parent_clean_labels[[paste0(pvar, "_cat")]] <- paste0("categorical ", 
-                qv7_parent_clean_labels[[pvar]], " -note: 15 = 'After 8:45 PM'")
+            qv7_parent_clean_labels[[paste0(pvar, "_cat")]] <- paste0("categorical ", qv7_parent_clean_labels[[pvar]],
+                " -note: 15 = 'After 8:45 PM'")
 
             # convert to factor label values
             qv7_parent_clean[[pvar]] <- haven::as_factor(qv7_parent_clean[[pvar]])
 
-            # check for value 'After 8:45 AM' and 'Don't want to answer'
-            # (values are kept in the categorical version of this variable)
-            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | 
-                qv7_parent_clean[[pvar]] == "After 8:45 AM" | qv7_parent_clean[[pvar]] == 
-                "Don't want to answer", NA, as.character(qv7_parent_clean[[pvar]]))
+            # check for value 'After 8:45 AM' and 'Don't want to answer' (values are kept in the categorical
+            # version of this variable)
+            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == "After 8:45 AM" |
+                qv7_parent_clean[[pvar]] == "Don't want to answer", NA, as.character(qv7_parent_clean[[pvar]]))
 
         } else if (grepl("leaveschool", pvar, fixed = TRUE)) {
             # duplicate to make categorical variable
@@ -467,19 +395,17 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
             names(qv7_parent_clean)[[nvar + 1]] <- paste0(pvar, "_cat")
 
             # update label
-            qv7_parent_clean_labels[[paste0(pvar, "_cat")]] <- paste0("categorical ", 
-                qv7_parent_clean_labels[[pvar]], " -note: 15 = 'After 8:45 PM'")
+            qv7_parent_clean_labels[[paste0(pvar, "_cat")]] <- paste0("categorical ", qv7_parent_clean_labels[[pvar]],
+                " -note: 15 = 'After 8:45 PM'")
 
             # convert to factor label values
             qv7_parent_clean[[pvar]] <- haven::as_factor(qv7_parent_clean[[pvar]])
 
-            # check for value 'Before 2 PM', 'After 6 PM', and 'Don't want to
-            # answer' (values are kept in the categorical version of this
-            # variable)
-            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | 
-                qv7_parent_clean[[pvar]] == "Before 2:00 PM" | qv7_parent_clean[[pvar]] == 
-                "After 6:00 PM" | qv7_parent_clean[[pvar]] == "Don't want to answer", 
-                NA, as.character(qv7_parent_clean[[pvar]]))
+            # check for value 'Before 2 PM', 'After 6 PM', and 'Don't want to answer' (values are kept in the
+            # categorical version of this variable)
+            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == "Before 2:00 PM" |
+                qv7_parent_clean[[pvar]] == "After 6:00 PM" | qv7_parent_clean[[pvar]] == "Don't want to answer", NA,
+                as.character(qv7_parent_clean[[pvar]]))
 
         } else if (grepl("bedtime", pvar, fixed = TRUE)) {
             # duplicate to make categorical variable
@@ -488,30 +414,27 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
             names(qv7_parent_clean)[[nvar + 1]] <- paste0(pvar, "_cat")
 
             # update label
-            qv7_parent_clean_labels[[paste0(pvar, "_cat")]] <- paste0("categorical ", 
-                qv7_parent_clean_labels[[pvar]], " -note: 15 = 'After 10:00 PM'")
+            qv7_parent_clean_labels[[paste0(pvar, "_cat")]] <- paste0("categorical ", qv7_parent_clean_labels[[pvar]],
+                " -note: 15 = 'After 10:00 PM'")
 
             # convert to factor label values
             qv7_parent_clean[[pvar]] <- haven::as_factor(qv7_parent_clean[[pvar]])
 
-            # check for value 'After 10 PM' and 'Don't want to answer'
-            # (values are kept in the categorical version of this variable)
-            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | 
-                qv7_parent_clean[[pvar]] == "After 10:00 PM" | qv7_parent_clean[[pvar]] == 
-                "Don't want to answer", NA, as.character(qv7_parent_clean[[pvar]]))
+            # check for value 'After 10 PM' and 'Don't want to answer' (values are kept in the categorical version
+            # of this variable)
+            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == "After 10:00 PM" |
+                qv7_parent_clean[[pvar]] == "Don't want to answer", NA, as.character(qv7_parent_clean[[pvar]]))
 
         } else {
-            # drop 99 level label labels only update if had 99 - done in if
-            # statement above
-            qv7_parent_clean[[pvar]] <- sjlabelled::remove_labels(qv7_parent_clean[[pvar]], 
-                labels = "Don't want to answer")
+            # drop 99 level label labels only update if had 99 - done in if statement above
+            qv7_parent_clean[[pvar]] <- sjlabelled::remove_labels(qv7_parent_clean[[pvar]], labels = "Don't want to answer")
 
             # extract variable attributes
             pvar_attr <- attributes(qv7_parent_clean[[pvar]])
 
             # replace 99 values
-            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | 
-                qv7_parent_clean[[pvar]] == 99, NA, qv7_parent_clean[[pvar]])
+            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == 99, NA,
+                qv7_parent_clean[[pvar]])
 
             # replace attributes
             attributes(qv7_parent_clean[[pvar]]) <- pvar_attr
@@ -520,8 +443,7 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
 
     ## 6c) continuous variables with 99's data ####
 
-    level99_issue_contvars <- names(qv7_parent_clean)[c(110:125, 
-        158:159, 171, 441)]
+    level99_issue_contvars <- names(qv7_parent_clean)[c(110:125, 158:159, 171, 441)]
 
     for (v in 1:length(level99_issue_contvars)) {
         # get variable name
@@ -529,8 +451,7 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
 
         # if has '99' value, create new pna variable marking pna == 1
         if (is.element(99, qv7_parent_clean[[pvar]])) {
-            pna_dat <- ifelse(is.na(qv7_parent_clean[[pvar]]), 0, 
-                ifelse(qv7_parent_clean[[pvar]] == 99, 1, 0))
+            pna_dat <- ifelse(is.na(qv7_parent_clean[[pvar]]), 0, ifelse(qv7_parent_clean[[pvar]] == 99, 1, 0))
 
             new_pna <- length(names(qv7_parent_pna)) + 1
             qv7_parent_pna[[new_pna]] <- pna_dat
@@ -538,26 +459,21 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
             names(qv7_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", 
-                pvar, ": ", qv7_parent_clean_labels[[pvar]])
+            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,
+                ": ", qv7_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
-            qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], 
-                " -- ", pna_label)
+            qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], " -- ", pna_label)
         }
 
-        # convert 99 to NA and make numeric variable labels only update
-        # if had 99 - done in if statement above
-        qv7_parent_clean[[pvar]] <- ifelse(qv7_parent_clean[[pvar]] == 
-            99, NA, as.numeric(qv7_parent_clean[[pvar]]))
+        # convert 99 to NA and make numeric variable labels only update if had 99 - done in if statement above
+        qv7_parent_clean[[pvar]] <- ifelse(qv7_parent_clean[[pvar]] == 99, NA, as.numeric(qv7_parent_clean[[pvar]]))
     }
 
     ## 6d) categorical variables with 99's data ####
-    level99_issue_catvars <- names(qv7_parent_clean)[c(77:95, 126:127, 
-        129:130, 132, 134:135, 137:138, 139:153, 155, 157, 160:168, 
-        170, 172:173, 216:225, 239, 245, 251, 257, 263, 269, 275, 
-        281, 287, 293, 299, 305, 311, 317, 323, 329, 335, 341, 347, 
-        353, 359, 365, 371, 376:440, 442:512)]
+    level99_issue_catvars <- names(qv7_parent_clean)[c(77:95, 126:127, 129:130, 132, 134:135, 137:138, 139:153, 155,
+        157, 160:168, 170, 172:173, 216:225, 239, 245, 251, 257, 263, 269, 275, 281, 287, 293, 299, 305, 311, 317, 323,
+        329, 335, 341, 347, 353, 359, 365, 371, 376:440, 442:512)]
 
     for (v in 1:length(level99_issue_catvars)) {
         # get variable name
@@ -565,8 +481,7 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
 
         # if has '99' value, create new pna variable marking pna == 1
         if (is.element(99, qv7_parent_clean[[pvar]])) {
-            pna_dat <- ifelse(is.na(qv7_parent_clean[[pvar]]), 0, 
-                ifelse(qv7_parent_clean[[pvar]] == 99, 1, 0))
+            pna_dat <- ifelse(is.na(qv7_parent_clean[[pvar]]), 0, ifelse(qv7_parent_clean[[pvar]] == 99, 1, 0))
 
             new_pna <- length(names(qv7_parent_pna)) + 1
             qv7_parent_pna[[new_pna]] <- pna_dat
@@ -574,26 +489,22 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
             names(qv7_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", 
-                pvar, ": ", qv7_parent_clean_labels[[pvar]])
+            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,
+                ": ", qv7_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
-            qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], 
-                " -- ", pna_label)
+            qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], " -- ", pna_label)
 
         }
 
-        # drop 99 level label labels only update if had 99 - done in if
-        # statement above
-        qv7_parent_clean[[pvar]] <- sjlabelled::remove_labels(qv7_parent_clean[[pvar]], 
-            labels = "Don't want to answer")
+        # drop 99 level label labels only update if had 99 - done in if statement above
+        qv7_parent_clean[[pvar]] <- sjlabelled::remove_labels(qv7_parent_clean[[pvar]], labels = "Don't want to answer")
 
         # extract variable attributes
         pvar_attr <- attributes(qv7_parent_clean[[pvar]])
 
         # replace 99 values
-        qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | 
-            qv7_parent_clean[[pvar]] == 99, NA, qv7_parent_clean[[pvar]])
+        qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == 99, NA, qv7_parent_clean[[pvar]])
 
         # replace attributes
         attributes(qv7_parent_clean[[pvar]]) <- pvar_attr
@@ -608,8 +519,7 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
 
         # if has '99' value, create new pna variable marking pna == 1
         if (is.element(99, qv7_parent_clean[[pvar]])) {
-            pna_dat <- ifelse(is.na(qv7_parent_clean[[pvar]]), 0, 
-                ifelse(qv7_parent_clean[[pvar]] == 99, 1, 0))
+            pna_dat <- ifelse(is.na(qv7_parent_clean[[pvar]]), 0, ifelse(qv7_parent_clean[[pvar]] == 99, 1, 0))
 
             new_pna <- length(names(qv7_parent_pna)) + 1
             qv7_parent_pna[[new_pna]] <- pna_dat
@@ -617,12 +527,11 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
             names(qv7_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", 
-                pvar, ": ", qv7_parent_clean_labels[[pvar]])
+            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,
+                ": ", qv7_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
-            qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], 
-                " -- ", pna_label)
+            qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], " -- ", pna_label)
         }
 
         # duplicate to make categorical variable
@@ -631,14 +540,11 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
         names(qv7_parent_clean)[[nvar + 1]] <- paste0(pvar, "_cat")
 
         # update label
-        qv7_parent_clean_labels[[paste0(pvar, "_cat")]] <- paste0("categorical ", 
-            qv7_parent_clean_labels[[pvar]], " -note: 61 = 'More than 60'")
+        qv7_parent_clean_labels[[paste0(pvar, "_cat")]] <- paste0("categorical ", qv7_parent_clean_labels[[pvar]], " -note: 61 = 'More than 60'")
 
-        # check for value 66 = 'More than 60' and 99 = 'Don't want to
-        # answer' (values are kept in the categorical version of this
-        # variable)
-        qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | 
-            qv7_parent_clean[[pvar]] == 99 | qv7_parent_clean[[pvar]] == 
+        # check for value 66 = 'More than 60' and 99 = 'Don't want to answer' (values are kept in the categorical
+        # version of this variable)
+        qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == 99 | qv7_parent_clean[[pvar]] ==
             61, NA, as.numeric(qv7_parent_clean[[pvar]]))
     }
 
@@ -646,40 +552,34 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
     qv7_parent_clean$start_date <- lubridate::ymd(as.Date(qv7_parent_clean$start_date))
     qv7_parent_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
-    qv7_parent_clean$parent_dob <- as.Date(qv7_parent_clean$parent_dob, 
-        format = "%m/%d/%Y")
+    qv7_parent_clean$parent_dob <- as.Date(qv7_parent_clean$parent_dob, format = "%m/%d/%Y")
     qv7_parent_clean_labels[["parent_dob"]] <- "parent date of birth converted to format yyyy-mm-dd in R"
 
     ## 7b) time data from PA (waketime, bedtime) ####
-    time_vars <- names(qv7_parent_clean)[c(17, 20:21, 28:29, 32:33, 
-        40:41, 44:45, 52:53, 56:57, 64:65, 68:69, 76)]
+    time_vars <- names(qv7_parent_clean)[c(17, 20:21, 28:29, 32:33, 40:41, 44:45, 52:53, 56:57, 64:65, 68:69, 76)]
 
     for (v in 1:length(time_vars)) {
         pvar <- time_vars[v]
 
         # convert time
-        qv7_parent_clean[[pvar]] <- format(as.POSIXlt(qv7_parent_clean[[pvar]], 
-            format = "%I:%M %p"), format = "%H:%M:%S")
+        qv7_parent_clean[[pvar]] <- format(as.POSIXlt(qv7_parent_clean[[pvar]], format = "%I:%M %p"), format = "%H:%M:%S")
 
         # update labels
-        qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], 
-            " converted to 24 hour time in R")
+        qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], " converted to 24 hour time in R")
     }
 
     # 8) re-calculate manual variables ####
 
     ## 8a) parent anthropometrics ####
-    qv7_parent_clean$parent_height_avg <- ifelse(is.na(qv7_parent_clean$parent_height1) | 
-        is.na(qv7_parent_clean$parent_height2), NA, rowSums(qv7_parent_clean[c("parent_height1", 
-        "parent_height2")], na.rm = TRUE)/2)
+    qv7_parent_clean$parent_height_avg <- ifelse(is.na(qv7_parent_clean$parent_height1) | is.na(qv7_parent_clean$parent_height2),
+        NA, rowSums(qv7_parent_clean[c("parent_height1", "parent_height2")], na.rm = TRUE)/2)
     qv7_parent_clean_labels[["parent_height1"]] <- "measured parent height 1 in lab"
     qv7_parent_clean_labels[["parent_height2"]] <- "measured parent height 2 in lab"
     qv7_parent_clean_labels[["parent_height_avg"]] <- "measured parent average height calculated in R"
 
     # avg parent weight, update label
-    qv7_parent_clean$parent_weight_avg <- ifelse(is.na(qv7_parent_clean$parent_weight1) | 
-        is.na(qv7_parent_clean$parent_weight2), NA, rowSums(qv7_parent_clean[c("parent_weight1", 
-        "parent_weight2")], na.rm = TRUE)/2)
+    qv7_parent_clean$parent_weight_avg <- ifelse(is.na(qv7_parent_clean$parent_weight1) | is.na(qv7_parent_clean$parent_weight2),
+        NA, rowSums(qv7_parent_clean[c("parent_weight1", "parent_weight2")], na.rm = TRUE)/2)
     qv7_parent_clean_labels[["parent_weight1"]] <- "measured parent weight 1 in lab"
     qv7_parent_clean_labels[["parent_weight2"]] <- "measured parent weight 2 in lab"
     qv7_parent_clean_labels[["parent_weight_avg"]] <- "measured parent average weight calculated in R"
@@ -689,18 +589,17 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
         qv7_parent_clean$parent_bmi <- as.numeric(qv7_parent_clean$parent_bmi)
     }
 
-    qv7_parent_clean$parent_bmi <- ifelse(is.na(qv7_parent_clean$parent_height_avg) | 
-        is.na(qv7_parent_clean$parent_weight_avg), NA, round(qv7_parent_clean$parent_weight_avg/((qv7_parent_clean$parent_height_avg/100)^2), 
-        digits = 2))
+    qv7_parent_clean$parent_bmi <- ifelse(is.na(qv7_parent_clean$parent_height_avg) | is.na(qv7_parent_clean$parent_weight_avg),
+        NA, round(qv7_parent_clean$parent_weight_avg/((qv7_parent_clean$parent_height_avg/100)^2), digits = 2))
     qv7_parent_clean_labels[["parent_bmi"]] <- "measured parent bmi calculated in R package using scripted average height and weight"
 
     # convert to cm and kg
-    qv7_parent_clean$sr_dad_height_cm <- (qv7_parent_clean$sr_dad_height_ft * 
-        12 + qv7_parent_clean$sr_dad_height_in) * 2.54
+    qv7_parent_clean$sr_dad_height_cm <- (qv7_parent_clean$sr_dad_height_ft * 12 + qv7_parent_clean$sr_dad_height_in) *
+        2.54
     qv7_parent_clean_labels[["sr_dad_height_cm"]] <- "parent-reported father height in feet and inches converted to cm in R"
 
-    qv7_parent_clean$sr_mom_height_cm <- (qv7_parent_clean$sr_mom_height_ft * 
-        12 + qv7_parent_clean$sr_mom_height_in) * 2.54
+    qv7_parent_clean$sr_mom_height_cm <- (qv7_parent_clean$sr_mom_height_ft * 12 + qv7_parent_clean$sr_mom_height_in) *
+        2.54
     qv7_parent_clean_labels[["sr_dad_height_cm"]] <- "parent-reported mother height in feet and inches converted to cm in R"
 
     qv7_parent_clean$sr_dad_weight_kg <- qv7_parent_clean$sr_dad_weight_lb/2.205
@@ -710,93 +609,75 @@ qualtrics_parent_v7dat <- function(date_str, data_path) {
     qv7_parent_clean_labels[["sr_mom_weight_kg"]] <- "parent-reported mother weight in pounds converted to kg in R"
 
     # parent-report bmi, update label
-    qv7_parent_clean$sr_dad_bmi <- round(qv7_parent_clean$sr_dad_weight_kg/((qv7_parent_clean$sr_dad_height_cm/100)^2), 
+    qv7_parent_clean$sr_dad_bmi <- round(qv7_parent_clean$sr_dad_weight_kg/((qv7_parent_clean$sr_dad_height_cm/100)^2),
         digits = 2)
     qv7_parent_clean_labels[["sr_dad_bmi"]] <- "computed bmi from parent-reported father height and weight in R"
 
-    qv7_parent_clean$sr_mom_bmi <- round(qv7_parent_clean$sr_mom_weight_kg/((qv7_parent_clean$sr_mom_height_cm/100)^2), 
+    qv7_parent_clean$sr_mom_bmi <- round(qv7_parent_clean$sr_mom_weight_kg/((qv7_parent_clean$sr_mom_height_cm/100)^2),
         digits = 2)
     qv7_parent_clean_labels[["sr_mom_bmi"]] <- "computed bmi from parent-reported mother height and weight in R"
 
     ## 8b) Inclusion/exclusion criteria, Risk Group ####
 
-    
+
 
     # 9) re-ordering factor levels to start with value 0 ####
 
     ## 9a) variables that just need to shift values by 1 ####
-    relevel_vars <- names(qv7_parent_clean)[c(18:19, 22:23, 30:31, 
-        34:35, 42:43, 46:47, 54:55, 58:59, 66:67, 70:71, 127, 129:130, 
-        132, 142, 153, 155, 157, 172, 173, 239, 245, 251, 257, 263, 
-        269, 275, 281, 287, 293, 299, 305, 311, 317, 323, 329, 335, 
-        341, 347, 353, 359, 365, 371)]
+    relevel_vars <- names(qv7_parent_clean)[c(18:19, 22:23, 30:31, 34:35, 42:43, 46:47, 54:55, 58:59, 66:67, 70:71, 127,
+        129:130, 132, 142, 153, 155, 157, 172, 173, 239, 245, 251, 257, 263, 269, 275, 281, 287, 293, 299, 305, 311,
+        317, 323, 329, 335, 341, 347, 353, 359, 365, 371)]
 
     for (v in 1:length(relevel_vars)) {
         pvar <- relevel_vars[v]
 
         # subtract 1 from level values so start at 0 rather than 1
-        attributes(qv7_parent_clean[[pvar]])$labels <- attributes(qv7_parent_clean[[pvar]])$labels - 
-            1
+        attributes(qv7_parent_clean[[pvar]])$labels <- attributes(qv7_parent_clean[[pvar]])$labels - 1
 
         # save attributes
         set_attr <- attributes(qv7_parent_clean[[pvar]])
 
         # subtract 1 from each data value to match new level values
-        qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]), 
-            NA, qv7_parent_clean[[pvar]] - 1)
+        qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]), NA, qv7_parent_clean[[pvar]] - 1)
 
         # reset attributes
         attributes(qv7_parent_clean[[pvar]]) <- set_attr
 
         # update varaible lables
-        qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], 
-            " re-leveled in R to start with 0")
+        qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], " re-leveled in R to start with 0")
     }
 
-    
-    # 10) specific fixes to factor level names and variable
-    # descriptions ####
+
+    # 10) specific fixes to factor level names and variable descriptions ####
 
     # 10a) make rankings numeric
-    qv7_parent_clean[101:142] <- sapply(qv7_parent_clean[101:142], 
-        function(x) as.numeric(x))
+    qv7_parent_clean[101:142] <- sapply(qv7_parent_clean[101:142], function(x) as.numeric(x))
 
     #### 11) Format for export ####
 
     ## 11a ) final re-order/clean of data
-    qv7_parent_clean <- qv7_parent_clean[c(1:16, 521, 17:19, 522, 
-        20, 523, 21:27, 524, 28, 525, 29:31, 526, 32, 527, 33:39, 
-        528, 40, 529, 41:43, 530, 44, 531, 45:51, 532, 52, 533, 53:55, 
-        534, 56, 535, 57:63, 536, 64, 537, 65:67, 538, 68, 539, 69:75, 
-        540, 76:106, 519, 107:109, 520, 543:548, 110:136, 541, 137:139, 
-        542, 140:518)]
+    qv7_parent_clean <- qv7_parent_clean[c(1:16, 521, 17:19, 522, 20, 523, 21:27, 524, 28, 525, 29:31, 526, 32, 527,
+        33:39, 528, 40, 529, 41:43, 530, 44, 531, 45:51, 532, 52, 533, 53:55, 534, 56, 535, 57:63, 536, 64, 537, 65:67,
+        538, 68, 539, 69:75, 540, 76:106, 519, 107:109, 520, 543:548, 110:136, 541, 137:139, 542, 140:518)]
 
-    qv7_parent_clean_labels <- qv7_parent_clean_labels[c(1:16, 521, 
-        17:19, 522, 20, 523, 21:27, 524, 28, 525, 29:31, 526, 32, 
-        527, 33:39, 528, 40, 529, 41:43, 530, 44, 531, 45:51, 532, 
-        52, 533, 53:55, 534, 56, 535, 57:63, 536, 64, 537, 65:67, 
-        538, 68, 539, 69:75, 540, 76:106, 519, 107:109, 520, 543:548, 
-        110:136, 541, 137:139, 542, 140:518)]
+    qv7_parent_clean_labels <- qv7_parent_clean_labels[c(1:16, 521, 17:19, 522, 20, 523, 21:27, 524, 28, 525, 29:31,
+        526, 32, 527, 33:39, 528, 40, 529, 41:43, 530, 44, 531, 45:51, 532, 52, 533, 53:55, 534, 56, 535, 57:63, 536,
+        64, 537, 65:67, 538, 68, 539, 69:75, 540, 76:106, 519, 107:109, 520, 543:548, 110:136, 541, 137:139, 542, 140:518)]
     ## 11b) add attributes to pna data
     n_pna_cols <- length(names(qv7_parent_pna))
-    qv7_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv7_parent_pna[2:n_pna_cols], 
-        function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, 
-            `Prefer not to answer` = 1))))
+    qv7_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv7_parent_pna[2:n_pna_cols], function(x) sjlabelled::add_labels(x,
+        labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
 
     ## 11c) put data in order of participant ID for ease
-    qv7_parent_clean <- qv7_parent_clean[order(qv7_parent_clean$id), 
-        ]
+    qv7_parent_clean <- qv7_parent_clean[order(qv7_parent_clean$id), ]
     qv7_parent_pna <- qv7_parent_pna[order(qv7_parent_pna$id), ]
 
     ## 11d) make sure the variable labels match in the dataset
-    qv7_parent_clean = sjlabelled::set_label(qv7_parent_clean, label = matrix(unlist(qv7_parent_clean_labels, 
-        use.names = FALSE)))
-    qv7_parent_pna = sjlabelled::set_label(qv7_parent_pna, label = matrix(unlist(qv7_parent_pna_labels, 
-        use.names = FALSE)))
+    qv7_parent_clean = sjlabelled::set_label(qv7_parent_clean, label = matrix(unlist(qv7_parent_clean_labels, use.names = FALSE)))
+    qv7_parent_pna = sjlabelled::set_label(qv7_parent_pna, label = matrix(unlist(qv7_parent_pna_labels, use.names = FALSE)))
 
     # make list of data frame and associated labels
-    qv7_parent <- list(data = qv7_parent_clean, dict = qv7_parent_clean_labels, 
-        pna_data = qv7_parent_pna, pna_dict = qv7_parent_pna_labels)
+    qv7_parent <- list(data = qv7_parent_clean, dict = qv7_parent_clean_labels, pna_data = qv7_parent_pna, pna_dict = qv7_parent_pna_labels)
 
     ## want an export options??
 

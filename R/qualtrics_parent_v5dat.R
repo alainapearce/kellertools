@@ -60,8 +60,7 @@ qualtrics_parent_v5dat <- function(date_str, data_path) {
     #### 2. Load Data #####
 
     if (isTRUE(datapath_arg)) {
-        qv5_parent_path <- paste0(data_path, "/Parent_V5_", date_str, 
-            ".sav")
+        qv5_parent_path <- paste0(data_path, "/Parent_V5_", date_str, ".sav")
     } else {
         qv5_parent_path <- paste0("Parent_V5_", date_str, ".sav")
     }
@@ -93,16 +92,13 @@ qualtrics_parent_v5dat <- function(date_str, data_path) {
     qv5_parent_clean_labels <- qv5_parent_labels[c(1, 11:35)]
 
     # 3c) removing all practice events (e.g., 999)
-    qv5_parent_clean <- qv5_parent_clean[!is.na(qv5_parent_clean$ID) & 
-        qv5_parent_clean$ID < 999, ]
+    qv5_parent_clean <- qv5_parent_clean[!is.na(qv5_parent_clean$ID) & qv5_parent_clean$ID < 999, ]
 
-    # 4) re-ordering and re-name data columns general order #### 1)
-    # demographics - AUDIT, 2) fasting, 3) updates
+    # 4) re-ordering and re-name data columns general order #### 1) demographics - AUDIT, 2) fasting, 3) updates
 
     qv5_parent_clean <- qv5_parent_clean[c(2, 1, 17:26, 3:16)]
 
-    qv5_parent_clean_labels <- qv5_parent_clean_labels[c(2, 1, 17:26, 
-        3:16)]
+    qv5_parent_clean_labels <- qv5_parent_clean_labels[c(2, 1, 17:26, 3:16)]
 
     ## re-name variables
 
@@ -133,24 +129,20 @@ qualtrics_parent_v5dat <- function(date_str, data_path) {
 
         # remove ' \' ' from apostrophes (e.g., child\'s)
         if (grepl("'s", qv5_parent_clean_labels[[var_name]], fixed = TRUE)) {
-            qv5_parent_clean_labels[[var_name]] <- gsub("\\'s", "", 
-                qv5_parent_clean_labels[[var_name]])
+            qv5_parent_clean_labels[[var_name]] <- gsub("\\'s", "", qv5_parent_clean_labels[[var_name]])
         }
 
         # remove trailing 'v5 ' from labels
         if (grepl("V5", qv5_parent_clean_labels[[var_name]], fixed = TRUE)) {
-            qv5_parent_clean_labels[[var_name]] <- gsub("\\V5 - ", 
-                "", qv5_parent_clean_labels[[var_name]])
-            qv5_parent_clean_labels[[var_name]] <- gsub("\\V5 ", 
-                "", qv5_parent_clean_labels[[var_name]])
+            qv5_parent_clean_labels[[var_name]] <- gsub("\\V5 - ", "", qv5_parent_clean_labels[[var_name]])
+            qv5_parent_clean_labels[[var_name]] <- gsub("\\V5 ", "", qv5_parent_clean_labels[[var_name]])
         }
     }
 
     #### 6) fix 99's and other poor categories ####
 
-    ## check for labels/99 option: 1) if 99's exist, make a 'prefere
-    ## not to answer' (pna) variable to go in pna database, 2) replace
-    ## 99's with NA and make variable numeric
+    ## check for labels/99 option: 1) if 99's exist, make a 'prefere not to answer' (pna) variable to go in pna
+    ## database, 2) replace 99's with NA and make variable numeric
 
     ## make pna database
     qv5_parent_pna <- data.frame(id = qv5_parent_clean$id)
@@ -168,8 +160,7 @@ qualtrics_parent_v5dat <- function(date_str, data_path) {
 
         # if has '99' value, create new pna variable marking pna == 1
         if (is.element(99, qv5_parent_clean[[pvar]])) {
-            pna_dat <- ifelse(is.na(qv5_parent_clean[[pvar]]), 0, 
-                ifelse(qv5_parent_clean[[pvar]] == 99, 1, 0))
+            pna_dat <- ifelse(is.na(qv5_parent_clean[[pvar]]), 0, ifelse(qv5_parent_clean[[pvar]] == 99, 1, 0))
 
             new_pna <- length(names(qv5_parent_pna)) + 1
             qv5_parent_pna[[new_pna]] <- pna_dat
@@ -177,26 +168,22 @@ qualtrics_parent_v5dat <- function(date_str, data_path) {
             names(qv5_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv5_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", 
-                pvar, ": ", qv5_parent_clean_labels[[pvar]])
+            qv5_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,
+                ": ", qv5_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
-            qv5_parent_clean_labels[[pvar]] <- paste0(qv5_parent_clean_labels[[pvar]], 
-                " -- ", pna_label)
+            qv5_parent_clean_labels[[pvar]] <- paste0(qv5_parent_clean_labels[[pvar]], " -- ", pna_label)
 
         }
 
-        # drop 99 level label labels only update if had 99 - done in if
-        # statement above
-        qv5_parent_clean[[pvar]] <- sjlabelled::remove_labels(qv5_parent_clean[[pvar]], 
-            labels = "Don't want to answer")
+        # drop 99 level label labels only update if had 99 - done in if statement above
+        qv5_parent_clean[[pvar]] <- sjlabelled::remove_labels(qv5_parent_clean[[pvar]], labels = "Don't want to answer")
 
         # extract variable attributes
         pvar_attr <- attributes(qv5_parent_clean[[pvar]])
 
         # replace 99 values
-        qv5_parent_clean[[pvar]] <- ifelse(is.na(qv5_parent_clean[[pvar]]) | 
-            qv5_parent_clean[[pvar]] == 99, NA, qv5_parent_clean[[pvar]])
+        qv5_parent_clean[[pvar]] <- ifelse(is.na(qv5_parent_clean[[pvar]]) | qv5_parent_clean[[pvar]] == 99, NA, qv5_parent_clean[[pvar]])
 
         # replace attributes
         attributes(qv5_parent_clean[[pvar]]) <- pvar_attr
@@ -210,24 +197,19 @@ qualtrics_parent_v5dat <- function(date_str, data_path) {
 
     ## 8a) add attributes to pna data
     n_pna_cols <- length(names(qv5_parent_pna))
-    qv5_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv5_parent_pna[2:n_pna_cols], 
-        function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, 
-            `Prefer not to answer` = 1))))
+    qv5_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv5_parent_pna[2:n_pna_cols], function(x) sjlabelled::add_labels(x,
+        labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
 
     ## 8b) put data in order of participant ID for ease
-    qv5_parent_clean <- qv5_parent_clean[order(qv5_parent_clean$id), 
-        ]
+    qv5_parent_clean <- qv5_parent_clean[order(qv5_parent_clean$id), ]
     qv5_parent_pna <- qv5_parent_pna[order(qv5_parent_pna$id), ]
 
     ## 8c) make sure the variable labels match in the dataset
-    qv5_parent_clean = sjlabelled::set_label(qv5_parent_clean, label = matrix(unlist(qv5_parent_clean_labels, 
-        use.names = FALSE)))
-    qv5_parent_pna = sjlabelled::set_label(qv5_parent_pna, label = matrix(unlist(qv5_parent_pna_labels, 
-        use.names = FALSE)))
+    qv5_parent_clean = sjlabelled::set_label(qv5_parent_clean, label = matrix(unlist(qv5_parent_clean_labels, use.names = FALSE)))
+    qv5_parent_pna = sjlabelled::set_label(qv5_parent_pna, label = matrix(unlist(qv5_parent_pna_labels, use.names = FALSE)))
 
     # make list of data frame and associated labels
-    qv5_parent <- list(data = qv5_parent_clean, dict = qv5_parent_clean_labels, 
-        pna_data = qv5_parent_pna, pna_dict = qv5_parent_pna_labels)
+    qv5_parent <- list(data = qv5_parent_clean, dict = qv5_parent_clean_labels, pna_data = qv5_parent_pna, pna_dict = qv5_parent_pna_labels)
 
     ## want an export options??
 

@@ -61,8 +61,7 @@ qualtrics_parent_v3dat <- function(date_str, data_path) {
     #### 2. Load Data #####
 
     if (isTRUE(datapath_arg)) {
-        qv3_parent_path <- paste0(data_path, "/Parent_V3_", date_str, 
-            ".sav")
+        qv3_parent_path <- paste0(data_path, "/Parent_V3_", date_str, ".sav")
     } else {
         qv3_parent_path <- paste0("Parent_V3_", date_str, ".sav")
     }
@@ -94,18 +93,18 @@ qualtrics_parent_v3dat <- function(date_str, data_path) {
     qv3_parent_clean_labels <- qv3_parent_labels[c(1, 18, 20:205)]
 
     # 3c) removing all practice events (e.g., 999)
-    qv3_parent_clean <- qv3_parent_clean[!is.na(qv3_parent_clean$ID) & 
-        qv3_parent_clean$ID < 999, ]
+    qv3_parent_clean <- qv3_parent_clean[!is.na(qv3_parent_clean$ID) & qv3_parent_clean$ID < 
+        999, ]
 
-    # 4) re-ordering and re-name data columns general order #### 1)
-    # child information/demo (sex, dob, h/w, puberty), 2) fasting, 3)
-    # sleep (CHSQ), 4) LBC, PWLB, 5) SPSRQP, BIS/BAS, 6) updates
+    # 4) re-ordering and re-name data columns general order #### 1) child
+    # information/demo (sex, dob, h/w, puberty), 2) fasting, 3) sleep (CHSQ), 4)
+    # LBC, PWLB, 5) SPSRQP, BIS/BAS, 6) updates
 
-    qv3_parent_clean <- qv3_parent_clean[c(2, 1, 3, 17:36, 109:188, 
+    qv3_parent_clean <- qv3_parent_clean[c(2, 1, 3, 17:36, 109:188, 37:85, 107, 
+        86:104, 108, 105:106, 4:16)]
+
+    qv3_parent_clean_labels <- qv3_parent_clean_labels[c(2, 1, 3, 17:36, 109:188, 
         37:85, 107, 86:104, 108, 105:106, 4:16)]
-
-    qv3_parent_clean_labels <- qv3_parent_clean_labels[c(2, 1, 3, 
-        17:36, 109:188, 37:85, 107, 86:104, 108, 105:106, 4:16)]
 
     ## re-name variables
 
@@ -126,18 +125,21 @@ qualtrics_parent_v3dat <- function(date_str, data_path) {
 
         # remove p from spsrq
         if (grepl("spsrqp", var_name, fixed = TRUE)) {
-            names(qv3_parent_clean)[var] <- gsub("spsrqp", "spsrq", 
-                var_name)
+            names(qv3_parent_clean)[var] <- gsub("spsrqp", "spsrq", var_name)
         }
 
         # fix 'PLWB' for parent weigh loss behavior questionnaire
         if (grepl("plwb", var_name, fixed = TRUE)) {
-            names(qv3_parent_clean)[var] <- gsub("plwb", "pwlb", 
-                var_name)
+            names(qv3_parent_clean)[var] <- gsub("plwb", "pwlb", var_name)
         }
 
         
     }
+
+    ## fix LBC names
+    names(qv3_parent_clean)[c(4:23)] <- c("lbc6", "lbc7", "lbc8", "lbc9", "lbc10", 
+        "lbc11", "lbc12", "lbc13", "lbc14", "lbc15", "lbc16", "lbc17", "lbc18", 
+        "lbc19", "lbc20", "lbc21", "lbc22", "lbc23", "lbc24", "lbc25")
 
     ## update data labels
     names(qv3_parent_clean_labels) <- names(qv3_parent_clean)
@@ -150,37 +152,47 @@ qualtrics_parent_v3dat <- function(date_str, data_path) {
 
         # remove ' \' ' from apostrophes (e.g., child\'s)
         if (grepl("'s", qv3_parent_clean_labels[[var_name]], fixed = TRUE)) {
-            qv3_parent_clean_labels[[var_name]] <- gsub("\\'s", "", 
-                qv3_parent_clean_labels[[var_name]])
+            qv3_parent_clean_labels[[var_name]] <- gsub("\\'s", "", qv3_parent_clean_labels[[var_name]])
         }
 
         # remove trailing 'v3 ' from labels
         if (grepl("V3", qv3_parent_clean_labels[[var_name]], fixed = TRUE)) {
-            qv3_parent_clean_labels[[var_name]] <- gsub("\\V3 - ", 
-                "", qv3_parent_clean_labels[[var_name]])
-            qv3_parent_clean_labels[[var_name]] <- gsub("\\V3 ", 
-                "", qv3_parent_clean_labels[[var_name]])
+            qv3_parent_clean_labels[[var_name]] <- gsub("\\V3 - ", "", qv3_parent_clean_labels[[var_name]])
+            qv3_parent_clean_labels[[var_name]] <- gsub("\\V3 ", "", qv3_parent_clean_labels[[var_name]])
         }
 
         # adjust labels for SPSR-Q
-        if (grepl("SPSRQP", qv3_parent_clean_labels[[var_name]], 
-            fixed = TRUE)) {
-            qv3_parent_clean_labels[[var_name]] <- gsub("\\SPSRQP", 
-                "SPSRQ Parent", qv3_parent_clean_labels[[var_name]])
+        if (grepl("SPSRQP", qv3_parent_clean_labels[[var_name]], fixed = TRUE)) {
+            qv3_parent_clean_labels[[var_name]] <- gsub("\\SPSRQP", "SPSRQ Parent", 
+                qv3_parent_clean_labels[[var_name]])
         }
 
         # adjust labels for PWLB where miss-spelled
         if (grepl("PLWB", qv3_parent_clean_labels[[var_name]], fixed = TRUE)) {
-            qv3_parent_clean_labels[[var_name]] <- gsub("\\PLWB", 
-                "PWLB", qv3_parent_clean_labels[[var_name]])
+            qv3_parent_clean_labels[[var_name]] <- gsub("\\PLWB", "PWLB", qv3_parent_clean_labels[[var_name]])
         }
+    }
+
+    ## fix LBC
+    LBC_vars <- names(qv3_parent_clean)[c(4:23)]
+
+    for (v in 1:length(LBC_vars)) {
+        # get variable name
+        pvar <- LBC_vars[v]
+
+        qnum <- gsub("lbc", "", pvar)
+
+        # Fix Label
+        qv3_parent_clean_labels[[pvar]] <- gsub(".*[.] ", "", qv3_parent_clean_labels[[pvar]])
+
+        qv3_parent_clean_labels[[pvar]] <- paste0("LBC - ", qnum, ". ", qv3_parent_clean_labels[[pvar]])
     }
 
     #### 6) fix 99's and other poor categories ####
 
-    ## check for labels/99 option: 1) if 99's exist, make a 'prefere
-    ## not to answer' (pna) variable to go in pna database, 2) replace
-    ## 99's with NA and make variable numeric
+    ## check for labels/99 option: 1) if 99's exist, make a 'prefere not to answer'
+    ## (pna) variable to go in pna database, 2) replace 99's with NA and make
+    ## variable numeric
 
     ## make pna database
     qv3_parent_pna <- data.frame(id = qv3_parent_clean$id)
@@ -198,8 +210,8 @@ qualtrics_parent_v3dat <- function(date_str, data_path) {
 
         # if has '99' value, create new pna variable marking pna == 1
         if (is.element(99, qv3_parent_clean[[pvar]])) {
-            pna_dat <- ifelse(is.na(qv3_parent_clean[[pvar]]), 0, 
-                ifelse(qv3_parent_clean[[pvar]] == 99, 1, 0))
+            pna_dat <- ifelse(is.na(qv3_parent_clean[[pvar]]), 0, ifelse(qv3_parent_clean[[pvar]] == 
+                99, 1, 0))
 
             new_pna <- length(names(qv3_parent_pna)) + 1
             qv3_parent_pna[[new_pna]] <- pna_dat
@@ -216,8 +228,8 @@ qualtrics_parent_v3dat <- function(date_str, data_path) {
 
         }
 
-        # drop 99 level label labels only update if had 99 - done in if
-        # statement above
+        # drop 99 level label labels only update if had 99 - done in if statement
+        # above
         qv3_parent_clean[[pvar]] <- sjlabelled::remove_labels(qv3_parent_clean[[pvar]], 
             labels = "Don't want to answer")
 
@@ -225,11 +237,29 @@ qualtrics_parent_v3dat <- function(date_str, data_path) {
         pvar_attr <- attributes(qv3_parent_clean[[pvar]])
 
         # replace 99 values
-        qv3_parent_clean[[pvar]] <- ifelse(is.na(qv3_parent_clean[[pvar]]) | 
-            qv3_parent_clean[[pvar]] == 99, NA, qv3_parent_clean[[pvar]])
+        qv3_parent_clean[[pvar]] <- ifelse(is.na(qv3_parent_clean[[pvar]]) | qv3_parent_clean[[pvar]] == 
+            99, NA, qv3_parent_clean[[pvar]])
 
         # replace attributes
         attributes(qv3_parent_clean[[pvar]]) <- pvar_attr
+    }
+
+    ## 6b) fix LBC levels
+    LBC_vars <- names(qv3_parent_clean)[c(4:23)]
+
+    for (v in 1:length(LBC_vars)) {
+        # get variable name
+        pvar <- LBC_vars[v]
+
+        # drop 99 level label labels only update if had 99 - done in if statement
+        # above
+        qv3_parent_clean[[pvar]] <- sjlabelled::remove_labels(qv3_parent_clean[[pvar]], 
+            labels = "4 Somewhat")
+
+        qv3_parent_clean[[pvar]] <- sjlabelled::set_labels(qv3_parent_clean[[pvar]], 
+            labels = c(`Not at all` = 1, `A little (-)` = 2, `A little (+)` = 3, 
+                Somewhat = 4, `Much (-)` = 5, `Much(+)` = 6, `Very much` = 7))
+
     }
 
     #### 7) reformatting dates/times #### 7a) dates (start, dobs) ####
@@ -245,8 +275,7 @@ qualtrics_parent_v3dat <- function(date_str, data_path) {
             `Prefer not to answer` = 1))))
 
     ## 8b) put data in order of participant ID for ease
-    qv3_parent_clean <- qv3_parent_clean[order(qv3_parent_clean$id), 
-        ]
+    qv3_parent_clean <- qv3_parent_clean[order(qv3_parent_clean$id), ]
     qv3_parent_pna <- qv3_parent_pna[order(qv3_parent_pna$id), ]
 
     ## 8c) make sure the variable labels match in the dataset

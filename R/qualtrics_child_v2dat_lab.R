@@ -62,8 +62,7 @@ qualtrics_child_v2dat_lab <- function(date_str, data_path) {
     #### 2. Load Data #####
 
     if (isTRUE(datapath_arg)) {
-        qv2_child_path <- paste0(data_path, "/Final_CovidAtHome/Child_V2_Lab_", date_str,
-                                 ".sav")
+        qv2_child_path <- paste0(data_path, "/Final_CovidAtHome/Child_V2_Lab_", date_str, ".sav")
     } else {
         qv2_child_path <- paste0("Final_CovidAtHome/Child_V2_Lab", date_str, ".sav")
     }
@@ -95,36 +94,28 @@ qualtrics_child_v2dat_lab <- function(date_str, data_path) {
     qv2_child_clean_labels <- qv2_child_labels[c(1, 18, 23:31, 37:39, 43:71)]
 
     # 3) removing all practice events (e.g., 999)
-    qv2_child_clean <- qv2_child_clean[!is.na(qv2_child_clean$ID) &
-        qv2_child_clean$ID < 999, ]
+    qv2_child_clean <- qv2_child_clean[!is.na(qv2_child_clean$ID) & qv2_child_clean$ID < 999, ]
 
-    # 4) re-ordering and re-name data columns general order: 1) child
-    # information (ID, date), 2) freddies, 3) food VAS 4) intakes (meal,
-    # meal duration) 5) notes
+    # 4) re-ordering and re-name data columns general order: 1) child information (ID, date), 2) freddies, 3) food
+    # VAS 4) intakes (meal, meal duration) 5) notes
 
     qv2_child_clean <- qv2_child_clean[c(2, 1, 15:16, 3:14, 17:43)]
 
     qv2_child_clean_labels <- qv2_child_clean_labels[c(2, 1, 15:16, 3:14, 17:43)]
 
     ## re-name variables -- make lowercase
-    names(qv2_child_clean) <- c("id", "start_date", "freddy_pre_meal",
-        "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli",
-        "vas_grape", "vas_water", "mealrank_mac_cheese", "mealrank_chkn_nug",
-        "mealrank_broccoli", "mealrank_grape", "meal_start", "meal_end",
-        "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g",
-        "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g",
-        "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g",
-        "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g",
-        "noplate_broccoli_g", "plate_broccoli_g", "post_broccoli_g",
-        "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g",
-        "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g",
-        "plate_water_g", "post_water_g", "consumed_water_g", "food_initials", "child_notes")
+    names(qv2_child_clean) <- c("id", "start_date", "freddy_pre_meal", "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug",
+        "vas_broccoli", "vas_grape", "vas_water", "mealrank_mac_cheese", "mealrank_chkn_nug", "mealrank_broccoli", "mealrank_grape",
+        "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g", "consumed_chkn_nug_g",
+        "noplate_mac_cheese_g", "plate_mac_cheese_g", "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g",
+        "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", "plate_broccoli_g",
+        "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g",
+        "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g", "food_initials", "child_notes")
 
     ## update data labels
     names(qv2_child_clean_labels) <- names(qv2_child_clean)
 
-    # 5) reformatting dates to be appropriate and computer readable
-    # #### YYYY-MM-DD
+    # 5) reformatting dates to be appropriate and computer readable #### YYYY-MM-DD
     qv2_child_clean$start_date <- lubridate::ymd(as.Date(qv2_child_clean$start_date))
     qv2_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
@@ -132,57 +123,52 @@ qualtrics_child_v2dat_lab <- function(date_str, data_path) {
 
     ## re-calculate all intake values
 
-    #get all intake variables
+    # get all intake variables
     intake_vars <- names(qv2_child_clean)[c(17:41)]
 
-    #make all intake variables numeric
-    for (var in 1:length(intake_vars)){
+    # make all intake variables numeric
+    for (var in 1:length(intake_vars)) {
         var_name <- intake_vars[[var]]
 
-        qv2_child_clean[[var_name]] <- ifelse(qv2_child_clean[[var_name]] == '-', NA, qv2_child_clean[[var_name]])
+        qv2_child_clean[[var_name]] <- ifelse(qv2_child_clean[[var_name]] == "-", NA, qv2_child_clean[[var_name]])
 
-        if (is.character(qv2_child_clean[[var_name]])){
+        if (is.character(qv2_child_clean[[var_name]])) {
             qv2_child_clean[[var_name]] <- as.numeric(qv2_child_clean[[var_name]])
         }
     }
 
-    #get all foods served - extract prefix and thne postfix in name
+    # get all foods served - extract prefix and thne postfix in name
     food_strs_g <- unique(sapply(intake_vars, function(x) gsub(".*plate_|.*post_|.*consumed_", "\\1", x), USE.NAMES = FALSE))
     food_strs <- unique(sapply(food_strs_g, function(x) gsub("_g.*", "\\1", x), USE.NAMES = FALSE))
 
-    #loop through foods
-    for (f in 1:length(food_strs)){
+    # loop through foods
+    for (f in 1:length(food_strs)) {
 
-        #no post weights for margerine
-        if (food_strs[f] != 'margerine'){
-            #get variable names for plate* and post* weights
-            plate_var <- paste0('plate_', food_strs[f], '_g')
-            post_var <- paste0('post_', food_strs[f], '_g')
-            consumed_var <- paste0('consumed_', food_strs[f], '_g')
+        # no post weights for margerine
+        if (food_strs[f] != "margerine") {
+            # get variable names for plate* and post* weights
+            plate_var <- paste0("plate_", food_strs[f], "_g")
+            post_var <- paste0("post_", food_strs[f], "_g")
+            consumed_var <- paste0("consumed_", food_strs[f], "_g")
 
-            #calculate amount consumed
-            qv2_child_clean[[consumed_var]] <- qv2_child_clean[[plate_var]] -  qv2_child_clean[[post_var]]
+            # calculate amount consumed
+            qv2_child_clean[[consumed_var]] <- qv2_child_clean[[plate_var]] - qv2_child_clean[[post_var]]
             qv2_child_clean[[consumed_var]] <- ifelse(qv2_child_clean[[consumed_var]] < 0, 0, qv2_child_clean[[consumed_var]])
 
-            #update labels
-            qv2_child_clean_labels[[consumed_var]] <- paste0(qv2_child_clean_labels[[consumed_var]], ' - recalcuated difference in R with values < 0 set to 0')
+            # update labels
+            qv2_child_clean_labels[[consumed_var]] <- paste0(qv2_child_clean_labels[[consumed_var]], " - recalcuated difference in R with values < 0 set to 0")
         }
     }
 
-    # 7) re-ordering factor levels to start with value 0 ####
-    ## no levels to reorder
+    # 7) re-ordering factor levels to start with value 0 #### no levels to reorder
 
-    # 8) random fixes to factor level names and variable descriptions
-    ## no levels or variables descriptions to fix
+    # 8) random fixes to factor level names and variable descriptions no levels or variables descriptions to fix
 
-    #### 9) Format for export #### put data in order of participant ID
-    #### for ease
-    qv2_child_clean <- qv2_child_clean[order(qv2_child_clean$id),
-        ]
+    #### 9) Format for export #### put data in order of participant ID for ease
+    qv2_child_clean <- qv2_child_clean[order(qv2_child_clean$id), ]
 
     # make sure the variable labels match in the dataset
-    qv2_child_clean = sjlabelled::set_label(qv2_child_clean, label = matrix(unlist(qv2_child_clean_labels,
-        use.names = FALSE)))
+    qv2_child_clean = sjlabelled::set_label(qv2_child_clean, label = matrix(unlist(qv2_child_clean_labels, use.names = FALSE)))
 
     ## make list of data frame and associated labels
     qv2_child <- list(data = qv2_child_clean, dict = qv2_child_clean_labels)
