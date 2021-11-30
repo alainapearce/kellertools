@@ -82,9 +82,9 @@ score_pds <- function(pds_data, respondent, male = 0, female = 1, parID) {
             if (sum(isTRUE(male_arg), isTRUE(female_arg)) == nsex_unique) {
                 if (nsex_unique == 2) {
                   # change values of sex in pds_data to default
-                  pds_data_edits[["sex"]] <- ifelse(pds_data_edits[["sex"]] == 
+                  pds_data_edits[["sex"]] <- ifelse(pds_data_edits[["sex"]] ==
                     male, 0, 1)
-                  pds_data_edits[["sex"]] <- factor(pds_data_edits[["sex"]], levels = c(0, 
+                  pds_data_edits[["sex"]] <- factor(pds_data_edits[["sex"]], levels = c(0,
                     1))
                 } else if (nsex_unique == 1 & isTRUE(male_arg)) {
                   # if only 1 value for sex and male is specified, set default to 0
@@ -104,14 +104,16 @@ score_pds <- function(pds_data, respondent, male = 0, female = 1, parID) {
     # check if parID exists
     ID_arg <- methods::hasArg(parID)
 
-    if (!(parID %in% names(pds_data_edits))) {
-        stop("variable name entered as parID is not in pds_data")
+    if (isTRUE(ID_arg)){
+        if (!(parID %in% names(pwlb_data))) {
+            stop("variable name entered as parID is not in pwlb_data")
+        }
     }
 
     # check variables in pds_data
 
     ## standard variable names
-    pds_varnames <- c("pds_1", "pds_2", "pds_3", "pds_4m", "pds_5m", "pds_4f", 
+    pds_varnames <- c("pds_1", "pds_2", "pds_3", "pds_4m", "pds_5m", "pds_4f",
         "pds_5fa")
 
     if (sum(pds_varnames[1:3] %in% names(pds_data_edits)) < 3) {
@@ -144,18 +146,18 @@ score_pds <- function(pds_data, respondent, male = 0, female = 1, parID) {
 
         if (var_name %in% names(pds_data_edits)) {
             # convert 'I Don't Know'/99
-            pds_data_edits[[var_name]] <- ifelse(pds_data_edits[[var_name]] == 
+            pds_data_edits[[var_name]] <- ifelse(pds_data_edits[[var_name]] ==
                 99, NA, pds_data_edits[[var_name]])
 
             # check range of values
-            if (min(pds_data_edits[[var_name]], na.rm = TRUE) < 1 & max(pds_data_edits[[var_name]], 
+            if (min(pds_data_edits[[var_name]], na.rm = TRUE) < 1 & max(pds_data_edits[[var_name]],
                 na.rm = TRUE) > 4) {
                 stop("coded level values should fall between the values 1 and 4")
             }
 
             # recode menarche
             if (var_name == "pds_5fa") {
-                pds_data_edits[[var_name]] <- ifelse(is.na(pds_data_edits[[var_name]]), 
+                pds_data_edits[[var_name]] <- ifelse(is.na(pds_data_edits[[var_name]]),
                   NA, ifelse(pds_data_edits[[var_name]] == 1, 4, 0))
             }
         }
@@ -166,45 +168,45 @@ score_pds <- function(pds_data, respondent, male = 0, female = 1, parID) {
     female_vars <- pds_varnames[c(1:3, 6:7)]
 
     ## number of NAs
-    pds_data_edits[["pds_score_na"]] <- ifelse(pds_data_edits[["sex"]] == 0, rowSums(is.na(pds_data_edits[male_vars])), 
+    pds_data_edits[["pds_score_na"]] <- ifelse(pds_data_edits[["sex"]] == 0, rowSums(is.na(pds_data_edits[male_vars])),
         rowSums(is.na(pds_data_edits[female_vars])))
 
-    pds_data_edits[["pds_score"]] <- ifelse(pds_data_edits[["sex"]] == 0, ifelse(pds_data_edits[["pds_score_na"]] <= 
-        1, rowMeans(pds_data_edits[male_vars], na.rm = TRUE), NA), ifelse(pds_data_edits[["pds_score_na"]] <= 
-        1 & !is.na(pds_data_edits[["pds_5fa"]]), rowMeans(pds_data_edits[female_vars], 
+    pds_data_edits[["pds_score"]] <- ifelse(pds_data_edits[["sex"]] == 0, ifelse(pds_data_edits[["pds_score_na"]] <=
+        1, rowMeans(pds_data_edits[male_vars], na.rm = TRUE), NA), ifelse(pds_data_edits[["pds_score_na"]] <=
+        1 & !is.na(pds_data_edits[["pds_5fa"]]), rowMeans(pds_data_edits[female_vars],
         na.rm = TRUE), NA))
 
     # tanner category
     male_tanner_vars <- pds_varnames[c(2, 4:5)]
     female_tanner_vars <- pds_varnames[c(2, 6)]
 
-    pds_data_edits[["pds_tanner_sum"]] <- ifelse(pds_data_edits[["sex"]] == 0, 
+    pds_data_edits[["pds_tanner_sum"]] <- ifelse(pds_data_edits[["sex"]] == 0,
         rowSums(pds_data_edits[male_tanner_vars]), rowSums(pds_data_edits[female_tanner_vars]))
 
-    pds_data_edits[["pds_tanner_cat"]] <- ifelse(is.na(pds_data_edits[["pds_tanner_sum"]]), 
-        NA, ifelse(pds_data_edits[["sex"]] == 0, ifelse(pds_data_edits[["pds_tanner_sum"]] == 
-            12, "Postpubertal", ifelse(pds_data_edits[["pds_tanner_sum"]] >= 9, 
-            "Late Pubertal", ifelse(pds_data_edits[["pds_tanner_sum"]] >= 6, ifelse(pds_data_edits["pds_2"] < 
-                4 & pds_data_edits["pds_4m"] < 4 & pds_data_edits["pds_5m"] < 
-                4, "Mid-Pubertal", "Late Pubertal"), ifelse(pds_data_edits[["pds_tanner_sum"]] >= 
-                4, ifelse(pds_data_edits["pds_2"] < 3 & pds_data_edits["pds_4m"] < 
-                3 & pds_data_edits["pds_5m"] < 3, "Early Pubertal", "Mid-Pubertal"), 
-                "Prepubertal")))), ifelse(pds_data_edits[["pds_5fa"]] == 4, ifelse(pds_data_edits[["pds_tanner_sum"]] == 
-            8, "Postpubertal", ifelse(pds_data_edits[["pds_tanner_sum"]] <= 7, 
-            "Late Pubertal", NA)), ifelse(pds_data_edits[["pds_tanner_sum"]] > 
-            3, "Mid-Pubertal", ifelse(pds_data_edits[["pds_tanner_sum"]] == 3, 
-            "Early Pubertal", ifelse(pds_data_edits[["pds_tanner_sum"]] == 2, 
+    pds_data_edits[["pds_tanner_cat"]] <- ifelse(is.na(pds_data_edits[["pds_tanner_sum"]]),
+        NA, ifelse(pds_data_edits[["sex"]] == 0, ifelse(pds_data_edits[["pds_tanner_sum"]] ==
+            12, "Postpubertal", ifelse(pds_data_edits[["pds_tanner_sum"]] >= 9,
+            "Late Pubertal", ifelse(pds_data_edits[["pds_tanner_sum"]] >= 6, ifelse(pds_data_edits["pds_2"] <
+                4 & pds_data_edits["pds_4m"] < 4 & pds_data_edits["pds_5m"] <
+                4, "Mid-Pubertal", "Late Pubertal"), ifelse(pds_data_edits[["pds_tanner_sum"]] >=
+                4, ifelse(pds_data_edits["pds_2"] < 3 & pds_data_edits["pds_4m"] <
+                3 & pds_data_edits["pds_5m"] < 3, "Early Pubertal", "Mid-Pubertal"),
+                "Prepubertal")))), ifelse(pds_data_edits[["pds_5fa"]] == 4, ifelse(pds_data_edits[["pds_tanner_sum"]] ==
+            8, "Postpubertal", ifelse(pds_data_edits[["pds_tanner_sum"]] <= 7,
+            "Late Pubertal", NA)), ifelse(pds_data_edits[["pds_tanner_sum"]] >
+            3, "Mid-Pubertal", ifelse(pds_data_edits[["pds_tanner_sum"]] == 3,
+            "Early Pubertal", ifelse(pds_data_edits[["pds_tanner_sum"]] == 2,
                 "Prepubertal", NA))))))
 
-    
+
     #### 3. Clean Export/Scored Data #####
 
     # make results dataset
     if (isTRUE(ID_arg)) {
-        pds_score_dat <- data.frame(id = pds_data_edits[[parID]], sex = pds_data_edits[["sex"]], 
+        pds_score_dat <- data.frame(id = pds_data_edits[[parID]], sex = pds_data_edits[["sex"]],
             pds_score = pds_data_edits[["pds_score"]], pds_tanner_cat = pds_data_edits[["pds_tanner_cat"]])
     } else {
-        pds_score_dat <- data.frame(sex = pds_data_edits[["sex"]], pds_score = pds_data_edits[["pds_score"]], 
+        pds_score_dat <- data.frame(sex = pds_data_edits[["sex"]], pds_score = pds_data_edits[["pds_score"]],
             pds_tanner_cat = pds_data_edits[["pds_tanner_cat"]])
     }
 
@@ -220,8 +222,8 @@ score_pds <- function(pds_data, respondent, male = 0, female = 1, parID) {
     pds_score_dat_labels[["pds_tanner"]] <- "Tanner equivaluent category"
 
     ## add attributes to for tanner category to data
-    pds_score_dat[["pds_tanner_cat"]] <- sjlabelled::add_labels(pds_score_dat[["pds_tanner_cat"]], 
-        labels = c(Prepubertal = 1, `Early Puberty` = 2, `Mid-Puberty` = 3, `Late Puberty` = 4, 
+    pds_score_dat[["pds_tanner_cat"]] <- sjlabelled::add_labels(pds_score_dat[["pds_tanner_cat"]],
+        labels = c(Prepubertal = 1, `Early Puberty` = 2, `Mid-Puberty` = 3, `Late Puberty` = 4,
             Postpubertal = 5))
     pds_score_dat[["pds_tanner_cat"]] <- sjlabelled::as_numeric(pds_score_dat[["pds_tanner_cat"]])
 
@@ -237,7 +239,7 @@ score_pds <- function(pds_data, respondent, male = 0, female = 1, parID) {
     }
 
     ## make sure the variable labels match in the dataset
-    pds_score_dat = sjlabelled::set_label(pds_score_dat, label = matrix(unlist(pds_score_dat_labels, 
+    pds_score_dat = sjlabelled::set_label(pds_score_dat, label = matrix(unlist(pds_score_dat_labels,
         use.names = FALSE)))
 
     return(pds_score_dat)

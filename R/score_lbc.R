@@ -14,11 +14,11 @@
 #'
 #' Subscales: 1. West F, Morawska A, Joughin K. The Lifestyle Behaviour Checklist: evaluation of the factor structure. Child: Care, Health and Development. 2010;36(4):508-515. doi:10.1111/j.1365-2214.2010.01074.x
 #'
-#' @param lbc_data a data.frame all items for the Lifestyle Behavior Chicklist following the naming conventions described above
+#' @param lbc_data a data.frame all items for the Lifestyle Behavior Checklist following the naming conventions described above
 #' @param study a string indicating which study collected the data. Currently, only option and default is 'fbs'. This parameter is included so this script can be adapted for future studies that collect all questions - FBS skipped first 5 questions
 #' @inheritParams fbs_intake
 #'
-#' @return A dataset with subscale scores for the Family Food Behavior Survey
+#' @return A dataset with subscale scores for the Lifestyle Behavior Checklist
 #' @examples
 #'
 #' # scoring for the lbc with IDs
@@ -62,15 +62,17 @@ score_lbc <- function(lbc_data, study = "fbs", parID) {
     # check if parID exists
     ID_arg <- methods::hasArg(parID)
 
-    if (!(parID %in% names(lbc_data))) {
-        stop("variable name entered as parID is not in lbc_data")
+    if (isTRUE(ID_arg)){
+        if (!(parID %in% names(pwlb_data))) {
+            stop("variable name entered as parID is not in pwlb_data")
+        }
     }
 
     #### 2. Set Up Data #####
 
     # set up database for results create empty matrix
-    lbc_score_dat <- data.frame(lbc_misbeh = rep(NA, nrow(lbc_data)), lbc_overeat = rep(NA, 
-        nrow(lbc_data)), lbc_em_overweight = rep(NA, nrow(lbc_data)), lbc_pa = rep(NA, 
+    lbc_score_dat <- data.frame(lbc_misbeh = rep(NA, nrow(lbc_data)), lbc_overeat = rep(NA,
+        nrow(lbc_data)), lbc_em_overweight = rep(NA, nrow(lbc_data)), lbc_pa = rep(NA,
         nrow(lbc_data)), lbc_total = rep(NA, nrow(lbc_data)))
 
     if (isTRUE(ID_arg)) {
@@ -123,7 +125,7 @@ score_lbc <- function(lbc_data, study = "fbs", parID) {
 
     ## Total
     pa_vars <- c("lbc7", "lbc16", "lbc17", "lbc18", "lbc19")
-    lbc_score_dat[["lbc_total"]] <- rowSums(lbc_data[c(misbeh_vars, overeat_vars, 
+    lbc_score_dat[["lbc_total"]] <- rowSums(lbc_data[c(misbeh_vars, overeat_vars,
         emOW_vars, pa_vars)])
 
     ## add labels to data
@@ -132,7 +134,7 @@ score_lbc <- function(lbc_data, study = "fbs", parID) {
     #### 3. Clean Export/Scored Data #####
 
     ## make sure the variable labels match in the dataset
-    lbc_score_dat = sjlabelled::set_label(lbc_score_dat, label = matrix(unlist(lbc_score_dat_labels, 
+    lbc_score_dat = sjlabelled::set_label(lbc_score_dat, label = matrix(unlist(lbc_score_dat_labels,
         use.names = FALSE)))
 
     return(lbc_score_dat)

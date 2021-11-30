@@ -48,8 +48,10 @@ score_bes <- function(bes_data, parID) {
     # check if parID exists
     ID_arg <- methods::hasArg(parID)
 
-    if (!(parID %in% names(bes_data))) {
-        stop("variable name entered as parID is not in bes_data")
+    if (isTRUE(ID_arg)){
+        if (!(parID %in% names(pwlb_data))) {
+            stop("variable name entered as parID is not in pwlb_data")
+        }
     }
 
     #### 2. Set Up Data #####
@@ -68,7 +70,7 @@ score_bes <- function(bes_data, parID) {
     # calculate question - specific scoring values
 
     ## subset with consistent scoring
-    cons_score_vars <- c("bes2", "bes5", "bes8", "bes9", "bes10", "bes11", "bes12", 
+    cons_score_vars <- c("bes2", "bes5", "bes8", "bes9", "bes10", "bes11", "bes12",
         "bes14", "bes15", "bes16")
 
     for (var in 1:length(cons_score_vars)) {
@@ -79,29 +81,29 @@ score_bes <- function(bes_data, parID) {
     }
 
     # custom scoring by question
-    bes_data[["bes1_s"]] <- ifelse(is.na(bes_data[["bes1"]]), NA, ifelse(bes_data[["bes1"]] < 
+    bes_data[["bes1_s"]] <- ifelse(is.na(bes_data[["bes1"]]), NA, ifelse(bes_data[["bes1"]] <
         3, 0, ifelse(bes_data[["bes1"]] == 3, 1, 4)))
 
-    bes_data[["bes3_s"]] <- ifelse(is.na(bes_data[["bes3"]]), NA, ifelse(bes_data[["bes3"]] > 
+    bes_data[["bes3_s"]] <- ifelse(is.na(bes_data[["bes3"]]), NA, ifelse(bes_data[["bes3"]] >
         2, 3, ifelse(bes_data[["bes3"]] == 2, 1, 0)))
 
-    bes_data[["bes4_s"]] <- ifelse(is.na(bes_data[["bes4"]]), NA, ifelse(bes_data[["bes4"]] < 
+    bes_data[["bes4_s"]] <- ifelse(is.na(bes_data[["bes4"]]), NA, ifelse(bes_data[["bes4"]] <
         4, 0, 2))
 
-    bes_data[["bes6_s"]] <- ifelse(is.na(bes_data[["bes6"]]), NA, ifelse(bes_data[["bes6"]] == 
+    bes_data[["bes6_s"]] <- ifelse(is.na(bes_data[["bes6"]]), NA, ifelse(bes_data[["bes6"]] ==
         3, 3, bes_data[["bes6"]] - 1))
 
-    bes_data[["bes7_s"]] <- ifelse(is.na(bes_data[["bes7"]]), NA, ifelse(bes_data[["bes7"]] == 
+    bes_data[["bes7_s"]] <- ifelse(is.na(bes_data[["bes7"]]), NA, ifelse(bes_data[["bes7"]] ==
         1, 0, ifelse(bes_data[["bes7"]] > 2, 3, 2)))
 
-    bes_data[["bes13_s"]] <- ifelse(is.na(bes_data[["bes13"]]), NA, ifelse(bes_data[["bes13"]] < 
+    bes_data[["bes13_s"]] <- ifelse(is.na(bes_data[["bes13"]]), NA, ifelse(bes_data[["bes13"]] <
         3, 0, ifelse(bes_data[["bes13"]] == 3, 2, 3)))
 
     ## Score
 
     # Total Score
-    bes_scored_vars <- c("bes1_s", "bes2_s", "bes3_s", "bes4_s", "bes5_s", "bes6_s", 
-        "bes7_s", "bes8_s", "bes9_s", "bes10_s", "bes11_s", "bes12_s", "bes13_s", 
+    bes_scored_vars <- c("bes1_s", "bes2_s", "bes3_s", "bes4_s", "bes5_s", "bes6_s",
+        "bes7_s", "bes8_s", "bes9_s", "bes10_s", "bes11_s", "bes12_s", "bes13_s",
         "bes14_s", "bes15_s", "bes16_s")
     bes_score_dat[["bes_total"]] <- rowSums(bes_data[bes_scored_vars])
 
@@ -111,7 +113,7 @@ score_bes <- function(bes_data, parID) {
     #### 3. Clean Export/Scored Data #####
 
     ## make sure the variable labels match in the dataset
-    bes_score_dat = sjlabelled::set_label(bes_score_dat, label = matrix(unlist(bes_score_dat_labels, 
+    bes_score_dat = sjlabelled::set_label(bes_score_dat, label = matrix(unlist(bes_score_dat_labels,
         use.names = FALSE)))
 
     return(bes_score_dat)

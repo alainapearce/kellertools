@@ -68,7 +68,7 @@ fbs_kcal_intake <- intake_data(intake_data, parID = 'ID')
 
 }
 \seealso{
-For the Food and Brain Study, the energy density of each food is in \like{fbs_ED.rda}. Raw data from Qualtrics was processed using the following scripts (or there 'lab' equivalent) \code{\link{qualtrics_child_v1dat}}, \code{\link{qualtrics_parent_v2dat}}, \code{\link{qualtrics_parent_v3dat}}, \code{\link{qualtrics_parent_v4dat}}, \code{\link{qualtrics_parent_v5dat}}, \code{\link{qualtrics_parent_v7dat}}
+For the Food and Brain Study, the energy density of each food is in \link{fbs_ED.rda}. Raw data from Qualtrics was processed using the following scripts (or there 'lab' equivalent) \code{\link{qualtrics_child_v1dat}}, \code{\link{qualtrics_parent_v2dat}}, \code{\link{qualtrics_parent_v3dat}}, \code{\link{qualtrics_parent_v4dat}}, \code{\link{qualtrics_parent_v5dat}}, \code{\link{qualtrics_parent_v7dat}}
 
 For the Food and Brain Study, the energy density of each food is in \like{fbs_ED.rda}. Raw data from Qualtrics was processed using the following scripts (or there 'lab' equivalent) \code{\link{qualtrics_child_v1dat}}, \code{\link{qualtrics_parent_v2dat}}, \code{\link{qualtrics_parent_v3dat}}, \code{\link{qualtrics_parent_v4dat}}, \code{\link{qualtrics_parent_v5dat}}, \code{\link{qualtrics_parent_v7dat}}
 }

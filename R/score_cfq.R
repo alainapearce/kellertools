@@ -32,8 +32,7 @@ cating which study collected the data. Currently, only option and default is 'fb
 es that have wider age rang and may collect question 13.
 #' @inheritParams fbs_intake
 #'
-#' @return A dataset with subscale scores for the Child Fee
-ng Questionnaire
+#' @return A dataset with subscale scores for the Child Feeding Questionnaire
 #'
 #' @examples
 #'
@@ -68,11 +67,11 @@ score_cfq <- function(cfq_data, restriction_split = FALSE, study = "fbs", parID)
     rest_arg <- methods::hasArg(restriction_split)
 
     if (isTRUE(rest_arg)) {
-        if (restriction_split == "true" | restriction_split == "True" | restriction_split == 
+        if (restriction_split == "true" | restriction_split == "True" | restriction_split ==
             "TRUE") {
             # convert to boolean
             restriction_split = TRUE
-        } else if (restriction_split == "false" | restriction_split == "False" | 
+        } else if (restriction_split == "false" | restriction_split == "False" |
             restriction_split == "FALSE") {
             # convert to boolean
             restriction_split = FALSE
@@ -97,8 +96,10 @@ score_cfq <- function(cfq_data, restriction_split = FALSE, study = "fbs", parID)
     # check if parID exists
     ID_arg <- methods::hasArg(parID)
 
-    if (!(parID %in% names(cfq_data))) {
-        stop("variable name entered as parID is not in cfq_data")
+    if (isTRUE(ID_arg)){
+        if (!(parID %in% names(pwlb_data))) {
+            stop("variable name entered as parID is not in pwlb_data")
+        }
     }
 
     #### 2. Set Up Data #####
@@ -106,16 +107,16 @@ score_cfq <- function(cfq_data, restriction_split = FALSE, study = "fbs", parID)
     # set up database for results
     if (isTRUE(restriction_split)) {
         # create empty matrix
-        cfq_score_dat <- data.frame(cfq_resp = rep(NA, nrow(cfq_data)), cfq_pcw = rep(NA, 
-            nrow(cfq_data)), cfq_ppw = rep(NA, nrow(cfq_data)), cfq_cwc = rep(NA, 
-            nrow(cfq_data)), cfq_rest = rep(NA, nrow(cfq_data)), cfq_rest_noreward = rep(NA, 
-            nrow(cfq_data)), cfq_food_reward = rep(NA, nrow(cfq_data)), cfq_pressure = rep(NA, 
+        cfq_score_dat <- data.frame(cfq_resp = rep(NA, nrow(cfq_data)), cfq_pcw = rep(NA,
+            nrow(cfq_data)), cfq_ppw = rep(NA, nrow(cfq_data)), cfq_cwc = rep(NA,
+            nrow(cfq_data)), cfq_rest = rep(NA, nrow(cfq_data)), cfq_rest_noreward = rep(NA,
+            nrow(cfq_data)), cfq_food_reward = rep(NA, nrow(cfq_data)), cfq_pressure = rep(NA,
             nrow(cfq_data)), cfq_mon = rep(NA, nrow(cfq_data)))
     } else {
         # create empty matrix
-        cfq_score_dat <- data.frame(cfq_resp = rep(NA, nrow(cfq_data)), cfq_pcw = rep(NA, 
-            nrow(cfq_data)), cfq_ppw = rep(NA, nrow(cfq_data)), cfq_cwc = rep(NA, 
-            nrow(cfq_data)), cfq_rest = rep(NA, nrow(cfq_data)), cfq_pressure = rep(NA, 
+        cfq_score_dat <- data.frame(cfq_resp = rep(NA, nrow(cfq_data)), cfq_pcw = rep(NA,
+            nrow(cfq_data)), cfq_ppw = rep(NA, nrow(cfq_data)), cfq_cwc = rep(NA,
+            nrow(cfq_data)), cfq_rest = rep(NA, nrow(cfq_data)), cfq_pressure = rep(NA,
             nrow(cfq_data)), cfq_mon = rep(NA, nrow(cfq_data)))
     }
 
@@ -167,7 +168,7 @@ score_cfq <- function(cfq_data, restriction_split = FALSE, study = "fbs", parID)
     cfq_score_dat_labels[["cfq_cwc"]] <- paste0("CFQ Child Weight Concern Total Score")
 
     # Restriction
-    rest_vars <- c("cfq17", "cfq18", "cfq19", "cfq20", "cfq21", "cfq22", "cfq23", 
+    rest_vars <- c("cfq17", "cfq18", "cfq19", "cfq20", "cfq21", "cfq22", "cfq23",
         "cfq24")
     cfq_score_dat[["cfq_rest"]] <- rowMeans(cfq_data[rest_vars])
 
@@ -175,7 +176,7 @@ score_cfq <- function(cfq_data, restriction_split = FALSE, study = "fbs", parID)
     cfq_score_dat_labels[["cfq_rest"]] <- paste0("CFQ Restriction Total Score")
 
     if (isTRUE(restriction_split)) {
-        cfq_score_dat[["cfq_rest_noreward"]] <- rowMeans(cfq_data[rest_vars[c(1:4, 
+        cfq_score_dat[["cfq_rest_noreward"]] <- rowMeans(cfq_data[rest_vars[c(1:4,
             7:8)]])
         cfq_score_dat[["cfq_food_reward"]] <- rowMeans(cfq_data[rest_vars[5:6]])
 
@@ -201,7 +202,7 @@ score_cfq <- function(cfq_data, restriction_split = FALSE, study = "fbs", parID)
     #### 3. Clean Export/Scored Data #####
 
     ## make sure the variable labels match in the dataset
-    cfq_score_dat = sjlabelled::set_label(cfq_score_dat, label = matrix(unlist(cfq_score_dat_labels, 
+    cfq_score_dat = sjlabelled::set_label(cfq_score_dat, label = matrix(unlist(cfq_score_dat_labels,
         use.names = FALSE)))
 
     return(cfq_score_dat)

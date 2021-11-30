@@ -66,8 +66,10 @@ score_cshqa <- function(cshqa_data, study = 'fbs', parID) {
     # check if parID exists
     ID_arg <- methods::hasArg(parID)
 
-    if (!(parID %in% names(cshqa_data))) {
-        stop("variable name entered as parID is not in cshqa_data")
+    if (isTRUE(ID_arg)){
+        if (!(parID %in% names(pwlb_data))) {
+            stop("variable name entered as parID is not in pwlb_data")
+        }
     }
 
     #### 2. Set Up Data #####

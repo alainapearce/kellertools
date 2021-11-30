@@ -47,15 +47,17 @@ score_ffbs <- function(ffbs_data, parID) {
     # check if parID exists
     ID_arg <- methods::hasArg(parID)
 
-    if (!(parID %in% names(ffbs_data))) {
-        stop("variable name entered as parID is not in ffbs_data")
+    if (isTRUE(ID_arg)){
+        if (!(parID %in% names(pwlb_data))) {
+            stop("variable name entered as parID is not in pwlb_data")
+        }
     }
 
     #### 2. Set Up Data #####
 
     # set up database for results create empty matrix
-    ffbs_score_dat <- data.frame(ffbs_control = rep(NA, nrow(ffbs_data)), ffbs_presence = rep(NA, 
-        nrow(ffbs_data)), ffbs_ch_choice = rep(NA, nrow(ffbs_data)), ffbs_org = rep(NA, 
+    ffbs_score_dat <- data.frame(ffbs_control = rep(NA, nrow(ffbs_data)), ffbs_presence = rep(NA,
+        nrow(ffbs_data)), ffbs_ch_choice = rep(NA, nrow(ffbs_data)), ffbs_org = rep(NA,
         nrow(ffbs_data)))
 
     if (isTRUE(ID_arg)) {
@@ -74,9 +76,9 @@ score_ffbs <- function(ffbs_data, parID) {
         var_name <- reverse_qs[var]
         reverse_name <- paste0(var_name, "_rev")
 
-        ffbs_data[[reverse_name]] <- ifelse(is.na(ffbs_data[[var_name]]), NA, 
-            ifelse(ffbs_data[[var_name]] == 0, 4, ifelse(ffbs_data[[var_name]] == 
-                1, 3, ifelse(ffbs_data[[var_name]] == 3, 1, ifelse(ffbs_data[[var_name]] == 
+        ffbs_data[[reverse_name]] <- ifelse(is.na(ffbs_data[[var_name]]), NA,
+            ifelse(ffbs_data[[var_name]] == 0, 4, ifelse(ffbs_data[[var_name]] ==
+                1, 3, ifelse(ffbs_data[[var_name]] == 3, 1, ifelse(ffbs_data[[var_name]] ==
                 4, 0, 2)))))
     }
 
@@ -113,7 +115,7 @@ score_ffbs <- function(ffbs_data, parID) {
     #### 3. Clean Export/Scored Data #####
 
     ## make sure the variable labels match in the dataset
-    ffbs_score_dat = sjlabelled::set_label(ffbs_score_dat, label = matrix(unlist(ffbs_score_dat_labels, 
+    ffbs_score_dat = sjlabelled::set_label(ffbs_score_dat, label = matrix(unlist(ffbs_score_dat_labels,
         use.names = FALSE)))
 
     return(ffbs_score_dat)

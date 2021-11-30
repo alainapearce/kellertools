@@ -17,7 +17,7 @@
 #' @param cbq_data a data.frame all items for the Child Behavior Questionnaire following the naming conventions described above
 #' @inheritParams fbs_intake
 #'
-#' @return A dataset with subscale scores for the Family Food Behavior Survey
+#' @return A dataset with subscale scores for the Child Behavior Questionnaire
 #' @examples
 #'
 #' # scoring for the cbq with IDs
@@ -47,8 +47,10 @@ score_cbq <- function(cbq_data, parID) {
     # check if parID exists
     ID_arg <- methods::hasArg(parID)
 
-    if (!(parID %in% names(cbq_data))) {
-        stop("variable name entered as parID is not in cbq_data")
+    if (isTRUE(ID_arg)){
+        if (!(parID %in% names(pwlb_data))) {
+            stop("variable name entered as parID is not in pwlb_data")
+        }
     }
 
     #### 2. Set Up Data #####
@@ -56,15 +58,15 @@ score_cbq <- function(cbq_data, parID) {
     # set up database for results
 
     ## create empty matrix
-    cbq_score_dat <- data.frame(cbq_activity = rep(NA, nrow(cbq_data)), cbq_anger = rep(NA, 
-        nrow(cbq_data)), cbq_approach = rep(NA, nrow(cbq_data)), cbq_attention = rep(NA, 
-        nrow(cbq_data)), cbq_discomfort = rep(NA, nrow(cbq_data)), cbq_soothability = rep(NA, 
-        nrow(cbq_data)), cbq_fear = rep(NA, nrow(cbq_data)), cbq_highintensity_pleasure = rep(NA, 
-        nrow(cbq_data)), cbq_impulsivity = rep(NA, nrow(cbq_data)), cbq_inhibitory_cont = rep(NA, 
-        nrow(cbq_data)), cbq_lowintensity_pleasure = rep(NA, nrow(cbq_data)), 
-        cbq_perceptual_sensitivity = rep(NA, nrow(cbq_data)), cbq_sadness = rep(NA, 
-            nrow(cbq_data)), cbq_shyness = rep(NA, nrow(cbq_data)), cbq_smile_laughter = rep(NA, 
-            nrow(cbq_data)), cbq_surgency = rep(NA, nrow(cbq_data)), cbq_neg_affect = rep(NA, 
+    cbq_score_dat <- data.frame(cbq_activity = rep(NA, nrow(cbq_data)), cbq_anger = rep(NA,
+        nrow(cbq_data)), cbq_approach = rep(NA, nrow(cbq_data)), cbq_attention = rep(NA,
+        nrow(cbq_data)), cbq_discomfort = rep(NA, nrow(cbq_data)), cbq_soothability = rep(NA,
+        nrow(cbq_data)), cbq_fear = rep(NA, nrow(cbq_data)), cbq_highintensity_pleasure = rep(NA,
+        nrow(cbq_data)), cbq_impulsivity = rep(NA, nrow(cbq_data)), cbq_inhibitory_cont = rep(NA,
+        nrow(cbq_data)), cbq_lowintensity_pleasure = rep(NA, nrow(cbq_data)),
+        cbq_perceptual_sensitivity = rep(NA, nrow(cbq_data)), cbq_sadness = rep(NA,
+            nrow(cbq_data)), cbq_shyness = rep(NA, nrow(cbq_data)), cbq_smile_laughter = rep(NA,
+            nrow(cbq_data)), cbq_surgency = rep(NA, nrow(cbq_data)), cbq_neg_affect = rep(NA,
             nrow(cbq_data)), cbq_effortful_cont = rep(NA, nrow(cbq_data)))
 
     if (isTRUE(ID_arg)) {
@@ -77,18 +79,18 @@ score_cbq <- function(cbq_data, parID) {
 
     # calculate reversed scores
 
-    reverse_qs <- c("cbq3", "cbq11", "cbq16", "cbq18", "cbq19", "cbq21", "cbq25", 
-        "cbq34", "cbq35", "cbq36", "cbq43", "cbq48", "cbq49", "cbq50", "cbq53", 
-        "cbq54", "cbq56", "cbq60", "cbq61", "cbq68", "cbq74", "cbq75", "cbq78", 
+    reverse_qs <- c("cbq3", "cbq11", "cbq16", "cbq18", "cbq19", "cbq21", "cbq25",
+        "cbq34", "cbq35", "cbq36", "cbq43", "cbq48", "cbq49", "cbq50", "cbq53",
+        "cbq54", "cbq56", "cbq60", "cbq61", "cbq68", "cbq74", "cbq75", "cbq78",
         "cbq80", "cbq82", "cbq83", "cbq84", "cbq90", "cbq91", "cbq92", "cbq93")
 
     for (var in 1:length(reverse_qs)) {
         var_name <- reverse_qs[var]
         reverse_name <- paste0(var_name, "_rev")
 
-        cbq_data[[reverse_name]] <- ifelse(is.na(cbq_data[[var_name]]), NA, ifelse(cbq_data[[var_name]] == 
-            1, 7, ifelse(cbq_data[[var_name]] == 2, 6, ifelse(cbq_data[[var_name]] == 
-            3, 5, ifelse(cbq_data[[var_name]] == 5, 3, ifelse(cbq_data[[var_name]] == 
+        cbq_data[[reverse_name]] <- ifelse(is.na(cbq_data[[var_name]]), NA, ifelse(cbq_data[[var_name]] ==
+            1, 7, ifelse(cbq_data[[var_name]] == 2, 6, ifelse(cbq_data[[var_name]] ==
+            3, 5, ifelse(cbq_data[[var_name]] == 5, 3, ifelse(cbq_data[[var_name]] ==
             6, 2, ifelse(cbq_data[[var_name]] == 7, 1, 4)))))))
     }
 
@@ -97,7 +99,7 @@ score_cbq <- function(cbq_data, parID) {
         var_name <- names(cbq_data)[var]
 
         if (grepl("cbq", var_name, fixed = TRUE)) {
-            cbq_data[[var_name]] <- ifelse(is.na(cbq_data[[var_name]]), NA, ifelse(cbq_data[[var_name]] == 
+            cbq_data[[var_name]] <- ifelse(is.na(cbq_data[[var_name]]), NA, ifelse(cbq_data[[var_name]] ==
                 -99, NA, cbq_data[[var_name]]))
         }
 
@@ -105,7 +107,7 @@ score_cbq <- function(cbq_data, parID) {
     ## Score Subscales
 
     # Activity Level
-    activity_vars <- c("cbq1", "cbq12", "cbq18_rev", "cbq22", "cbq50_rev", "cbq85", 
+    activity_vars <- c("cbq1", "cbq12", "cbq18_rev", "cbq22", "cbq50_rev", "cbq85",
         "cbq93_rev")
     cbq_score_dat[["cbq_activity"]] <- rowSums(cbq_data[activity_vars], na.rm = TRUE)/rowSums(!is.na(cbq_data[activity_vars]))
 
@@ -127,7 +129,7 @@ score_cbq <- function(cbq_data, parID) {
     cbq_score_dat_labels[["cbq_approach"]] <- paste0("CBQ Approach/Positive Anticipation Total Score")
 
     # Attentional Focusing
-    attention_vars <- c("cbq16_rev", "cbq21_rev", "cbq62", "cbq71", "cbq84_rev", 
+    attention_vars <- c("cbq16_rev", "cbq21_rev", "cbq62", "cbq71", "cbq84_rev",
         "cbq89")
     cbq_score_dat[["cbq_attention"]] <- rowSums(cbq_data[attention_vars], na.rm = TRUE)/rowSums(!is.na(cbq_data[approach_vars]))
 
@@ -157,16 +159,16 @@ score_cbq <- function(cbq_data, parID) {
 
     # High Intensity Pleasure
     hi_pleasure_vars <- c("cbq4", "cbq10", "cbq33", "cbq69", "cbq78_rev", "cbq88")
-    cbq_score_dat[["cbq_highintensity_pleasure"]] <- rowSums(cbq_data[hi_pleasure_vars], 
+    cbq_score_dat[["cbq_highintensity_pleasure"]] <- rowSums(cbq_data[hi_pleasure_vars],
         na.rm = TRUE)/rowSums(!is.na(cbq_data[hi_pleasure_vars]))
 
     ## add labels to data
     cbq_score_dat_labels[["cbq_highintensity_pleasure"]] <- paste0("CBQ High Intensity Pleasure Total Score")
 
     # Impulsivity
-    impulsivity_vars <- c("cbq7", "cbq28", "cbq36_rev", "cbq43_rev", "cbq51", 
+    impulsivity_vars <- c("cbq7", "cbq28", "cbq36_rev", "cbq43_rev", "cbq51",
         "cbq82_rev")
-    cbq_score_dat[["cbq_impulsivity"]] <- rowSums(cbq_data[impulsivity_vars], 
+    cbq_score_dat[["cbq_impulsivity"]] <- rowSums(cbq_data[impulsivity_vars],
         na.rm = TRUE)/rowSums(!is.na(cbq_data[impulsivity_vars]))
 
     ## add labels to data
@@ -180,9 +182,9 @@ score_cbq <- function(cbq_data, parID) {
     cbq_score_dat_labels[["cbq_inhibitory_cont"]] <- paste0("CBQ Inhibitory Control Total Score")
 
     # Low Intensity Pleasure
-    li_pleasure_vars <- c("cbq26", "cbq39", "cbq57", "cbq65", "cbq72", "cbq76", 
+    li_pleasure_vars <- c("cbq26", "cbq39", "cbq57", "cbq65", "cbq72", "cbq76",
         "cbq86", "cbq94")
-    cbq_score_dat[["cbq_lowintensity_pleasure"]] <- rowSums(cbq_data[li_pleasure_vars], 
+    cbq_score_dat[["cbq_lowintensity_pleasure"]] <- rowSums(cbq_data[li_pleasure_vars],
         na.rm = TRUE)/rowSums(!is.na(cbq_data[li_pleasure_vars]))
 
     ## add labels to data
@@ -190,14 +192,14 @@ score_cbq <- function(cbq_data, parID) {
 
     # Perceptual Sensitivity
     percept_vars <- c("cbq5", "cbq13", "cbq24", "cbq32", "cbq47", "cbq83_rev")
-    cbq_score_dat[["cbq_perceptual_sensitivity"]] <- rowSums(cbq_data[percept_vars], 
+    cbq_score_dat[["cbq_perceptual_sensitivity"]] <- rowSums(cbq_data[percept_vars],
         na.rm = TRUE)/rowSums(!is.na(cbq_data[percept_vars]))
 
     ## add labels to data
     cbq_score_dat_labels[["cbq_perceptual_sensitivity"]] <- paste0("CBQ Perceptual Sensitivity Total Score")
 
     # Sadness
-    sad_vars <- c("cbq8", "cbq20", "cbq27", "cbq31", "cbq54_rev", "cbq56_rev", 
+    sad_vars <- c("cbq8", "cbq20", "cbq27", "cbq31", "cbq54_rev", "cbq56_rev",
         "cbq74_rev")
     cbq_score_dat[["cbq_sadness"]] <- rowSums(cbq_data[sad_vars], na.rm = TRUE)/rowSums(!is.na(cbq_data[sad_vars]))
 
@@ -221,7 +223,7 @@ score_cbq <- function(cbq_data, parID) {
     # Big 3 - Surgency reverse the shyness scale
     cbq_score_dat[["cbq_shyness_rev"]] <- 8 - cbq_score_dat["cbq_shyness"]
 
-    cbq_score_dat[["cbq_surgency"]] <- rowMeans(cbq_score_dat[c("cbq_activity", 
+    cbq_score_dat[["cbq_surgency"]] <- rowMeans(cbq_score_dat[c("cbq_activity",
         "cbq_highintensity_pleasure", "cbq_impulsivity", "cbq_shyness_rev")])
 
     # remove shyness-reveresed scale
@@ -233,7 +235,7 @@ score_cbq <- function(cbq_data, parID) {
     # Big 3 - Negative Affect remove soothability scale
     cbq_score_dat[["cbq_soothability_rev"]] <- 8 - cbq_score_dat["cbq_soothability"]
 
-    cbq_score_dat[["cbq_neg_affect"]] <- rowMeans(cbq_score_dat[c("cbq_anger", 
+    cbq_score_dat[["cbq_neg_affect"]] <- rowMeans(cbq_score_dat[c("cbq_anger",
         "cbq_discomfort", "cbq_fear", "cbq_sadness", "cbq_soothability_rev")])
 
     # remove soothability-reversed scale
@@ -245,7 +247,7 @@ score_cbq <- function(cbq_data, parID) {
     # Big 3 - Effortful Control remove soothability scale
     cbq_score_dat[["cbq_soothability_rev"]] <- 8 - cbq_score_dat["cbq_soothability"]
 
-    cbq_score_dat[["cbq_effortful_cont"]] <- rowMeans(cbq_score_dat[c("cbq_attention", 
+    cbq_score_dat[["cbq_effortful_cont"]] <- rowMeans(cbq_score_dat[c("cbq_attention",
         "cbq_inhibitory_cont", "cbq_lowintensity_pleasure", "cbq_perceptual_sensitivity")])
 
     # remove soothability-reversed scale
@@ -257,7 +259,7 @@ score_cbq <- function(cbq_data, parID) {
     #### 3. Clean Export/Scored Data #####
 
     ## make sure the variable labels match in the dataset
-    cbq_score_dat = sjlabelled::set_label(cbq_score_dat, label = matrix(unlist(cbq_score_dat_labels, 
+    cbq_score_dat = sjlabelled::set_label(cbq_score_dat, label = matrix(unlist(cbq_score_dat_labels,
         use.names = FALSE)))
 
     return(cbq_score_dat)

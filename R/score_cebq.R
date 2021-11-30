@@ -46,18 +46,20 @@ score_cebq <- function(cebq_data, parID) {
     # check if parID exists
     ID_arg <- methods::hasArg(parID)
 
-    if (!(parID %in% names(cebq_data))) {
-        stop("variable name entered as parID is not in cebq_data")
+    if (isTRUE(ID_arg)){
+        if (!(parID %in% names(pwlb_data))) {
+            stop("variable name entered as parID is not in pwlb_data")
+        }
     }
 
     #### 2. Set Up Data #####
 
     # set up database for results create empty matrix
-    cebq_score_dat <- data.frame(cebq_fr = rep(NA, nrow(cebq_data)), cebq_eoe = rep(NA, 
-        nrow(cebq_data)), cebq_ef = rep(NA, nrow(cebq_data)), cebq_dd = rep(NA, 
-        nrow(cebq_data)), cebq_sr = rep(NA, nrow(cebq_data)), cebq_se = rep(NA, 
-        nrow(cebq_data)), cebq_eue = rep(NA, nrow(cebq_data)), cebq_ff = rep(NA, 
-        nrow(cebq_data)), cebq_approach = rep(NA, nrow(cebq_data)), cebq_avoid = rep(NA, 
+    cebq_score_dat <- data.frame(cebq_fr = rep(NA, nrow(cebq_data)), cebq_eoe = rep(NA,
+        nrow(cebq_data)), cebq_ef = rep(NA, nrow(cebq_data)), cebq_dd = rep(NA,
+        nrow(cebq_data)), cebq_sr = rep(NA, nrow(cebq_data)), cebq_se = rep(NA,
+        nrow(cebq_data)), cebq_eue = rep(NA, nrow(cebq_data)), cebq_ff = rep(NA,
+        nrow(cebq_data)), cebq_approach = rep(NA, nrow(cebq_data)), cebq_avoid = rep(NA,
         nrow(cebq_data)))
 
     if (isTRUE(ID_arg)) {
@@ -76,9 +78,9 @@ score_cebq <- function(cebq_data, parID) {
         var_name <- reverse_qs[var]
         reverse_name <- paste0(var_name, "_rev")
 
-        cebq_data[[reverse_name]] <- ifelse(is.na(cebq_data[[var_name]]), NA, 
-            ifelse(cebq_data[[var_name]] == 1, 5, ifelse(cebq_data[[var_name]] == 
-                2, 4, ifelse(cebq_data[[var_name]] == 4, 2, ifelse(cebq_data[[var_name]] == 
+        cebq_data[[reverse_name]] <- ifelse(is.na(cebq_data[[var_name]]), NA,
+            ifelse(cebq_data[[var_name]] == 1, 5, ifelse(cebq_data[[var_name]] ==
+                2, 4, ifelse(cebq_data[[var_name]] == 4, 2, ifelse(cebq_data[[var_name]] ==
                 5, 1, 3)))))
     }
 
@@ -134,23 +136,23 @@ score_cebq <- function(cebq_data, parID) {
     cebq_score_dat_labels[["cebq_eue"]] <- paste0("CEBQ Emotional Under Eating Total Score")
 
     # Food Fussiness
-    FF_vars <- c("cebq7", "cebq10_rev", "cebq16_rev", "cebq24", "cebq32_rev", 
+    FF_vars <- c("cebq7", "cebq10_rev", "cebq16_rev", "cebq24", "cebq32_rev",
         "cebq33")
     cebq_score_dat[["cebq_ff"]] <- rowMeans(cebq_data[FF_vars])
 
     ## add labels to data
     cebq_score_dat_labels[["cebq_ff"]] <- paste0("CEBQ Food Fussiness Total Score")
 
-    
+
     # Total Approach Score
-    cebq_score_dat[["cebq_approach"]] <- rowMeans(cebq_data[c(FR_vars, EOE_vars, 
+    cebq_score_dat[["cebq_approach"]] <- rowMeans(cebq_data[c(FR_vars, EOE_vars,
         EF_vars, DD_vars)])
 
     ## add labels to data
     cebq_score_dat_labels[["cebq_approach"]] <- paste0("CEBQ Approach Total Score")
 
     # Total Avoid Score
-    cebq_score_dat[["cebq_avoid"]] <- rowMeans(cebq_data[c(SR_vars, SE_vars, EUE_vars, 
+    cebq_score_dat[["cebq_avoid"]] <- rowMeans(cebq_data[c(SR_vars, SE_vars, EUE_vars,
         FF_vars)])
 
     ## add labels to data
@@ -159,7 +161,7 @@ score_cebq <- function(cebq_data, parID) {
     #### 3. Clean Export/Scored Data #####
 
     ## make sure the variable labels match in the dataset
-    cebq_score_dat = sjlabelled::set_label(cebq_score_dat, label = matrix(unlist(cebq_score_dat_labels, 
+    cebq_score_dat = sjlabelled::set_label(cebq_score_dat, label = matrix(unlist(cebq_score_dat_labels,
         use.names = FALSE)))
 
     return(cebq_score_dat)
