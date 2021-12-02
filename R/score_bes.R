@@ -10,8 +10,9 @@
 #'
 #' Note, as long as variable names match those listed, the dataset can include other variables
 #'
+#' @references
 #' Primary References for the Binge Eating Scale and Scoring:
-#' Gormally, J., Black, S., Daston, S., & Rardin, D. (1982). The assessment of binge eating severity among obese persons. Addictive Behaviors, 7(1), 47–55. https://doi.org/10.1016/0306-4603(82)90024-7
+#' Gormally, J., Black, S., Daston, S., & Rardin, D. (1982). The assessment of binge eating severity among obese persons. Addictive Behaviors, 7(1), 47–55. https://doi.org/10.1016/0306-4603(82)90024-7  (\href{https://pubmed.ncbi.nlm.nih.gov/7080884/}{PubMed})
 #'
 #' Timmerman, G. M. (1999). Binge Eating Scale: Further Assessment of Validity and Reliability. Journal of Applied Biobehavioral Research, 4(1), 1–12. https://doi.org/10.1111/j.1751-9861.1999.tb00051.x
 #'
@@ -108,9 +109,15 @@ score_bes <- function(bes_data, parID) {
     bes_score_dat[["bes_total"]] <- rowSums(bes_data[bes_scored_vars])
 
     ## add labels to data
-    bes_score_dat_labels[["bes_total"]] <- paste0("BES Total Score")
+    bes_score_dat_labels[["bes_total"]] <- "BES Total Score"
 
     #### 3. Clean Export/Scored Data #####
+    ## round data
+    if (isTRUE(ID_arg)){
+        bes_score_dat[2:ncol(bes_score_dat)] <- round(bes_score_dat[2:ncol(bes_score_dat)], digits = 3)
+    } else {
+        bes_score_dat <- round(bes_score_dat, digits = 3)
+    }
 
     ## make sure the variable labels match in the dataset
     bes_score_dat = sjlabelled::set_label(bes_score_dat, label = matrix(unlist(bes_score_dat_labels,

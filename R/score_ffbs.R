@@ -9,10 +9,10 @@
 #'
 #' Note, as long as variable names match those listed, the dataset can include other variables
 #'
-#' Primary References for the Family Food Behvior Survey and Scoring:
-#' Baughcum, A. E., Powers, S. W., Johnson, S. B., Chamberlin, L. A., Deeks, C. M., Jain, A., & Whitaker, R. C. (2001). Maternal Feeding Practices and Beliefs and Their Relationships to Overweight in Early Childhood: Journal of Developmental & Behavioral Pediatrics, 22(6), 391–408. https://doi.org/10.1097/00004703-200112000-00007
+#' @references
+#' Baughcum, A. E., Powers, S. W., Johnson, S. B., Chamberlin, L. A., Deeks, C. M., Jain, A., & Whitaker, R. C. (2001). Maternal Feeding Practices and Beliefs and Their Relationships to Overweight in Early Childhood: Journal of Developmental & Behavioral Pediatrics, 22(6), 391–408. https://doi.org/10.1097/00004703-200112000-00007 (\href{https://pubmed.ncbi.nlm.nih.gov/11773804/}{PubMed})
 #'
-#' McCurdy, K., & Gorman, K. S. (2010). Measuring family food environments in diverse families with young children. Appetite, 54(3), 615–618. https://doi.org/10.1016/j.appet.2010.03.004
+#' McCurdy, K., & Gorman, K. S. (2010). Measuring family food environments in diverse families with young children. Appetite, 54(3), 615–618. https://doi.org/10.1016/j.appet.2010.03.004 (\href{https://pubmed.ncbi.nlm.nih.gov/20227449/}{PubMed})
 #'
 #' @param ffbs_data a data.frame all items for the Family Food Behvior Survey following the naming conventions described above
 #' @inheritParams fbs_intake
@@ -89,30 +89,36 @@ score_ffbs <- function(ffbs_data, parID) {
     ffbs_score_dat[["ffbs_control"]] <- rowSums(ffbs_data[cont_vars])
 
     ## add labels to data
-    ffbs_score_dat_labels[["ffbs_control"]] <- paste0("ffbs Maternal Control Total Score")
+    ffbs_score_dat_labels[["ffbs_control"]] <- "FFBS Maternal Control Total Score"
 
     # Maternal Presence
     presence_vars <- c("ffbs10", "ffbs12_rev", "ffbs14", "ffbs15", "ffbs20")
     ffbs_score_dat[["ffbs_presence"]] <- rowSums(ffbs_data[presence_vars])
 
     ## add labels to data
-    ffbs_score_dat_labels[["ffbs_presence"]] <- paste0("ffbs Maternal Presence Total Score")
+    ffbs_score_dat_labels[["ffbs_presence"]] <- "FFBS Maternal Presence Total Score"
 
     # Child Choice
     choice_vars <- c("ffbs1_rev", "ffbs3", "ffbs9", "ffbs13", "ffbs16")
     ffbs_score_dat[["ffbs_ch_choice"]] <- rowSums(ffbs_data[choice_vars])
 
     ## add labels to data
-    ffbs_score_dat_labels[["ffbs_ch_choice"]] <- paste0("ffbs Child Choice Total Score")
+    ffbs_score_dat_labels[["ffbs_ch_choice"]] <- "FFBS Child Choice Total Score"
 
     # Organization
     org_vars <- c("ffbs2", "ffbs4", "ffbs7", "ffbs18", "ffbs19")
     ffbs_score_dat[["ffbs_org"]] <- rowSums(ffbs_data[org_vars])
 
     ## add labels to data
-    ffbs_score_dat_labels[["ffbs_org"]] <- paste0("ffbs Organization Total Score")
+    ffbs_score_dat_labels[["ffbs_org"]] <- "FFBS Organization Total Score"
 
     #### 3. Clean Export/Scored Data #####
+    ## round data
+    if (isTRUE(ID_arg)){
+        ffbs_score_dat[2:ncol(ffbs_score_dat)] <- round(ffbs_score_dat[2:ncol(ffbs_score_dat)], digits = 3)
+    } else {
+        ffbs_score_dat <- round(ffbs_score_dat, digits = 3)
+    }
 
     ## make sure the variable labels match in the dataset
     ffbs_score_dat = sjlabelled::set_label(ffbs_score_dat, label = matrix(unlist(ffbs_score_dat_labels,

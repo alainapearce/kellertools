@@ -126,9 +126,7 @@ qualtrics_parent_v4dat <- function(date_str, data_path) {
     }
 
     ## fix HFSSM names
-    names(qv4_parent_clean)[c(3:21)] <- c("hfssm_hh1", "hfssm_hh2", "hfssm_hh3", "hfssm_hh4", "hfssm_ad1", "hfssm_ad1a",
-        "hfssm_ad2", "hfssm_ad3", "hfssm_ad4", "hfssm_ad5", "hfssm_ad5a", "hfssm_ch1", "hfssm_ch2", "hfssm_ch3", "hfssm_ch4",
-        "hfssm_ch5", "hfssm_ch5a", "hfssm_ch6", "hfssm_ch7")
+    names(qv4_parent_clean)[c(3:21)] <- c("hfssm_hh1", "hfssm_hh2", "hfssm_hh3", "hfssm_hh4", "hfssm_ad1", "hfssm_ad1a", "hfssm_ad2", "hfssm_ad3", "hfssm_ad4", "hfssm_ad5", "hfssm_ad5a", "hfssm_ch1", "hfssm_ch2", "hfssm_ch3", "hfssm_ch4", "hfssm_ch5", "hfssm_ch5a", "hfssm_ch6", "hfssm_ch7")
 
     ## update data labels
     names(qv4_parent_clean_labels) <- names(qv4_parent_clean)
@@ -163,18 +161,17 @@ qualtrics_parent_v4dat <- function(date_str, data_path) {
 
     #### 6) fix 99's and other poor categories ####
 
-    ## check for labels/99 option: 1) if 99's exist, make a 'prefere not to answer' (pna) variable to go in pna
-    ## database, 2) replace 99's with NA and make variable numeric
+    ## check for labels/99 option: 1) if 99's exist, make a 'prefere not to answer' (pna) variable to go in pna database, 2) replace 99's with NA and make variable numeric
 
     ## make pna database
-    qv4_parent_pna <- data.frame()
+    qv4_parent_pna <- data.frame(id = qv4_parent_clean$id)
     qv4_parent_pna_labels <- lapply(qv4_parent_pna, function(x) attributes(x)$label)
+    qv4_parent_pna_labels[["id"]] <- qv4_parent_clean_labels[["id"]]
 
     pna_label <- "Note: prefer not to answer (pna) marked NA - see pna database for which were pna rather than missing NA"
 
     ## 6a) categorical variables with 99's data ####
-    level99_issue_catvars <- names(qv4_parent_clean)[c(22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 44, 48, 52, 56, 60, 64,
-        68, 72:144)]
+    level99_issue_catvars <- names(qv4_parent_clean)[c(22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 44, 48, 52, 56, 60, 64, 68, 72:144)]
 
     for (v in 1:length(level99_issue_catvars)) {
         # get variable name
@@ -195,8 +192,7 @@ qualtrics_parent_v4dat <- function(date_str, data_path) {
             names(qv4_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv4_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,
-                ": ", qv4_parent_clean_labels[[pvar]])
+            qv4_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar, ": ", qv4_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
             qv4_parent_clean_labels[[pvar]] <- paste0(qv4_parent_clean_labels[[pvar]], " -- ", pna_label)
@@ -238,8 +234,7 @@ qualtrics_parent_v4dat <- function(date_str, data_path) {
             names(qv4_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv4_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,
-                ": ", qv4_parent_clean_labels[[pvar]])
+            qv4_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar, ": ", qv4_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
             qv4_parent_clean_labels[[pvar]] <- paste0(qv4_parent_clean_labels[[pvar]], " -- ", pna_label)
@@ -249,55 +244,103 @@ qualtrics_parent_v4dat <- function(date_str, data_path) {
         qv4_parent_clean[[pvar]] <- ifelse(qv4_parent_clean[[pvar]] == 99, NA, as.numeric(qv4_parent_clean[[pvar]]))
     }
 
-    ## 6b) hfssm set dont know to -99 ####
-    hfssm_vars <- names(qv4_parent_clean)[3:21]
+    ## 6b) fix HFSSM value coding and set dont know to -99 ####
+
+    often_sometimes_vars <- c('hfssm_hh2', 'hfssm_hh3', 'hfssm_hh4', 'hfssm_ch1', 'hfssm_ch2', 'hfssm_ch3')
+    wk_freq_vars <- c('hfssm_ad1a', 'hfssm_ad5a')
 
     for (var in 1:length(hfssm_vars)) {
         var_name <- hfssm_vars[var]
 
-        # remove 99 label
-        qv4_parent_clean[[var_name]] <- sjlabelled::remove_labels(qv4_parent_clean[[var_name]], labels = "I don't know or Don't want to answer")
+        if (var_name %in% often_sometimes_vars){
+            #save attributes
+            set_attr <- attributes(qv4_parent_clean[[var_name]])
 
-        # add -99 label
-        qv4_parent_clean[[var_name]] <- sjlabelled::add_labels(qv4_parent_clean[[var_name]], labels = c(`I don't know or Don't want to answer` = -99))
+            #re-level
+            qv4_parent_clean[[var_name]] <- ifelse(is.na(qv4_parent_clean[[var_name]]), NA,
+                                                   ifelse(qv4_parent_clean[[var_name]] >= 1, 1,
+                                                          ifelse(qv4_parent_clean[[var_name]] == 99, -99, 0)))
 
-        # save attributes
-        set_attr <- attributes(qv4_parent_clean[[var_name]])
+            #set attributes
+            attributes(qv4_parent_clean[[var_name]]) <- set_attr
 
-        # update values
-        qv4_parent_clean[[var_name]] <- ifelse(is.na(qv4_parent_clean[[var_name]]), NA, ifelse(qv4_parent_clean[[var_name]] ==
-            99, -99, qv4_parent_clean[[var_name]]))
+            # remove 'Often' and dont know label
+            qv4_parent_clean[[var_name]] <- sjlabelled::remove_labels(qv4_parent_clean[[var_name]], labels = c("Often True", "Sometimes True", "I don't know or Don't want to answer"))
 
-        # reset attributes
-        attributes(qv4_parent_clean[[var_name]]) <- set_attr
+            # add Often True = 1 label
+            qv4_parent_clean[[var_name]] <- sjlabelled::add_labels(qv4_parent_clean[[var_name]], labels = c(`Often True` = 1, `Sometimes True` = 1, `I don't know or Don't want to answer` = -99))
 
-        # update variable labels
-        qv4_parent_clean_labels[[var_name]] <- paste0(qv4_parent_clean_labels[[var_name]], " re-leveled in R so don't know = -99")
+            #update label
+            qv4_parent_clean_labels[[var_name]] <- paste0(qv4_parent_clean_labels[[var_name]], " re-leveled in R so don't know = -99 AND 'often' and 'sometimes' both coded as 1")
+        } else if (var_name %in% wk_freq_vars){
+
+            #save attributes
+            set_attr <- attributes(qv4_parent_clean[[var_name]])
+
+            #re-level
+            qv4_parent_clean[[var_name]] <- ifelse(is.na(qv4_parent_clean[[var_name]]), NA,
+                                                   ifelse(qv4_parent_clean[[var_name]] > 1, 1,
+                                                          ifelse(qv4_parent_clean[[var_name]] == 1, 0,
+                                                                 ifelse(qv4_parent_clean[[var_name]] == 99, -99, qv4_parent_clean[[var_name]]))))
+
+            #set attributes
+            attributes(qv4_parent_clean[[var_name]]) <- set_attr
+
+            # remove all labels
+            qv4_parent_clean[[var_name]] <- sjlabelled::remove_labels(qv4_parent_clean[[var_name]], labels = c("Almost every month", "Some months, but not every month", "Only 1 or 2 months", "I don't know or Don't want to answer"))
+
+            # add labels back with correct values
+            qv4_parent_clean[[var_name]] <- sjlabelled::add_labels(qv4_parent_clean[[var_name]], labels = c(`Often True` = 1, `Some months, but not every month` = 1, `Only 1 or 2 months` = 0, `I don't know or Don't want to answer` = -99))
+
+            #update label
+            qv4_parent_clean_labels[[var_name]] <- paste0(qv4_parent_clean_labels[[var_name]], " re-leveled in R so don't know = -99 AND 'Almost every month' and 'Some months, but not every month' both coded as 1")
+        } else {
+            # save attributes
+            set_attr <- attributes(qv4_parent_clean[[var_name]])
+
+            # update values
+            qv4_parent_clean[[var_name]] <- ifelse(is.na(qv4_parent_clean[[var_name]]), NA,
+                                                   ifelse(qv4_parent_clean[[var_name]] == 99, -99, qv4_parent_clean[[var_name]]))
+
+            # reset attributes
+            attributes(qv4_parent_clean[[var_name]]) <- set_attr
+
+            # remove 99 label
+            qv4_parent_clean[[var_name]] <- sjlabelled::remove_labels(qv4_parent_clean[[var_name]], labels = "I don't know or Don't want to answer")
+
+            # add -99 label
+            qv4_parent_clean[[var_name]] <- sjlabelled::add_labels(qv4_parent_clean[[var_name]], labels = c(`I don't know or Don't want to answer` = -99))
+
+            # update variable labels
+            qv4_parent_clean_labels[[var_name]] <- paste0(qv4_parent_clean_labels[[var_name]], " re-leveled in R so don't know = -99")
+        }
     }
 
-    #### 7) reformatting dates/times #### 7a) dates (start, dobs) ####
-    qv4_parent_clean$start_date <- lubridate::ymd(as.Date(qv4_parent_clean$start_date))
-    qv4_parent_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
-    #### 8) Format for export ####
+        #### 7) reformatting dates/times ####
+        ## 7a) dates (start, dobs)
+        qv4_parent_clean$start_date <- lubridate::ymd(as.Date(qv4_parent_clean$start_date))
+        qv4_parent_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
-    ## 8a) add attributes to pna data
-    n_pna_cols <- length(names(qv4_parent_pna))
-    qv4_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv4_parent_pna[2:n_pna_cols], function(x) sjlabelled::add_labels(x,
-        labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+        #### 8) Format for export ####
 
-    ## 8b) put data in order of participant ID for ease
-    qv4_parent_clean <- qv4_parent_clean[order(qv4_parent_clean$id), ]
-    qv4_parent_pna <- qv4_parent_pna[order(qv4_parent_pna$id), ]
+        ## 8a) add attributes to pna data
+        n_pna_cols <- length(names(qv4_parent_pna))
+        qv4_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv4_parent_pna[2:n_pna_cols], function(x) sjlabelled::add_labels(x,
+                                                                                                                              labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
 
-    ## 8c) make sure the variable labels match in the dataset
-    qv4_parent_clean = sjlabelled::set_label(qv4_parent_clean, label = matrix(unlist(qv4_parent_clean_labels, use.names = FALSE)))
-    qv4_parent_pna = sjlabelled::set_label(qv4_parent_pna, label = matrix(unlist(qv4_parent_pna_labels, use.names = FALSE)))
+        ## 8b) put data in order of participant ID for ease
+        qv4_parent_clean <- qv4_parent_clean[order(qv4_parent_clean$id), ]
+        qv4_parent_pna <- qv4_parent_pna[order(qv4_parent_pna$id), ]
 
-    # make list of data frame and associated labels
-    qv4_parent <- list(data = qv4_parent_clean, dict = qv4_parent_clean_labels, pna_data = qv4_parent_pna, pna_dict = qv4_parent_pna_labels)
+        ## 8c) make sure the variable labels match in the dataset
+        qv4_parent_clean = sjlabelled::set_label(qv4_parent_clean, label = matrix(unlist(qv4_parent_clean_labels, use.names = FALSE)))
+        qv4_parent_pna = sjlabelled::set_label(qv4_parent_pna, label = matrix(unlist(qv4_parent_pna_labels, use.names = FALSE)))
 
-    ## want an export options??
+        # make list of data frame and associated labels
+        qv4_parent <- list(data = qv4_parent_clean, dict = qv4_parent_clean_labels, pna_data = qv4_parent_pna, pna_dict = qv4_parent_pna_labels)
 
-    return(qv4_parent)
-}
+        ## want an export options??
+
+        return(qv4_parent)
+    }

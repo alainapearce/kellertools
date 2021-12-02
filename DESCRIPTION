@@ -26,6 +26,7 @@ Imports:
     sjlabelled,
     childsds,
     lubridate,
+    readxl,
     ggplot2
 Suggests: 
     knitr,

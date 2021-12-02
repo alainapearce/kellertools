@@ -106,17 +106,7 @@ qualtrics_child_v4dat <- function(date_str, data_path) {
 
     ## re-name variables
 
-    names(qv4_child_clean) <- c("id", "start_date", "freddy_pre_meal", "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug",
-        "vas_broccoli", "vas_grape", "vas_water", "mealrank_mac_cheese", "mealrank_chkn_nug", "mealrank_broccoli", "mealrank_grape",
-        "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g", "consumed_chkn_nug_g",
-        "noplate_mac_cheese_g", "plate_mac_cheese_g", "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g",
-        "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", "plate_broccoli_g",
-        "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g",
-        "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g", "cwc1", "cwc2", "cwc3", "cwc4", "cwc5",
-        "cbis_percieved_male", "cbis_ideal_male", "cbis_percieved_female", "cbis_ideal_female", "psi_responsive_mom1",
-        "psi_responsive_mom2", "psi_responsive_mom3", "psi_responsive_mom4", "psi_responsive_mom5", "psi_responsive_dad1",
-        "psi_responsive_dad2", "psi_responsive_dad3", "psi_responsive_dad4", "psi_responsive_dad5", "spacegame_reward",
-        "mockscan1_complete", "food_initials", "child_notes")
+    names(qv4_child_clean) <- c("id", "start_date", "freddy_pre_meal", "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water", "mealrank_mac_cheese", "mealrank_chkn_nug", "mealrank_broccoli", "mealrank_grape", "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g", "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g", "cwc1", "cwc2", "cwc3", "cwc4", "cwc5", "cbis_percieved_male", "cbis_ideal_male", "cbis_percieved_female", "cbis_ideal_female", "psi_responsive_mom1", "psi_responsive_mom2", "psi_responsive_mom3", "psi_responsive_mom4", "psi_responsive_mom5", "psi_responsive_dad1", "psi_responsive_dad2", "psi_responsive_dad3", "psi_responsive_dad4", "psi_responsive_dad5", "spacegame_reward", "mockscan1_complete", "food_initials", "child_notes")
 
     ## update data labels
     names(qv4_child_clean_labels) <- names(qv4_child_clean)
@@ -180,8 +170,7 @@ qualtrics_child_v4dat <- function(date_str, data_path) {
 
     pna_label <- "Note: prefer not to answer (pna) marked NA - see pna database for which were pna rather than missing NA"
 
-    ## Fix 99/Don't want to answer in CWC, CBIS, PSI - Parent Responsiveness (levels are OK starting with 1; all
-    ## are categorical variables)
+    ## Fix 99/Don't want to answer in CWC, CBIS, PSI - Parent Responsiveness (levels are OK starting with 1; all are categorical variables)
     level99_issue_catvars <- names(qv4_child_clean)[c(42:60)]
 
     for (v in 1:length(level99_issue_catvars)) {
@@ -198,8 +187,7 @@ qualtrics_child_v4dat <- function(date_str, data_path) {
             names(qv4_child_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv4_child_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,
-                ": ", qv4_child_clean_labels[[pvar]])
+            qv4_child_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar, ": ", qv4_child_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
             qv4_child_clean_labels[[pvar]] <- paste0(qv4_child_clean_labels[[pvar]], " -- ", pna_label)
@@ -225,7 +213,6 @@ qualtrics_child_v4dat <- function(date_str, data_path) {
     qv4_child_clean_labels[["meal_end"]] <- "V4 meal end time"
     qv4_child_clean_labels[["spacegame_reward"]] <- "Type of candy selected for Space Game reward"
     qv4_child_clean_labels[["mockscan1_complete"]] <- "Completion of Mock Scan Training 1 (viewing mock MRI environment)"
-
 
     # 9) Format for export #### put data in order of participant ID for ease
     qv4_child_clean <- qv4_child_clean[order(qv4_child_clean$id), ]

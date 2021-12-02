@@ -13,6 +13,8 @@
 #'
 #' Note, as long as variable names match those listed, the dataset can include other variables
 #'
+#' @references
+#' Harro, M. (1997). Validation of a Questionnaire to Assess Physical Activity of Children Ages 4–8 Years. Research Quarterly for Exercise and Sport, 68(4), 259–268. https://doi.org/10.1080/02701367.1997.10608007 (\href{https://pubmed.ncbi.nlm.nih.gov/9421838/}{PubMed})
 #'
 #' @param paq_data a data.frame all items for the Physical Activity Questionnaire following the
 #' naming conventions described above
@@ -21,10 +23,6 @@
 #' @param sleep (optional) A boolean indicator for whether parent-reported sleep should be estimated
 #' for each day and week. Default = FALSE.
 #' @inheritParams fbs_intake
-#'
-#' Primary References for the Physical Activity Questionnaire and Scoring:
-#' Harro, M. (1997). Validation of a Questionnaire to Assess Physical Activity of Children Ages 4–8 Years. Research Quarterly for Exercise and Sport, 68(4), 259–268. https://doi.org/10.1080/02701367.1997.10608007
-#'
 #'
 #' @return A dataset with amount of MVPA calculated for each day and week. If sleep = TRUE,
 #' parent-reported sleep will also be included
@@ -291,6 +289,12 @@ score_paq <- function(paq_data, study = "fbs", sleep = FALSE, parID) {
     }
 
     #### 3. Clean Export/Scored Data #####
+    ## round data
+    if (isTRUE(ID_arg)){
+        paq_calc_dat[2:ncol(paq_calc_dat)] <- round(paq_calc_dat[2:ncol(paq_calc_dat)], digits = 3)
+    } else {
+        paq_calc_dat <- round(paq_calc_dat, digits = 3)
+    }
 
     ## make sure the variable labels match in the dataset
     paq_calc_dat = sjlabelled::set_label(paq_calc_dat, label = matrix(unlist(paq_calc_dat_labels,

@@ -14,8 +14,6 @@ score_pds(pds_data, respondent, male = 0, female = 1, parID)
 \item{male}{(optional) value for male. Default value is male = 0}
 
 \item{female}{(optional) value for female. Default value is female = 1}
-
-\item{parID}{(optional) name of participant ID column in pds_data. If included the output dataset will be matched by parID, if not included the output dataset will be in the order of pds_data but will have no participant identifier.}
 }
 \value{
 A dataset with a Pubertal Development Score and the Tanner Stage equivalents.
@@ -31,11 +29,6 @@ To use this function, the data must be prepared according to the following crite
 4) All variable should be converted to numeric values such that 1 = not started yet, 2 = barely started, 3 = definitely started, 4 = seems complete, and 99 = I Don't Know. For Female ('pds_5fa') question on menarche, the response can be coded as Yes = 1, No = 0.
 
 Note, as long as variable names match those listed, pds_data can include only data from male and/or female version scales.
-
-Primary References for the Pubertal Development Scale and Scoring:
-Carskadon, Mary A., and Christine Acebo. 'A self-administered rating scale for pubertal development.' Journal of Adolescent Health 14, no. 3 (1993): 190-195. https://doi.org/10.1016/1054-139X(93)90004-9
-
-Crockett, L. J. 'Pubertal development scale: Pubertal categories.' Unpublished manuscript (1988).
 }
 \examples{
 #default male/female
@@ -47,6 +40,11 @@ pds_tanner_data <- pds_data(pds_data, respondent = 'parent', male = 'male', fema
 \dontrun{
 }
 
+}
+\references{
+Carskadon, Mary A., and Christine Acebo. A self-administered rating scale for pubertal development. Journal of Adolescent Health 14, no. 3 (1993): 190-195. https://doi.org/10.1016/1054-139X(93)90004-9 (\href{https://pubmed.ncbi.nlm.nih.gov/8323929/}{PubMed})
+
+Crockett, L. J. Pubertal development scale: Pubertal categories. Unpublished manuscript (1988).
 }
 \seealso{
 For the Food and Brain Study, raw data from Qualtrics was processed using \code{\link{qualtrics_parent_v1dat}}

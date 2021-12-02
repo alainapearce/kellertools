@@ -639,10 +639,10 @@ qualtrics_parent_v1dat <- function(date_str, data_path) {
     ## 9b) variables that need manual shift ####
 
     ## sex - make sure always matches across parent/child and visits
-    qv1_parent_clean$sex <- sjlabelled::set_labels(qv1_parent_clean$sex, labels = c(Male = 0, Female = 1))
+    qv1_parent_clean[['sex']] <- sjlabelled::set_labels(qv1_parent_clean[['sex']], labels = c(Male = 0, Female = 1))
     set_attr <- attributes(qv1_parent_clean$sex)
-    qv1_parent_clean$sex <- ifelse(is.na(qv1_parent_clean$sex), NA, ifelse(qv1_parent_clean$sex == 1, 0, 1))
-    attributes(qv1_parent_clean$sex) <- set_attr
+    qv1_parent_clean[['sex']] <- ifelse(is.na(qv1_parent_clean[['sex']]), NA, ifelse(qv1_parent_clean[['sex']] == 1, 0, 1))
+    attributes(qv1_parent_clean[['sex']]) <- set_attr
     qv1_parent_clean_labels[["sex"]] <- paste0(qv1_parent_clean_labels[["sex"]], " re-leveled in R to start with 0")
 
     ## race - make sure always matches across parent/child and visits

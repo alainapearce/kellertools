@@ -186,14 +186,12 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
     qv1_child_clean_labels[["age_mo"]] <- "Age in months calculated from dob and start_date"
 
     # child bmi percentile, update label
-    qv1_child_clean$bmi_percentile <- round((childsds::sds(value = qv1_child_clean$bmi, age = qv1_child_clean$age_yr,
-        sex = qv1_child_clean$sex, item = "bmi", ref = cdc.ref, type = "perc", male = 1, female = 2)) * 100, digits = 2)
+    qv1_child_clean$bmi_percentile <- round((childsds::sds(value = qv1_child_clean$bmi, age = qv1_child_clean$age_yr, sex = qv1_child_clean[['sex']], item = "bmi", ref = cdc.ref, type = "perc", male = 1, female = 2)) * 100, digits = 2)
     qv1_child_clean_labels[["bmi_percentile"]] <- "BMI percentile updated: calculated using childsds R package and scripted average height and weight"
 
     # child bmi z score : sds (standard deviations away from center/50th centile) - new variable so need to add to
     # labels
-    qv1_child_clean$bmi_z <- round(childsds::sds(value = qv1_child_clean$bmi, age = qv1_child_clean$age_yr, sex = qv1_child_clean$sex,
-        item = "bmi", ref = cdc.ref, type = "SDS", male = 1, female = 2), digits = 2)
+    qv1_child_clean$bmi_z <- round(childsds::sds(value = qv1_child_clean$bmi, age = qv1_child_clean$age_yr, sex = qv1_child_clean[['sex']], item = "bmi", ref = cdc.ref, type = "SDS", male = 1, female = 2), digits = 2)
     qv1_child_clean_labels[["bmi_z"]] <- "BMI-z/sds calculated using childsds R package"
 
     # re-organize variables and labels with newly added variables
@@ -240,10 +238,10 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
     # 7) re-ordering factor levels to start with value 0 ####
 
     ## sex - make sure always matches across parent/child and visits
-    qv1_child_clean$sex <- sjlabelled::set_labels(qv1_child_clean$sex, labels = c(Male = 0, Female = 1))
-    set_attr <- attributes(qv1_child_clean$sex)
-    qv1_child_clean$sex <- ifelse(is.na(qv1_child_clean$sex), NA, ifelse(qv1_child_clean$sex == 1, 0, 1))
-    attributes(qv1_child_clean$sex) <- set_attr
+    qv1_child_clean[['sex']]<- sjlabelled::set_labels(qv1_child_clean[['sex']], labels = c(Male = 0, Female = 1))
+    set_attr <- attributes(qv1_child_clean[['sex']])
+    qv1_child_clean[['sex']] <- ifelse(is.na(qv1_child_clean[['sex']]), NA, ifelse(qv1_child_clean[['sex']] == 1, 0, 1))
+    attributes(qv1_child_clean[['sex']]) <- set_attr
     qv1_child_clean_labels[["sex"]] <- paste0(qv1_child_clean_labels[["sex"]], " re-leveled in R to start with 0")
 
     # 8) random fixes to factor level names and variable descriptions fix psd value labes

@@ -10,8 +10,9 @@
 #'
 #' Note, as long as variable names match those listed, the dataset can include other variables
 #'
+#' @references
 #' Primary References for the Children's Eating Behavior Questionniare and Scoring:
-#' Wardle, J., Guthrie, C. A., Sanderson, S., & Rapoport, L. (2001). Development of the children’s eating behaviour questionnaire. Journal of Child Psychology and Psychiatry, 42, 963–970. https://doi.org/10.1017/S0021963001007727
+#' Wardle, J., Guthrie, C. A., Sanderson, S., & Rapoport, L. (2001). Development of the children’s eating behaviour questionnaire. Journal of Child Psychology and Psychiatry, 42, 963–970. https://doi.org/10.1017/S0021963001007727 (\href{https://pubmed.ncbi.nlm.nih.gov/11693591/}{PubMed})
 #'
 #' @param cebq_data a data.frame all items for the Children's Eating Behavior Questionnaire following the naming conventions described above
 #' @inheritParams fbs_intake
@@ -91,49 +92,49 @@ score_cebq <- function(cebq_data, parID) {
     cebq_score_dat[["cebq_fr"]] <- rowMeans(cebq_data[FR_vars])
 
     ## add labels to data
-    cebq_score_dat_labels[["cebq_fr"]] <- paste0("CEBQ Food Responsiveness Total Score")
+    cebq_score_dat_labels[["cebq_fr"]] <- "CEBQ Food Responsiveness Total Score"
 
     # Emotional Overeating
     EOE_vars <- c("cebq2", "cebq13", "cebq15", "cebq27")
     cebq_score_dat[["cebq_eoe"]] <- rowMeans(cebq_data[EOE_vars])
 
     ## add labels to data
-    cebq_score_dat_labels[["cebq_eoe"]] <- paste0("CEBQ Emotional Overeating Total Score")
+    cebq_score_dat_labels[["cebq_eoe"]] <- "CEBQ Emotional Overeating Total Score"
 
     # Enjoyment of Food
     EF_vars <- c("cebq1", "cebq5", "cebq20", "cebq22")
     cebq_score_dat[["cebq_ef"]] <- rowMeans(cebq_data[EF_vars])
 
     ## add labels to data
-    cebq_score_dat_labels[["cebq_ef"]] <- paste0("CEBQ Enjoyment of Food Total Score")
+    cebq_score_dat_labels[["cebq_ef"]] <- "CEBQ Enjoyment of Food Total Score"
 
     # Desire to Drink
     DD_vars <- c("cebq6", "cebq29", "cebq31")
     cebq_score_dat[["cebq_dd"]] <- rowMeans(cebq_data[DD_vars])
 
     ## add labels to data
-    cebq_score_dat_labels[["cebq_dd"]] <- paste0("CEBQ Desire to Drink Total Score")
+    cebq_score_dat_labels[["cebq_dd"]] <- "CEBQ Desire to Drink Total Score"
 
     # Satiety Responsiveness
     SR_vars <- c("cebq3_rev", "cebq17", "cebq21", "cebq26", "cebq30")
     cebq_score_dat[["cebq_sr"]] <- rowMeans(cebq_data[SR_vars])
 
     ## add labels to data
-    cebq_score_dat_labels[["cebq_sr"]] <- paste0("CEBQ Satiety Responsiveness Total Score")
+    cebq_score_dat_labels[["cebq_sr"]] <- "CEBQ Satiety Responsiveness Total Score"
 
     # Slowness in Eating
     SE_vars <- c("cebq4_rev", "cebq8", "cebq18", "cebq35")
     cebq_score_dat[["cebq_se"]] <- rowMeans(cebq_data[SE_vars])
 
     ## add labels to data
-    cebq_score_dat_labels[["cebq_se"]] <- paste0("CEBQ Slowness in Eating Total Score")
+    cebq_score_dat_labels[["cebq_se"]] <- "CEBQ Slowness in Eating Total Score"
 
     # Emotional Under Eating
     EUE_vars <- c("cebq9", "cebq11", "cebq23", "cebq35")
     cebq_score_dat[["cebq_eue"]] <- rowMeans(cebq_data[EUE_vars])
 
     ## add labels to data
-    cebq_score_dat_labels[["cebq_eue"]] <- paste0("CEBQ Emotional Under Eating Total Score")
+    cebq_score_dat_labels[["cebq_eue"]] <- "CEBQ Emotional Under Eating Total Score"
 
     # Food Fussiness
     FF_vars <- c("cebq7", "cebq10_rev", "cebq16_rev", "cebq24", "cebq32_rev",
@@ -141,7 +142,7 @@ score_cebq <- function(cebq_data, parID) {
     cebq_score_dat[["cebq_ff"]] <- rowMeans(cebq_data[FF_vars])
 
     ## add labels to data
-    cebq_score_dat_labels[["cebq_ff"]] <- paste0("CEBQ Food Fussiness Total Score")
+    cebq_score_dat_labels[["cebq_ff"]] <- "CEBQ Food Fussiness Total Score"
 
 
     # Total Approach Score
@@ -149,16 +150,22 @@ score_cebq <- function(cebq_data, parID) {
         EF_vars, DD_vars)])
 
     ## add labels to data
-    cebq_score_dat_labels[["cebq_approach"]] <- paste0("CEBQ Approach Total Score")
+    cebq_score_dat_labels[["cebq_approach"]] <- "CEBQ Approach Total Score"
 
     # Total Avoid Score
     cebq_score_dat[["cebq_avoid"]] <- rowMeans(cebq_data[c(SR_vars, SE_vars, EUE_vars,
         FF_vars)])
 
     ## add labels to data
-    cebq_score_dat_labels[["cebq_avoid"]] <- paste0("CEBQ Avoid Total Score")
+    cebq_score_dat_labels[["cebq_avoid"]] <- "CEBQ Avoid Total Score"
 
     #### 3. Clean Export/Scored Data #####
+    ## round data
+    if (isTRUE(ID_arg)){
+        cebq_score_dat[2:ncol(cebq_score_dat)] <- round(cebq_score_dat[2:ncol(cebq_score_dat)], digits = 3)
+    } else {
+        cebq_score_dat <- round(cebq_score_dat, digits = 3)
+    }
 
     ## make sure the variable labels match in the dataset
     cebq_score_dat = sjlabelled::set_label(cebq_score_dat, label = matrix(unlist(cebq_score_dat_labels,

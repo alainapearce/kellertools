@@ -9,10 +9,11 @@
 #'
 #' Note, as long as variable names match those listed, the dataset can include other variables
 #'
-#' Primary References for the Lifestyle Behavior Checklist and Scoring:
-#' 1. West F, Sanders MR. The Lifestyle Behaviour Checklist: A measure of weight-related problem behaviour in obese children. International Journal of Pediatric Obesity. 2009;4(4):266-273. doi:10.3109/17477160902811199
+#' @references
+#' West F, Sanders MR. The Lifestyle Behaviour Checklist: A measure of weight-related problem behaviour in obese children. International Journal of Pediatric Obesity. 2009;4(4):266-273. doi:10.3109/17477160902811199
 #'
-#' Subscales: 1. West F, Morawska A, Joughin K. The Lifestyle Behaviour Checklist: evaluation of the factor structure. Child: Care, Health and Development. 2010;36(4):508-515. doi:10.1111/j.1365-2214.2010.01074.x
+#' Subscales:
+#' West F, Morawska A, Joughin K. The Lifestyle Behaviour Checklist: evaluation of the factor structure. Child: Care, Health and Development. 2010;36(4):508-515. doi:10.1111/j.1365-2214.2010.01074.x (\href{https://pubmed.ncbi.nlm.nih.gov/20337641/}{PubMed})
 #'
 #' @param lbc_data a data.frame all items for the Lifestyle Behavior Checklist following the naming conventions described above
 #' @param study a string indicating which study collected the data. Currently, only option and default is 'fbs'. This parameter is included so this script can be adapted for future studies that collect all questions - FBS skipped first 5 questions
@@ -95,7 +96,7 @@ score_lbc <- function(lbc_data, study = "fbs", parID) {
     lbc_score_dat[["lbc_misbeh"]] <- rowSums(lbc_data[misbeh_vars])
 
     ## add labels to data
-    lbc_score_dat_labels[["lbc_misbeh"]] <- paste0("LBC Food-Related Misbehavior Total Score")
+    lbc_score_dat_labels[["lbc_misbeh"]] <- "LBC Food-Related Misbehavior Total Score"
 
     # Overeating
     if (study == "fbs" | study == "FBS") {
@@ -107,21 +108,21 @@ score_lbc <- function(lbc_data, study = "fbs", parID) {
     lbc_score_dat[["lbc_overeat"]] <- rowSums(lbc_data[overeat_vars])
 
     ## add labels to data
-    lbc_score_dat_labels[["lbc_overeat"]] <- paste0("LBC Overeating Total Score")
+    lbc_score_dat_labels[["lbc_overeat"]] <- "LBC Overeating Total Score"
 
     # Emotion Related to Being Overweight
     emOW_vars <- c("lbc20", "lbc21", "lbc22", "lbc23", "lbc24")
     lbc_score_dat[["lbc_em_overweight"]] <- rowSums(lbc_data[emOW_vars])
 
     ## add labels to data
-    lbc_score_dat_labels[["lbc_em_overweight"]] <- paste0("LBC Emotion Related to Being Overweight Total Score")
+    lbc_score_dat_labels[["lbc_em_overweight"]] <- "LBC Emotion Related to Being Overweight Total Score"
 
     # Physical Activity
     pa_vars <- c("lbc7", "lbc16", "lbc17", "lbc18", "lbc19")
     lbc_score_dat[["lbc_pa"]] <- rowSums(lbc_data[pa_vars])
 
     ## add labels to data
-    lbc_score_dat_labels[["lbc_pa"]] <- paste0("LBC Physical Activity Total Score")
+    lbc_score_dat_labels[["lbc_pa"]] <- "LBC Physical Activity Total Score"
 
     ## Total
     pa_vars <- c("lbc7", "lbc16", "lbc17", "lbc18", "lbc19")
@@ -129,9 +130,15 @@ score_lbc <- function(lbc_data, study = "fbs", parID) {
         emOW_vars, pa_vars)])
 
     ## add labels to data
-    lbc_score_dat_labels[["lbc_total"]] <- paste0("LBC Total Score")
+    lbc_score_dat_labels[["lbc_total"]] <- "LBC Total Score"
 
     #### 3. Clean Export/Scored Data #####
+    ## round data
+    if (isTRUE(ID_arg)){
+        lbc_score_dat[2:ncol(lbc_score_dat)] <- round(lbc_score_dat[2:ncol(lbc_score_dat)], digits = 3)
+    } else {
+        lbc_score_dat <- round(lbc_score_dat, digits = 3)
+    }
 
     ## make sure the variable labels match in the dataset
     lbc_score_dat = sjlabelled::set_label(lbc_score_dat, label = matrix(unlist(lbc_score_dat_labels,

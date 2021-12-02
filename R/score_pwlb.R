@@ -9,10 +9,12 @@
 #'
 #' Note, as long as variable names match those listed, the dataset can include other variables
 #'
+#' @references
 #' Primary References for the Parent Weight-Loss Behavior Questionnaire and Scoring:
-#' Savage JS, Birch LL. Patterns of weight control strategies predict differences in women’s 4 y weight gain. Obesity (Silver Spring). 2010;18(3):513-520. doi:10.1038/oby.2009.265
+#' Savage JS, Birch LL. Patterns of weight control strategies predict differences in women’s 4 y weight gain. Obesity (Silver Spring). 2010;18(3):513-520. doi:10.1038/oby.2009.265 (\href{https://pubmed.ncbi.nlm.nih.gov/19696759/}{PubMed})
+#'
 #' Measure Adpated from:
-#' French SA, Perry CL, Leon GR, Fulkerson JA. Dieting behaviors and weight change history in female adolescents. Health Psychology. 1995;14(6):548-555. doi:http://dx.doi.org/10.1037/0278-6133.14.6.548
+#' French SA, Perry CL, Leon GR, Fulkerson JA. Dieting behaviors and weight change history in female adolescents. Health Psychology. 1995;14(6):548-555. doi:http://dx.doi.org/10.1037/0278-6133.14.6.548 (\href{https://pubmed.ncbi.nlm.nih.gov/8565929/}{PubMed})
 #'
 #' @param pwlb_data a data.frame all items for the Parent Weight-Loss Behavior Questionnaire following the naming conventions described above
 #' @inheritParams fbs_intake
@@ -76,22 +78,28 @@ score_pwlb <- function(pwlb_data, parID) {
     pwlb_score_dat[["pwlb_healthy"]] <- rowSums(pwlb_data[healthy_vars])
 
     ## add labels to data
-    pwlb_score_dat_labels[["pwlb_healthy"]] <- paste0("PWLB Healthy Weight-Loss Strategy Score")
+    pwlb_score_dat_labels[["pwlb_healthy"]] <- "PWLB Healthy Weight-Loss Strategy Score"
 
     # Unhelathy
     unhealthy_vars <- c("pwlb9", "pwlb11", "pwlb12", "pwlb13", "pwlb16", "pwlb17", "pwlb19", "pwlb20", "pwlb23")
     pwlb_score_dat[["pwlb_unhealthy"]] <- rowSums(pwlb_data[unhealthy_vars])
 
     ## add labels to data
-    pwlb_score_dat_labels[["pwlb_unhealthy"]] <- paste0("PWLB Unhealthy Weight-Loss Strategy Score")
+    pwlb_score_dat_labels[["pwlb_unhealthy"]] <- "PWLB Unhealthy Weight-Loss Strategy Score"
 
     ## Total
     pwlb_score_dat[["pwlb_total"]] <- rowSums(pwlb_data[c(healthy_vars, unhealthy_vars)])
 
     ## add labels to data
-    pwlb_score_dat_labels[["pwlb_total"]] <- paste0("PWLB Total Score")
+    pwlb_score_dat_labels[["pwlb_total"]] <- "PWLB Total Score"
 
     #### 3. Clean Export/Scored Data #####
+    ## round data
+    if (isTRUE(ID_arg)){
+        pwlb_score_dat[2:ncol(pwlb_score_dat)] <- round(pwlb_score_dat[2:ncol(pwlb_score_dat)], digits = 3)
+    } else {
+        pwlb_score_dat <- round(pwlb_score_dat, digits = 3)
+    }
 
     ## make sure the variable labels match in the dataset
     pwlb_score_dat = sjlabelled::set_label(pwlb_score_dat, label = matrix(unlist(pwlb_score_dat_labels,

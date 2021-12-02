@@ -11,6 +11,7 @@
 #'
 #' Note, as long as variable names match those listed, the dataset can include other variables
 #'
+#' @references
 #' Primary References for the Three Factor Eating Questionnaire and Scoring:
 #' Stunkard AJ, Messick S. The three-factor eating questionnaire to measure dietary restraint, disinhibition and hunger. Journal of Psychosomatic Research. 1985;29(1):71-83. doi:10.1016/0022-3999(85)90010-8
 #'
@@ -106,23 +107,29 @@ score_tfeq <- function(tfeq_data, parID) {
     tfeq_score_dat[["tfeq_cogcontrol"]] <- rowSums(tfeq_data[cont_vars])
 
     ## add labels to data
-    tfeq_score_dat_labels[["tfeq_cogcontrol"]] <- paste0("TFEQ Cogntiive Control Score")
+    tfeq_score_dat_labels[["tfeq_cogcontrol"]] <- "TFEQ Cogntiive Control Score"
 
     # Disinhibition of Control
     disinhib_vars <- c("tfeq1", "tfeq2", "tfeq7", "tfeq9", "tfeq11", "tfeq13", "tfeq15", "tfeq16_rev", "tfeq20", "tfeq25_rev", "tfeq27", "tfeq31_rev", "tfeq36", "tfeq45_recode", "tfeq49_recode", "tfeq51_recode")
     tfeq_score_dat[["tfeq_disinhibition"]] <- rowSums(tfeq_data[disinhib_vars])
 
     ## add labels to data
-    tfeq_score_dat_labels[["tfeq_disinhibition"]] <- paste0("TFEQ Disinhibition Score")
+    tfeq_score_dat_labels[["tfeq_disinhibition"]] <- "TFEQ Disinhibition Score"
 
     # Susceptibility to Hunger
     hunger_vars <- c("tfeq3", "tfeq5", "tfeq8", "tfeq12", "tfeq17", "tfeq19", "tfeq22", "tfeq24", "tfeq26", "tfeq29", "tfeq34", "tfeq39_recode", "tfeq41_recode", "tfeq47_recode_rev")
     tfeq_score_dat[["tfeq_hunger"]] <- rowSums(tfeq_data[hunger_vars])
 
     ## add labels to data
-    tfeq_score_dat_labels[["tfeq_hunger"]] <- paste0("TFEQ USusceptibility to Hunger Score")
+    tfeq_score_dat_labels[["tfeq_hunger"]] <- "TFEQ USusceptibility to Hunger Score"
 
     #### 3. Clean Export/Scored Data #####
+    ## round data
+    if (isTRUE(ID_arg)){
+        tfeq_score_dat[2:ncol(tfeq_score_dat)] <- round(tfeq_score_dat[2:ncol(tfeq_score_dat)], digits = 3)
+    } else {
+        tfeq_score_dat <- round(tfeq_score_dat, digits = 3)
+    }
 
     ## make sure the variable labels match in the dataset
     tfeq_score_dat = sjlabelled::set_label(tfeq_score_dat, label = matrix(unlist(tfeq_score_dat_labels,

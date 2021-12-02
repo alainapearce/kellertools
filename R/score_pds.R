@@ -10,10 +10,10 @@
 #'
 #' Note, as long as variable names match those listed, pds_data can include only data from male and/or female version scales.
 #'
-#' Primary References for the Pubertal Development Scale and Scoring:
-#' Carskadon, Mary A., and Christine Acebo. 'A self-administered rating scale for pubertal development.' Journal of Adolescent Health 14, no. 3 (1993): 190-195. https://doi.org/10.1016/1054-139X(93)90004-9
+#' @references
+#' Carskadon, Mary A., and Christine Acebo. A self-administered rating scale for pubertal development. Journal of Adolescent Health 14, no. 3 (1993): 190-195. https://doi.org/10.1016/1054-139X(93)90004-9 (\href{https://pubmed.ncbi.nlm.nih.gov/8323929/}{PubMed})
 #'
-#' Crockett, L. J. 'Pubertal development scale: Pubertal categories.' Unpublished manuscript (1988).
+#' Crockett, L. J. Pubertal development scale: Pubertal categories. Unpublished manuscript (1988).
 #'
 #'
 #' @param pds_data a data.frame with child sex and all questions from the Pubertal Development Scale. The required data to score the Pubertal Development Scale include sex, questions 1-3, and male/female specific questions 4-5. These questions must have the following names in the dataset: 'sex', 'pds_1', 'pds_2', 'pds_3', 'pds_4m', 'pds_5m', 'pds_4f', 'pds_5fa'. Note, as long as variable names match those listed, pds_data can include only data from male and/or female version scales.
@@ -236,6 +236,13 @@ score_pds <- function(pds_data, respondent, male = 0, female = 1, parID) {
             names(pds_score_dat)[2:3] <- c("pds_score_self", "pds_tanner_self")
             names(pds_score_dat_labels)[2:3] <- c("pds_score_self", "pds_tanner_self")
         }
+    }
+
+    ## round data
+    if (isTRUE(ID_arg)){
+        pds_score_dat[2:ncol(pds_score_dat)] <- round(pds_score_dat[2:ncol(pds_score_dat)], digits = 3)
+    } else {
+        pds_score_dat <- round(pds_score_dat, digits = 3)
     }
 
     ## make sure the variable labels match in the dataset
