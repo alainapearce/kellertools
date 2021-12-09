@@ -255,6 +255,27 @@ qualtrics_child_v6dat <- function(date_str, data_path) {
     qv6_child_clean_labels[["notes_mri_run5"]] <- "notes about MRI: food cue task - run5"
     qv6_child_clean_labels[["notes"]] <- "V6 notes"
 
+
+    ## fix preMRI cams factor levels to start at 0
+    var_name = "cams_pre_mri"
+    qv6_child_clean[[var_name]] <- sjlabelled::set_labels(qv6_child_clean[[var_name]], labels = c(`0` = 0,
+                                                                                                      `1` = 1, `2` = 2, `3` = 3, `4` = 4,`5` = 5,
+                                                                                                      `6` = 6, `7` = 7,`8` = 8,`9` = 9, `10` = 10))
+    set_attr <- attributes(qv6_child_clean$var_name)
+    qv6_child_clean[[var_name]] <- ifelse(is.na(qv6_child_clean[[var_name]]), NA, ifelse(qv6_child_clean[[var_name]] ==
+                                                                                                 1, 0, ifelse(qv6_child_clean[[var_name]] == 2, 1,
+                                                                                                              ifelse(qv6_child_clean[[var_name]] == 3, 2,
+                                                                                                                     ifelse(qv6_child_clean[[var_name]] == 4, 3,
+                                                                                                                            ifelse(qv6_child_clean[[var_name]] == 5, 4,
+                                                                                                                                   ifelse(qv6_child_clean[[var_name]] == 6, 5,
+                                                                                                                                          ifelse(qv6_child_clean[[var_name]] == 7, 6,
+                                                                                                                                                 ifelse(qv6_child_clean[[var_name]] == 8, 7,
+                                                                                                                                                        ifelse(qv6_child_clean[[var_name]] == 9, 8,
+                                                                                                                                                               ifelse(qv6_child_clean[[var_name]] == 10, 9, 10)))))))))))
+    attributes(qv6_child_clean[[var_name]]) <- set_attr
+    qv6_child_clean_labels[[var_name]] <- paste0(qv6_child_clean_labels[[var_name]], " - re-leveled in R to start with 0")
+
+
     # 9) Format for export #### put data in order of participant ID for ease
     qv6_child_clean <- qv6_child_clean[order(qv6_child_clean$id), ]
 

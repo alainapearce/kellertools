@@ -2,21 +2,23 @@
 % Please edit documentation in R/score_brief2.R
 \name{score_brief2}
 \alias{score_brief2}
-\title{score_brief22: Scored data from the Behavioral Rating Inventory of Executive Function-2}
+\title{score_brief2: Scored data from the Behavioral Rating Inventory of Executive Function-2}
 \usage{
 score_brief2(brief_data, parID)
 }
 \arguments{
-\item{brief_data}{a data.frame all items for the Behavioral Rating Inventory of Executive Function following the naming conventions described above}
+\item{brief_data}{a data.frame all items for the Behavioral Rating Inventory of Executive Function-2 following the naming conventions described above}
 }
 \value{
-A dataset with subscale scores for the Behavioral Rating Inventory of Executive Function
+A dataset with subscale scores for the Behavioral Rating Inventory of Executive Function-2
 }
 \description{
-This function scores the Behavioral Rating Inventory of Executive Function and provides subscale scores for the following behaviors: Inhibit, Self-Monitor, Shift, Emotional Control, Initiate, Working Memory, Plan/Organize, Task Monitoring, Organization of Materials. There are also 4 index scores: Behavioral Regulation Index, Emotion Regulation Index, Cognitive Regulation Index, and the General Executive Composite. Three scores help indicate if responses were valid: Negativity Score, Inconsistency Score, and Infrequency Score
+This function scores the Behavioral Rating Inventory of Executive Function-2 and provides subscale scores for the following behaviors: Inhibit, Self-Monitor, Shift, Emotional Control, Initiate, Working Memory, Plan/Organize, Task Monitoring, Organization of Materials. There are also 4 index scores: Behavioral Regulation Index, Emotion Regulation Index, Cognitive Regulation Index, and the General Executive Composite. Three scores help indicate if responses were valid: Negativity Score, Inconsistency Score, and Infrequency Score
 }
 \details{
 Note - the factor structure of this questionnaire has been repeatedly questioned so may want to look further to decide on best approach for each study. The provided subscales are based on the canonical approach in the literature and should not be taken as a recommendation or 'best' factoring approach.
+
+These data are scored using the brief2_scoretables data available in the kellertools package to look up age- and sex-nomed t-scores and percentiles.
 
 To use this function, the data must be prepared according to the following criteria:
 1) The data must include all individual questionnaire items
@@ -39,5 +41,5 @@ brief_score_data <- score_brief2(brief_data, parID = 'ID')
 Gioia GA, Isquith PK, Guy SC, Kenworthy L. BRIEF-2: Behavior Rating Inventory of Executive Function: Professional Manual. Psychological Assessment Resources; 2015.
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v3dat}}
+Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v4dat}}
 }

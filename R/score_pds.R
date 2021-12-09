@@ -26,12 +26,25 @@
 #'
 #' @examples
 #' #default male/female
-#' pds_tanner_data <- pds_data(pds_data, respondent = 'parent', parID = 'ID')
+#' pds_tanner_data <- score_pds(pds_data, respondent = 'parent', parID = 'ID')
 #'
 #' #specify male/female
-#' pds_tanner_data <- pds_data(pds_data, respondent = 'parent', male = 'male', female = 'female', parID = 'ID')
+#' pds_tanner_data <- score_pds(pds_data, respondent = 'parent', male = 'male', female = 'female', parID = 'ID')
 #'
 #' \dontrun{
+#'
+#' # male and female specification must match the data in brief_data. Do not give the value label if pds_data has label attributes for sex.
+#'
+#' #check attributes for sex
+#' attributes(pds_data$sex)
+#'
+#' #$labels
+#' #Male Female
+#' # 0      1
+#'
+#' #with the above attributes, the following will not run as the data.frame contains 0's and 1's, not the labels
+#' pds_tanner_data <- score_pds(pds_data, age_var = 'age', sex_var = 'sex', male = 'Male', female = 'Female')
+#'
 #' }
 #'
 #' @seealso For the Food and Brain Study, raw data from Qualtrics was processed using \code{\link{qualtrics_parent_v1dat}}
@@ -94,7 +107,7 @@ score_pds <- function(pds_data, respondent, male = 0, female = 1, parID) {
                   pds_data_edits[["sex"]] <- 1
                 }
             } else {
-                stop("The number of alternate values entered for sex do not match the number of differen sexes in data")
+                stop("The number of alternate values entered for sex do not match the number of different sexes in data. If specifying non-default values for male and/or female, must provide all values that exist in data (e.g., if have both males and females, need to provide values for both)")
             }
         } else if (sum(isTRUE(male_arg), isTRUE(female_arg)) == 0) {
             pds_data_edits[["sex"]] <- factor(pds_data_edits[["sex"]])

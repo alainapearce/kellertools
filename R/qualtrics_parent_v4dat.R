@@ -87,10 +87,10 @@ qualtrics_parent_v4dat <- function(date_str, data_path) {
     qv4_parent_labels <- lapply(qv4_parent_dat, function(x) attributes(x)$label)
 
     # 3b) selecting relevant data columns
-    qv4_parent_clean <- qv4_parent_dat[c(1, 11:94, 97:161)]
+    qv4_parent_clean <- qv4_parent_dat[c(1, 11:161)]
 
     ## update labels
-    qv4_parent_clean_labels <- qv4_parent_labels[c(1, 11:94, 97:161)]
+    qv4_parent_clean_labels <- qv4_parent_labels[c(1, 11:161)]
 
     # 3c) removing all practice events (e.g., 999)
     qv4_parent_clean <- qv4_parent_clean[!is.na(qv4_parent_clean$ID) & qv4_parent_clean$ID < 999, ]
@@ -98,9 +98,9 @@ qualtrics_parent_v4dat <- function(date_str, data_path) {
     # 4) re-ordering and re-name data columns general order #### 1) demographics - HFSSM, HFIAS, CCHIP, 2) fasting,
     # 3) BRIEF, 4) updates
 
-    qv4_parent_clean <- qv4_parent_clean[c(2, 1, 17:85, 3, 86:150, 4:16)]
+    qv4_parent_clean <- qv4_parent_clean[c(2, 1, 17:85, 3, 86:152, 4:16)]
 
-    qv4_parent_clean_labels <- qv4_parent_clean_labels[c(2, 1, 17:85, 3, 86:150, 4:16)]
+    qv4_parent_clean_labels <- qv4_parent_clean_labels[c(2, 1, 17:85, 3, 86:152, 4:16)]
 
     ## re-name variables
 
@@ -171,7 +171,7 @@ qualtrics_parent_v4dat <- function(date_str, data_path) {
     pna_label <- "Note: prefer not to answer (pna) marked NA - see pna database for which were pna rather than missing NA"
 
     ## 6a) categorical variables with 99's data ####
-    level99_issue_catvars <- names(qv4_parent_clean)[c(22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 44, 48, 52, 56, 60, 64, 68, 72:144)]
+    level99_issue_catvars <- names(qv4_parent_clean)[c(22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 44, 48, 52, 56, 60, 64, 68, 72:73, 75:146)]
 
     for (v in 1:length(level99_issue_catvars)) {
         # get variable name
@@ -213,7 +213,7 @@ qualtrics_parent_v4dat <- function(date_str, data_path) {
     }
 
     ## 6a) continuous variables with 99's data ####
-    level99_issue_contvars <- names(qv4_parent_clean)[c(41:43, 45:47, 49:51, 53:55, 57:59, 61:63, 65:67, 69:71)]
+    level99_issue_contvars <- names(qv4_parent_clean)[c(41:43, 45:47, 49:51, 53:55, 57:59, 61:63, 65:67, 69:71, 74)]
 
     for (v in 1:length(level99_issue_contvars)) {
         # get variable name
@@ -245,7 +245,6 @@ qualtrics_parent_v4dat <- function(date_str, data_path) {
     }
 
     ## 6b) fix HFSSM value coding and set dont know to -99 ####
-
     often_sometimes_vars <- c('hfssm_hh2', 'hfssm_hh3', 'hfssm_hh4', 'hfssm_ch1', 'hfssm_ch2', 'hfssm_ch3')
     wk_freq_vars <- c('hfssm_ad1a', 'hfssm_ad5a')
 
@@ -316,31 +315,37 @@ qualtrics_parent_v4dat <- function(date_str, data_path) {
         }
     }
 
+    ## 6c) fix sex levels ####
+    qv4_parent_clean[['sex']] <- sjlabelled::set_labels(qv4_parent_clean[['sex']], labels = c(Male = 0, Female = 1))
+    set_attr <- attributes(qv4_parent_clean$sex)
+    qv4_parent_clean[['sex']] <- ifelse(is.na(qv4_parent_clean[['sex']]), NA, ifelse(qv4_parent_clean[['sex']] == 1, 0, 1))
+    attributes(qv4_parent_clean[['sex']]) <- set_attr
+    qv4_parent_clean_labels[["sex"]] <- paste0(qv4_parent_clean_labels[["sex"]], " re-leveled in R to start with 0")
 
-        #### 7) reformatting dates/times ####
-        ## 7a) dates (start, dobs)
-        qv4_parent_clean$start_date <- lubridate::ymd(as.Date(qv4_parent_clean$start_date))
-        qv4_parent_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
+    #### 7) reformatting dates/times ####
+    ## 7a) dates (start, dobs)
+    qv4_parent_clean$start_date <- lubridate::ymd(as.Date(qv4_parent_clean$start_date))
+    qv4_parent_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
-        #### 8) Format for export ####
+    #### 8) Format for export ####
 
-        ## 8a) add attributes to pna data
-        n_pna_cols <- length(names(qv4_parent_pna))
-        qv4_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv4_parent_pna[2:n_pna_cols], function(x) sjlabelled::add_labels(x,
-                                                                                                                              labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+    ## 8a) add attributes to pna data
+    n_pna_cols <- length(names(qv4_parent_pna))
+    qv4_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv4_parent_pna[2:n_pna_cols], function(x) sjlabelled::add_labels(x,
+                                                                                                                          labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
 
-        ## 8b) put data in order of participant ID for ease
-        qv4_parent_clean <- qv4_parent_clean[order(qv4_parent_clean$id), ]
-        qv4_parent_pna <- qv4_parent_pna[order(qv4_parent_pna$id), ]
+    ## 8b) put data in order of participant ID for ease
+    qv4_parent_clean <- qv4_parent_clean[order(qv4_parent_clean$id), ]
+    qv4_parent_pna <- qv4_parent_pna[order(qv4_parent_pna$id), ]
 
-        ## 8c) make sure the variable labels match in the dataset
-        qv4_parent_clean = sjlabelled::set_label(qv4_parent_clean, label = matrix(unlist(qv4_parent_clean_labels, use.names = FALSE)))
-        qv4_parent_pna = sjlabelled::set_label(qv4_parent_pna, label = matrix(unlist(qv4_parent_pna_labels, use.names = FALSE)))
+    ## 8c) make sure the variable labels match in the dataset
+    qv4_parent_clean = sjlabelled::set_label(qv4_parent_clean, label = matrix(unlist(qv4_parent_clean_labels, use.names = FALSE)))
+    qv4_parent_pna = sjlabelled::set_label(qv4_parent_pna, label = matrix(unlist(qv4_parent_pna_labels, use.names = FALSE)))
 
-        # make list of data frame and associated labels
-        qv4_parent <- list(data = qv4_parent_clean, dict = qv4_parent_clean_labels, pna_data = qv4_parent_pna, pna_dict = qv4_parent_pna_labels)
+    # make list of data frame and associated labels
+    qv4_parent <- list(data = qv4_parent_clean, dict = qv4_parent_clean_labels, pna_data = qv4_parent_pna, pna_dict = qv4_parent_pna_labels)
 
-        ## want an export options??
+    ## want an export options??
 
-        return(qv4_parent)
-    }
+    return(qv4_parent)
+}
