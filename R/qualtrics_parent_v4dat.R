@@ -93,7 +93,7 @@ qualtrics_parent_v4dat <- function(date_str, data_path) {
     qv4_parent_clean_labels <- qv4_parent_labels[c(1, 11:161)]
 
     # 3c) removing all practice events (e.g., 999)
-    qv4_parent_clean <- qv4_parent_clean[!is.na(qv4_parent_clean$ID) & qv4_parent_clean$ID < 999, ]
+    qv4_parent_clean <- qv4_parent_clean[!is.na(qv4_parent_clean[["ID"]]) & qv4_parent_clean[["ID"]] < 999, ]
 
     # 4) re-ordering and re-name data columns general order #### 1) demographics - HFSSM, HFIAS, CCHIP, 2) fasting,
     # 3) BRIEF, 4) updates
@@ -164,7 +164,7 @@ qualtrics_parent_v4dat <- function(date_str, data_path) {
     ## check for labels/99 option: 1) if 99's exist, make a 'prefere not to answer' (pna) variable to go in pna database, 2) replace 99's with NA and make variable numeric
 
     ## make pna database
-    qv4_parent_pna <- data.frame(id = qv4_parent_clean$id)
+    qv4_parent_pna <- data.frame(id = qv4_parent_clean[["ID"]])
     qv4_parent_pna_labels <- lapply(qv4_parent_pna, function(x) attributes(x)$label)
     qv4_parent_pna_labels[["id"]] <- qv4_parent_clean_labels[["id"]]
 
@@ -317,14 +317,14 @@ qualtrics_parent_v4dat <- function(date_str, data_path) {
 
     ## 6c) fix sex levels ####
     qv4_parent_clean[['sex']] <- sjlabelled::set_labels(qv4_parent_clean[['sex']], labels = c(Male = 0, Female = 1))
-    set_attr <- attributes(qv4_parent_clean$sex)
+    set_attr <- attributes(qv4_parent_clean[["sex"]])
     qv4_parent_clean[['sex']] <- ifelse(is.na(qv4_parent_clean[['sex']]), NA, ifelse(qv4_parent_clean[['sex']] == 1, 0, 1))
     attributes(qv4_parent_clean[['sex']]) <- set_attr
     qv4_parent_clean_labels[["sex"]] <- paste0(qv4_parent_clean_labels[["sex"]], " re-leveled in R to start with 0")
 
     #### 7) reformatting dates/times ####
     ## 7a) dates (start, dobs)
-    qv4_parent_clean$start_date <- lubridate::ymd(as.Date(qv4_parent_clean$start_date))
+    qv4_parent_clean[["start_date"]] <- lubridate::ymd(as.Date(qv4_parent_clean[["start_date"]]))
     qv4_parent_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
     #### 8) Format for export ####
@@ -335,8 +335,8 @@ qualtrics_parent_v4dat <- function(date_str, data_path) {
                                                                                                                           labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
 
     ## 8b) put data in order of participant ID for ease
-    qv4_parent_clean <- qv4_parent_clean[order(qv4_parent_clean$id), ]
-    qv4_parent_pna <- qv4_parent_pna[order(qv4_parent_pna$id), ]
+    qv4_parent_clean <- qv4_parent_clean[order(qv4_parent_clean[["ID"]]), ]
+    qv4_parent_pna <- qv4_parent_pna[order(qv4_parent_pna[["id"]]), ]
 
     ## 8c) make sure the variable labels match in the dataset
     qv4_parent_clean = sjlabelled::set_label(qv4_parent_clean, label = matrix(unlist(qv4_parent_clean_labels, use.names = FALSE)))

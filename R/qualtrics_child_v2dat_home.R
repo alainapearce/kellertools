@@ -96,7 +96,7 @@ qualtrics_child_v2dat_home <- function(date_str, data_path) {
 
 
     # 3) removing all practice events (e.g., 999) Note, ID variable is Q1
-    qv2_child_clean <- qv2_child_clean[!is.na(qv2_child_clean$Q1) & qv2_child_clean$Q1 < 999, ]
+    qv2_child_clean <- qv2_child_clean[!is.na(qv2_child_clean[["Q1"]]) & qv2_child_clean[["Q1"]] < 999, ]
 
     # 4) re-ordering and re-name data columns general order: 1) child information (ID), 2) freddies, 3) food VAS 4)
     # intakes (meal, meal duration), 5) KFQ, TESQE, RCMAS 6) notes

@@ -92,7 +92,7 @@ qualtrics_parent_v5dat <- function(date_str, data_path) {
     qv5_parent_clean_labels <- qv5_parent_labels[c(1, 11:35)]
 
     # 3c) removing all practice events (e.g., 999)
-    qv5_parent_clean <- qv5_parent_clean[!is.na(qv5_parent_clean$ID) & qv5_parent_clean$ID < 999, ]
+    qv5_parent_clean <- qv5_parent_clean[!is.na(qv5_parent_clean[["ID"]]) & qv5_parent_clean[["ID"]] < 999, ]
 
     # 4) re-ordering and re-name data columns general order #### 1) demographics - AUDIT, 2) fasting, 3) updates
 
@@ -145,7 +145,7 @@ qualtrics_parent_v5dat <- function(date_str, data_path) {
     ## database, 2) replace 99's with NA and make variable numeric
 
     ## make pna database
-    qv5_parent_pna <- data.frame(id = qv5_parent_clean$id)
+    qv5_parent_pna <- data.frame(id = qv5_parent_clean[["ID"]])
     qv5_parent_pna_labels <- lapply(qv5_parent_pna, function(x) attributes(x)$label)
     qv5_parent_pna_labels[["id"]] <- qv5_parent_clean_labels[["id"]]
 
@@ -190,7 +190,7 @@ qualtrics_parent_v5dat <- function(date_str, data_path) {
     }
 
     #### 7) reformatting dates/times #### 7a) dates (start, dobs) ####
-    qv5_parent_clean$start_date <- lubridate::ymd(as.Date(qv5_parent_clean$start_date))
+    qv5_parent_clean[["start_date"]] <- lubridate::ymd(as.Date(qv5_parent_clean[["start_date"]]))
     qv5_parent_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
     #### 8) Format for export ####
@@ -201,8 +201,8 @@ qualtrics_parent_v5dat <- function(date_str, data_path) {
         labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
 
     ## 8b) put data in order of participant ID for ease
-    qv5_parent_clean <- qv5_parent_clean[order(qv5_parent_clean$id), ]
-    qv5_parent_pna <- qv5_parent_pna[order(qv5_parent_pna$id), ]
+    qv5_parent_clean <- qv5_parent_clean[order(qv5_parent_clean[["ID"]]), ]
+    qv5_parent_pna <- qv5_parent_pna[order(qv5_parent_pna[["id"]]), ]
 
     ## 8c) make sure the variable labels match in the dataset
     qv5_parent_clean = sjlabelled::set_label(qv5_parent_clean, label = matrix(unlist(qv5_parent_clean_labels, use.names = FALSE)))

@@ -97,7 +97,7 @@ qualtrics_child_v1dat_home <- function(date_str, data_path) {
 
 
     # 3) removing all practice events (e.g., 999)
-    qv1_child_clean <- qv1_child_clean[!is.na(qv1_child_clean$ID) & qv1_child_clean$ID < 999, ]
+    qv1_child_clean <- qv1_child_clean[!is.na(qv1_child_clean[["ID"]]) & qv1_child_clean[["ID"]] < 999, ]
 
     # 4) re-ordering and re-name data columns general order #### 1) child id, 2) start date, (3) child information
     # (sex, dob, h/w, bmi, screen out), (4)PSD, PSS
@@ -127,19 +127,19 @@ qualtrics_child_v1dat_home <- function(date_str, data_path) {
     names(qv1_child_clean_labels) <- names(qv1_child_clean)
 
     # 5) reformatting dates to be appropriate and computer readable #### YYYY-MM-DD
-    qv1_child_clean$start_date <- lubridate::ymd(as.Date(qv1_child_clean$start_date))
+    qv1_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv1_child_clean[["start_date"]]))
     qv1_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
-    qv1_child_clean$dob <- as.Date(qv1_child_clean$dob, format = "%m/%d/%Y")
+    qv1_child_clean[["dob"]] <- as.Date(qv1_child_clean[["dob"]], format = "%m/%d/%Y")
     qv1_child_clean_labels[["dob"]] <- "date of birth converted to format yyyy-mm-dd in R"
 
     # 6) re-calculate manual variables ####
 
     # child age - new variables so need to add to labels
-    qv1_child_clean$age_yr <- round((qv1_child_clean$dob %--% qv1_child_clean$start_date)/years(1), digits = 2)
+    qv1_child_clean[["age_yr"]] <- round((qv1_child_clean[["dob"]] %--% qv1_child_clean[["start_date"]])/years(1), digits = 2)
     qv1_child_clean_labels[["age_yr"]] <- "Age in years calculated from dob and start_date"
 
-    qv1_child_clean$age_mo <- round((qv1_child_clean$dob %--% qv1_child_clean$start_date)/months(1), digits = 1)
+    qv1_child_clean[["age_mo"]] <- round((qv1_child_clean[["dob"]] %--% qv1_child_clean[["start_date"]])/months(1), digits = 1)
     qv1_child_clean_labels[["age_mo"]] <- "Age in months calculated from dob and start_date"
 
     # re-organize variables and labels with newly added variables
@@ -149,10 +149,10 @@ qualtrics_child_v1dat_home <- function(date_str, data_path) {
     # 7) re-ordering factor levels to start with value 0 ####
 
     ## sex - make sure always matches across parent/child and visits
-    qv1_child_clean$sex <- sjlabelled::set_labels(qv1_child_clean$sex, labels = c(Male = 0, Female = 1))
-    set_attr <- attributes(qv1_child_clean$sex)
-    qv1_child_clean$sex <- ifelse(is.na(qv1_child_clean$sex), NA, ifelse(qv1_child_clean$sex == 1, 0, 1))
-    attributes(qv1_child_clean$sex) <- set_attr
+    qv1_child_clean[["sex"]] <- sjlabelled::set_labels(qv1_child_clean[["sex"]], labels = c(Male = 0, Female = 1))
+    set_attr <- attributes(qv1_child_clean[["sex"]])
+    qv1_child_clean[["sex"]] <- ifelse(is.na(qv1_child_clean[["sex"]]), NA, ifelse(qv1_child_clean[["sex"]] == 1, 0, 1))
+    attributes(qv1_child_clean[["sex"]]) <- set_attr
     qv1_child_clean_labels[["sex"]] <- paste0(qv1_child_clean_labels[["sex"]], " re-leveled in R to start with 0")
 
     # 8) random fixes to factor level names and variable descriptions #### fix psd value labes
@@ -187,7 +187,7 @@ qualtrics_child_v1dat_home <- function(date_str, data_path) {
     }
 
     #### 9) Format for export #### put data in order of participant ID for ease
-    qv1_child_clean <- qv1_child_clean[order(qv1_child_clean$id), ]
+    qv1_child_clean <- qv1_child_clean[order(qv1_child_clean[["ID"]]), ]
 
     # make sure the variable labels match in the dataset
     qv1_child_clean = sjlabelled::set_label(qv1_child_clean, label = matrix(unlist(qv1_child_clean_labels, use.names = FALSE)))

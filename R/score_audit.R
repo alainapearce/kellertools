@@ -1,23 +1,26 @@
 #' score_audit: Score data from the Alcohol Use Disorders Identification Test
 #'
-#' This function scores the Alcohol Use Disorders Identification Test and provides subscale scores for the following behaviors: Food Responsiveness, Emotional Overeating, Enjoyment of Food, Desire to Drink, Satiety Responsiveness, Slowness in Eating, Emotional Undereating, and Food Fussiness
+#' This function scores the Alcohol Use Disorders Identification Test
 #'
 #' To use this function, the data must be prepared according to the following criteria:
 #' 1) The data must include all individual questionnaire items
-#' 2) The  columns/variables must match the following naming convention: 'audit#' where # is the question number (1-35)
-#' 3) All questions must have the numeric value for the choice: 1 - Never, 2 - Rarely, 3 - Sometimes, 4 - Often, 5 - Always
-#' 4) This script will apply reverse scoring so all levels must be true to the scale described above
+#' 2) The  columns/variables must match the following naming convention: 'audit#' where # is the question number (1-10)
+#' 3) All questions must have the numeric value for the choice:
+#' 3a) question 1: 0 - Never, 1 - Monthly or Less, 2 - 2-4 times a month, 3 - 2-3 times a week, 4 - 4 or more times a week
+#' 3b) question 2: 0 - 1 or 2, 1 - 3 or 4, 2 - 5 or 6, 3 - 7 to 9, 4 - 10
+#' 3c) question 3-8: 0 - Never, 1 - Less than Monthly, 2 - Monthly, 3 - Weekly, 4 - Daily or Almost Daily
+#' 3d) questions 9-10: 0 - No, 2 - Yes, but not in the last year, 4 - Yes, during the last year
 #'
 #' Note, as long as variable names match those listed, the dataset can include other variables
 #'
 #' @references
 #' Primary References for the Children's Eating Behavior Questionniare and Scoring:
-#' Wardle, J., Guthrie, C. A., Sanderson, S., & Rapoport, L. (2001). Development of the children’s eating behaviour questionnaire. Journal of Child Psychology and Psychiatry, 42, 963–970. https://doi.org/10.1017/S0021963001007727 (\href{https://pubmed.ncbi.nlm.nih.gov/11693591/}{PubMed})
+#' 1. Saunders JB, Aasland OG, Babor TF, De La Fuente JR, Grant M. Development of the Alcohol Use Disorders Identification Test (AUDIT): WHO Collaborative Project on Early Detection of Persons with Harmful Alcohol Consumption-II. Addiction. 1993;88(6):791-804. doi:10.1111/j.1360-0443.1993.tb02093.x (\href{https://pubmed.ncbi.nlm.nih.gov/8329970/}{PubMed})
 #'
 #' @param audit_data a data.frame all items for the Alcohol Use Disorders Identification Test following the naming conventions described above
 #' @inheritParams fbs_intake
 #'
-#' @return A dataset with subscale scores for the Alcohol Use Disorders Identification Test
+#' @return A dataset with a score for the Alcohol Use Disorders Identification Test
 #' @examples
 #'
 #' # scoring for the audit with IDs
@@ -26,7 +29,7 @@
 #' \dontrun{
 #' }
 #'
-#' @seealso Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v2dat}}
+#' @seealso Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v5dat}}
 #'
 #'
 #' @export
@@ -56,12 +59,7 @@ score_audit <- function(audit_data, parID) {
     #### 2. Set Up Data #####
 
     # set up database for results create empty matrix
-    audit_score_dat <- data.frame(audit_fr = rep(NA, nrow(audit_data)), audit_eoe = rep(NA,
-        nrow(audit_data)), audit_ef = rep(NA, nrow(audit_data)), audit_dd = rep(NA,
-        nrow(audit_data)), audit_sr = rep(NA, nrow(audit_data)), audit_se = rep(NA,
-        nrow(audit_data)), audit_eue = rep(NA, nrow(audit_data)), audit_ff = rep(NA,
-        nrow(audit_data)), audit_approach = rep(NA, nrow(audit_data)), audit_avoid = rep(NA,
-        nrow(audit_data)))
+    audit_score_dat <- data.frame(audit_total = rep(NA, nrow(audit_data)), audit_cat = rep(NA, nrow(audit_data)))
 
     if (isTRUE(ID_arg)) {
         audit_score_dat <- data.frame(audit_data[[parID]], audit_score_dat)
@@ -71,101 +69,18 @@ score_audit <- function(audit_data, parID) {
     # set up labels for audit_score_dat
     audit_score_dat_labels <- lapply(audit_score_dat, function(x) attributes(x)$label)
 
-    # calculate reversed scores
 
-    reverse_qs <- c("audit3", "audit4", "audit10", "audit16", "audit32")
+    ## Total Score
+    audit_vars <- c("audit1", "audit2", "audit3", "audit4", "audit5", "audit6", "audit7", "audit7", "audit8", "audit9", "audit10")
+    audit_score_dat[["audit_total"]] <- rowSums(audit_data[audit_vars])
 
-    for (var in 1:length(reverse_qs)) {
-        var_name <- reverse_qs[var]
-        reverse_name <- paste0(var_name, "_rev")
-
-        audit_data[[reverse_name]] <- ifelse(is.na(audit_data[[var_name]]), NA,
-            ifelse(audit_data[[var_name]] == 1, 5, ifelse(audit_data[[var_name]] ==
-                2, 4, ifelse(audit_data[[var_name]] == 4, 2, ifelse(audit_data[[var_name]] ==
-                5, 1, 3)))))
-    }
-
-    ## Score Subscales
-
-    # Food Responsiveness
-    FR_vars <- c("audit12", "audit14", "audit19", "audit28", "audit34")
-    audit_score_dat[["audit_fr"]] <- rowMeans(audit_data[FR_vars])
+    audit_score_dat[["audit_cat"]] <- ifelse(is.na(audit_score_dat[["audit_total"]]), NA, ifelse(audit_score_dat[["audit_total"]] >=8, 'Likely Harmful Consumption', 'Not Harmful Consumption'))
 
     ## add labels to data
-    audit_score_dat_labels[["audit_fr"]] <- "audit Food Responsiveness Total Score"
-
-    # Emotional Overeating
-    EOE_vars <- c("audit2", "audit13", "audit15", "audit27")
-    audit_score_dat[["audit_eoe"]] <- rowMeans(audit_data[EOE_vars])
-
-    ## add labels to data
-    audit_score_dat_labels[["audit_eoe"]] <- "audit Emotional Overeating Total Score"
-
-    # Enjoyment of Food
-    EF_vars <- c("audit1", "audit5", "audit20", "audit22")
-    audit_score_dat[["audit_ef"]] <- rowMeans(audit_data[EF_vars])
-
-    ## add labels to data
-    audit_score_dat_labels[["audit_ef"]] <- "audit Enjoyment of Food Total Score"
-
-    # Desire to Drink
-    DD_vars <- c("audit6", "audit29", "audit31")
-    audit_score_dat[["audit_dd"]] <- rowMeans(audit_data[DD_vars])
-
-    ## add labels to data
-    audit_score_dat_labels[["audit_dd"]] <- "audit Desire to Drink Total Score"
-
-    # Satiety Responsiveness
-    SR_vars <- c("audit3_rev", "audit17", "audit21", "audit26", "audit30")
-    audit_score_dat[["audit_sr"]] <- rowMeans(audit_data[SR_vars])
-
-    ## add labels to data
-    audit_score_dat_labels[["audit_sr"]] <- "audit Satiety Responsiveness Total Score"
-
-    # Slowness in Eating
-    SE_vars <- c("audit4_rev", "audit8", "audit18", "audit35")
-    audit_score_dat[["audit_se"]] <- rowMeans(audit_data[SE_vars])
-
-    ## add labels to data
-    audit_score_dat_labels[["audit_se"]] <- "audit Slowness in Eating Total Score"
-
-    # Emotional Under Eating
-    EUE_vars <- c("audit9", "audit11", "audit23", "audit35")
-    audit_score_dat[["audit_eue"]] <- rowMeans(audit_data[EUE_vars])
-
-    ## add labels to data
-    audit_score_dat_labels[["audit_eue"]] <- "audit Emotional Under Eating Total Score"
-
-    # Food Fussiness
-    FF_vars <- c("audit7", "audit10_rev", "audit16_rev", "audit24", "audit32_rev",
-        "audit33")
-    audit_score_dat[["audit_ff"]] <- rowMeans(audit_data[FF_vars])
-
-    ## add labels to data
-    audit_score_dat_labels[["audit_ff"]] <- "audit Food Fussiness Total Score"
-
-
-    # Total Approach Score
-    audit_score_dat[["audit_approach"]] <- rowMeans(audit_data[c(FR_vars, EOE_vars,
-        EF_vars, DD_vars)])
-
-    ## add labels to data
-    audit_score_dat_labels[["audit_approach"]] <- "audit Approach Total Score"
-
-    # Total Avoid Score
-    audit_score_dat[["audit_avoid"]] <- rowMeans(audit_data[c(SR_vars, SE_vars, EUE_vars,
-        FF_vars)])
-
-    ## add labels to data
-    audit_score_dat_labels[["audit_avoid"]] <- "audit Avoid Total Score"
+    audit_score_dat_labels[["audit_total"]] <- "AUDIT Total Score"
+    audit_score_dat_labels[["audit_cat"]] <- "AUDIT Total Score Categorization"
 
     #### 3. Clean Export/Scored Data #####
-    ## round data
-    if (isTRUE(ID_arg)){
-        audit_score_dat[2:ncol(audit_score_dat)] <- round(audit_score_dat[2:ncol(audit_score_dat)], digits = 3)
-    } else {
-        audit_score_dat <- round(audit_score_dat, digits = 3)
-    }
 
     ## make sure the variable labels match in the dataset
     audit_score_dat = sjlabelled::set_label(audit_score_dat, label = matrix(unlist(audit_score_dat_labels,
