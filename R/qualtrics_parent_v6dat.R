@@ -92,7 +92,7 @@ qualtrics_parent_v6dat <- function(date_str, data_path) {
     qv6_parent_clean_labels <- qv6_parent_labels[c(1, 11:27)]
 
     # 3c) removing all practice events (e.g., 999)
-    qv6_parent_clean <- qv6_parent_clean[!is.na(qv6_parent_clean[["id"]]) & qv6_parent_clean[["id"]] < 999, ]
+    qv6_parent_clean <- qv6_parent_clean[!is.na(qv6_parent_clean$ID) & qv6_parent_clean$ID < 999, ]
 
     # 4) re-ordering and re-name data columns general order #### 1) demographics - AUDIT, 2) fasting, 3) updates
 
@@ -145,7 +145,7 @@ qualtrics_parent_v6dat <- function(date_str, data_path) {
     ## database, 2) replace 99's with NA and make variable numeric
 
     ## make pna database
-    qv6_parent_pna <- data.frame(id = qv6_parent_clean[["id"]])
+    qv6_parent_pna <- data.frame(id = qv6_parent_clean$id)
     qv6_parent_pna_labels <- lapply(qv6_parent_pna, function(x) attributes(x)$label)
     qv6_parent_pna_labels[["id"]] <- qv6_parent_clean_labels[["id"]]
 
@@ -190,12 +190,12 @@ qualtrics_parent_v6dat <- function(date_str, data_path) {
     }
 
     #### 7) reformatting dates/times #### 7a) dates (start, dobs) ####
-    qv6_parent_clean[["start_date"]] <- lubridate::ymd(as.Date(qv6_parent_clean[["start_date"]]))
+    qv6_parent_clean$start_date <- lubridate::ymd(as.Date(qv6_parent_clean$start_date))
     qv6_parent_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
     #### 8) Format for export #### put data in order of participant ID for ease
-    qv6_parent_clean <- qv6_parent_clean[order(qv6_parent_clean[["id"]]), ]
-    qv6_parent_pna <- qv6_parent_pna[order(qv6_parent_pna[["id"]]), ]
+    qv6_parent_clean <- qv6_parent_clean[order(qv6_parent_clean$id), ]
+    qv6_parent_pna <- qv6_parent_pna[order(qv6_parent_pna$id), ]
 
     # make sure the variable labels match in the dataset
     qv6_parent_clean = sjlabelled::set_label(qv6_parent_clean, label = matrix(unlist(qv6_parent_clean_labels, use.names = FALSE)))

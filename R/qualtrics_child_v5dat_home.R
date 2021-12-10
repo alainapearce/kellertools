@@ -59,14 +59,14 @@ qualtrics_child_v5dat_home <- function(date_str, data_path) {
         }
     }
 
-
+    
     #### 2. Load Data #####
 
     if (isTRUE(datapath_arg)) {
-        qv5_child_path <- paste0(data_path, "/Final_CovidAtHome/Child_V5_Home_",
+        qv5_child_path <- paste0(data_path, "/Final_CovidAtHome/Child_V5_Home_", 
             date_str, ".sav")
     } else {
-        qv5_child_path <- paste0("Final_CovidAtHome/Child_V5_Home", date_str,
+        qv5_child_path <- paste0("Final_CovidAtHome/Child_V5_Home", date_str, 
             ".sav")
     }
 
@@ -96,9 +96,9 @@ qualtrics_child_v5dat_home <- function(date_str, data_path) {
     ## update labels
     qv5_child_clean_labels <- qv5_child_labels[c(1, 18:34)]
 
-
+    
     # 3) removing all practice events (e.g., 999) Note, ID variable is 'ID'
-    qv5_child_clean <- qv5_child_clean[!is.na(qv5_child_clean[["ID"]]) & qv5_child_clean[["ID"]] <
+    qv5_child_clean <- qv5_child_clean[!is.na(qv5_child_clean$ID) & qv5_child_clean$ID < 
         999, ]
 
     # 4) re-ordering and re-name data columns general order: 1) child information
@@ -109,8 +109,8 @@ qualtrics_child_v5dat_home <- function(date_str, data_path) {
     qv5_child_clean_labels <- qv5_child_clean_labels[c(2, 1, 3:18)]
 
     ## manually update variable names
-    names(qv5_child_clean) <- c("id", "start_date", "ctc1", "ctc2", "ctc3", "ctc4",
-        "ctc5", "ctc6", "ctc7", "ctc8", "ctc9", "ctc10", "ctc11", "ctc12", "ctc13",
+    names(qv5_child_clean) <- c("id", "start_date", "ctc1", "ctc2", "ctc3", "ctc4", 
+        "ctc5", "ctc6", "ctc7", "ctc8", "ctc9", "ctc10", "ctc11", "ctc12", "ctc13", 
         "ctc14", "ctc15", "ctc16")
 
     ## update data labels
@@ -118,7 +118,7 @@ qualtrics_child_v5dat_home <- function(date_str, data_path) {
 
     # 5) reformatting dates to be appropriate and computer readable ####
     # YYYY-MM-DD
-    qv5_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv5_child_clean[["start_date"]]))
+    qv5_child_clean$start_date <- lubridate::ymd(as.Date(qv5_child_clean$start_date))
     qv5_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
     # 6) re-calculate manual variables #### no manual variables to calculate
@@ -130,7 +130,7 @@ qualtrics_child_v5dat_home <- function(date_str, data_path) {
     ## variable numeric
 
     ## make pna database
-    qv5_child_pna <- data.frame(id = qv5_child_clean[["ID"]])
+    qv5_child_pna <- data.frame(id = qv5_child_clean$id)
     qv5_child_pna_labels <- lapply(qv5_child_pna, function(x) attributes(x)$label)
     qv5_child_pna_labels[["id"]] <- qv5_child_pna_labels[["id"]]
 
@@ -145,7 +145,7 @@ qualtrics_child_v5dat_home <- function(date_str, data_path) {
 
         # if has '99' value, create new pna variable marking pna == 1
         if (is.element(99, qv5_child_clean[[pvar]])) {
-            pna_dat <- ifelse(is.na(qv5_child_clean[[pvar]]), 0, ifelse(qv5_child_clean[[pvar]] ==
+            pna_dat <- ifelse(is.na(qv5_child_clean[[pvar]]), 0, ifelse(qv5_child_clean[[pvar]] == 
                 99, 1, 0))
 
             new_pna <- length(names(qv5_child_pna)) + 1
@@ -154,25 +154,25 @@ qualtrics_child_v5dat_home <- function(date_str, data_path) {
             names(qv5_child_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv5_child_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ",
+            qv5_child_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", 
                 pvar, ": ", qv5_child_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
-            qv5_child_clean_labels[[pvar]] <- paste0(qv5_child_clean_labels[[pvar]],
+            qv5_child_clean_labels[[pvar]] <- paste0(qv5_child_clean_labels[[pvar]], 
                 " -- ", pna_label)
 
         }
 
         # drop 99 level label labels only update if had 99 - done in if statement
         # above
-        qv5_child_clean[[pvar]] <- sjlabelled::remove_labels(qv5_child_clean[[pvar]],
+        qv5_child_clean[[pvar]] <- sjlabelled::remove_labels(qv5_child_clean[[pvar]], 
             labels = "Don't want to answer")
 
         # extract variable attributes
         pvar_attr <- attributes(qv5_child_clean[[pvar]])
 
         # replace 99 values
-        qv5_child_clean[[pvar]] <- ifelse(is.na(qv5_child_clean[[pvar]]) | qv5_child_clean[[pvar]] ==
+        qv5_child_clean[[pvar]] <- ifelse(is.na(qv5_child_clean[[pvar]]) | qv5_child_clean[[pvar]] == 
             99, NA, qv5_child_clean[[pvar]])
 
         # replace attributes
@@ -188,10 +188,10 @@ qualtrics_child_v5dat_home <- function(date_str, data_path) {
     qv5_child_clean_labels[["id"]] <- "participant ID"
 
     #### 9) Format for export #### put data in order of participant ID for ease
-    qv5_child_clean <- qv5_child_clean[order(qv5_child_clean[["ID"]]), ]
+    qv5_child_clean <- qv5_child_clean[order(qv5_child_clean$id), ]
 
     # make sure the variable labels match in the dataset
-    qv5_child_clean = sjlabelled::set_label(qv5_child_clean, label = matrix(unlist(qv5_child_clean_labels,
+    qv5_child_clean = sjlabelled::set_label(qv5_child_clean, label = matrix(unlist(qv5_child_clean_labels, 
         use.names = FALSE)))
 
     ## make list of data frame and associated labels

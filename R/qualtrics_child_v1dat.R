@@ -95,7 +95,7 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
 
 
     # 3) removing all practice events (e.g., 999)
-    qv1_child_clean <- qv1_child_clean[!is.na(qv1_child_clean[["ID"]]) & qv1_child_clean[["ID"]] < 999, ]
+    qv1_child_clean <- qv1_child_clean[!is.na(qv1_child_clean$ID) & qv1_child_clean$ID < 999, ]
 
     # 4) re-ordering and re-name data columns general order: 1) child information (sex, dob, h/w, bmi, screen out),
     # 2) freddies, 3) food VAS 4) intakes (preMeal, EAH, meal duration), 5) wanting, PSD, PSS, etc 6) notes
@@ -150,47 +150,48 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
     names(qv1_child_clean_labels) <- names(qv1_child_clean)
 
     # 5) reformatting dates to be appropriate and computer readable #### YYYY-MM-DD
-    qv1_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv1_child_clean[["start_date"]]))
+    qv1_child_clean$start_date <- lubridate::ymd(as.Date(qv1_child_clean$start_date))
     qv1_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
-    qv1_child_clean[["dob"]] <- as.Date(qv1_child_clean[["dob"]], format = "%m/%d/%Y")
+    qv1_child_clean$dob <- as.Date(qv1_child_clean$dob, format = "%m/%d/%Y")
     qv1_child_clean_labels[["dob"]] <- "date of birth converted to format yyyy-mm-dd in R"
 
     # 6) re-calculate manual variables ####
 
     # avg child height, update label
-    qv1_child_clean[["height_avg"]] <- ifelse(is.na(qv1_child_clean[["height1"]]) | is.na(qv1_child_clean[["height2"]]), NA, rowSums(qv1_child_clean[c("height1",
+    qv1_child_clean$height_avg <- ifelse(is.na(qv1_child_clean$height1) | is.na(qv1_child_clean$height2), NA, rowSums(qv1_child_clean[c("height1",
         "height2")], na.rm = TRUE)/2)
     qv1_child_clean_labels[["height_avg"]] <- "average height calculated in R"
 
     # avg child weight, update label
-    qv1_child_clean[["weight_avg"]] <- ifelse(is.na(qv1_child_clean[["weight1"]]) | is.na(qv1_child_clean[["weight2"]]), NA, rowSums(qv1_child_clean[c("weight1",
+    qv1_child_clean$weight_avg <- ifelse(is.na(qv1_child_clean$weight1) | is.na(qv1_child_clean$weight2), NA, rowSums(qv1_child_clean[c("weight1",
         "weight2")], na.rm = TRUE)/2)
     qv1_child_clean_labels[["weight_avg"]] <- "average weight calculated in R"
 
     # child bmi, update label
-    if (class(qv1_child_clean[["bmi"]]) == "character") {
-        qv1_child_clean[["bmi"]] <- as.numeric(qv1_child_clean[["bmi"]])
+    if (class(qv1_child_clean$bmi) == "character") {
+        qv1_child_clean$bmi <- as.numeric(qv1_child_clean$bmi)
     }
 
-    qv1_child_clean[["bmi"]] <- ifelse(is.na(qv1_child_clean[["height_avg"]]) | is.na(qv1_child_clean[["weight_avg"]]), NA, round(qv1_child_clean[["weight_avg"]]/((qv1_child_clean[["height_avg"]]/100)^2),
+    qv1_child_clean$bmi <- ifelse(is.na(qv1_child_clean$height_avg) | is.na(qv1_child_clean$weight_avg), NA, round(qv1_child_clean$weight_avg/((qv1_child_clean$height_avg/100)^2),
         digits = 2))
     qv1_child_clean_labels[["bmi"]] <- "bmi calculated in R package using scripted average height and weight"
 
+
     # child age - new variables so need to add to labels
-    qv1_child_clean[["age_yr"]] <- round(lubridate::`%--%`(qv1_child_clean[["dob"]], qv1_child_clean[["start_date"]])/lubridate::years(1), digits = 2)
+    qv1_child_clean$age_yr <- round((qv1_child_clean$dob %--% qv1_child_clean$start_date)/years(1), digits = 2)
     qv1_child_clean_labels[["age_yr"]] <- "Age in years calculated from dob and start_date"
 
-    qv1_child_clean[["age_mo"]] <- round(lubridate::`%--%`(qv1_child_clean[["dob"]], qv1_child_clean[["start_date"]])/lubridate::dmonths(1), digits = 1)
+    qv1_child_clean$age_mo <- round((qv1_child_clean$dob %--% qv1_child_clean$start_date)/months(1), digits = 1)
     qv1_child_clean_labels[["age_mo"]] <- "Age in months calculated from dob and start_date"
 
     # child bmi percentile, update label
-    qv1_child_clean[["bmi_percentile"]] <- round((childsds::sds(value = qv1_child_clean[["bmi"]], age = qv1_child_clean[["age_yr"]], sex = qv1_child_clean[['sex']], item = "bmi", ref = cdc.ref, type = "perc", male = 1, female = 2)) * 100, digits = 2)
+    qv1_child_clean$bmi_percentile <- round((childsds::sds(value = qv1_child_clean$bmi, age = qv1_child_clean$age_yr, sex = qv1_child_clean[['sex']], item = "bmi", ref = cdc.ref, type = "perc", male = 1, female = 2)) * 100, digits = 2)
     qv1_child_clean_labels[["bmi_percentile"]] <- "BMI percentile updated: calculated using childsds R package and scripted average height and weight"
 
     # child bmi z score : sds (standard deviations away from center/50th centile) - new variable so need to add to
     # labels
-    qv1_child_clean[["bmi_z"]] <- round(childsds::sds(value = qv1_child_clean[["bmi"]], age = qv1_child_clean[["age_yr"]], sex = qv1_child_clean[['sex']], item = "bmi", ref = cdc.ref, type = "SDS", male = 1, female = 2), digits = 2)
+    qv1_child_clean$bmi_z <- round(childsds::sds(value = qv1_child_clean$bmi, age = qv1_child_clean$age_yr, sex = qv1_child_clean[['sex']], item = "bmi", ref = cdc.ref, type = "SDS", male = 1, female = 2), digits = 2)
     qv1_child_clean_labels[["bmi_z"]] <- "BMI-z/sds calculated using childsds R package"
 
     # re-organize variables and labels with newly added variables
@@ -286,7 +287,7 @@ qualtrics_child_v1dat <- function(date_str, data_path) {
     }
 
     #### 8) Format for export #### put data in order of participant ID for ease
-    qv1_child_clean <- qv1_child_clean[order(qv1_child_clean[["ID"]]), ]
+    qv1_child_clean <- qv1_child_clean[order(qv1_child_clean$id), ]
 
     # make sure the variable labels match in the dataset
     qv1_child_clean = sjlabelled::set_label(qv1_child_clean, label = matrix(unlist(qv1_child_clean_labels, use.names = FALSE)))

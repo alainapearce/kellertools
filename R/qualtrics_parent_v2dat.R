@@ -93,10 +93,10 @@ qualtrics_parent_v2dat <- function(date_str, data_path) {
     qv2_parent_clean_labels <- qv2_parent_labels[c(1, 11:238)]
 
     # 3c) removing all practice events (e.g., 999)
-    qv2_parent_clean <- qv2_parent_clean[!is.na(qv2_parent_clean[["id"]]) & qv2_parent_clean[["id"]] < 999, ]
+    qv2_parent_clean <- qv2_parent_clean[!is.na(qv2_parent_clean$ID) & qv2_parent_clean$ID < 999, ]
 
     # 4) re-ordering and re-name data columns general order #### 1) child information/demo (sex, dob, h/w,
-    # puberty), 2) fasting, 3) sleep (CSHQ), 4) CEBQ, CFQ, BES, FFB, 5) CBQ, 6) updates
+    # puberty), 2) fasting, 3) sleep (CHSQ), 4) CEBQ, CFQ, BES, FFB, 5) CBQ, 6) updates
 
     qv2_parent_clean <- qv2_parent_clean[c(2, 1, 3, 212:229, 111:211, 17:18, 80, 19:25, 81, 26:29, 82, 30, 83:84, 31,
         85, 32:34, 86, 35:42, 87:89, 43:48, 90, 49:52, 91:93, 53:54, 94:95, 55, 96, 56:58, 97:98, 59:64, 99, 65:69, 100:101,
@@ -167,7 +167,7 @@ qualtrics_parent_v2dat <- function(date_str, data_path) {
     ## database, 2) replace 99's with NA and make variable numeric
 
     ## make pna database
-    qv2_parent_pna <- data.frame(id = qv2_parent_clean[["id"]])
+    qv2_parent_pna <- data.frame(id = qv2_parent_clean$id)
     qv2_parent_pna_labels <- lapply(qv2_parent_pna, function(x) attributes(x)$label)
     qv2_parent_pna_labels[["id"]] <- qv2_parent_clean_labels[["id"]]
 
@@ -212,7 +212,7 @@ qualtrics_parent_v2dat <- function(date_str, data_path) {
     }
 
     #### 7) reformatting dates/times #### 7a) dates (start, dobs) ####
-    qv2_parent_clean[["start_date"]] <- lubridate::ymd(as.Date(qv2_parent_clean[["start_date"]]))
+    qv2_parent_clean$start_date <- lubridate::ymd(as.Date(qv2_parent_clean$start_date))
     qv2_parent_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
     # 8) fixing factor level values to match questionnaire scoring ####
@@ -320,8 +320,8 @@ qualtrics_parent_v2dat <- function(date_str, data_path) {
         labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
 
     ## 9b) put data in order of participant ID for ease
-    qv2_parent_clean <- qv2_parent_clean[order(qv2_parent_clean[["id"]]), ]
-    qv2_parent_pna <- qv2_parent_pna[order(qv2_parent_pna[["id"]]), ]
+    qv2_parent_clean <- qv2_parent_clean[order(qv2_parent_clean$id), ]
+    qv2_parent_pna <- qv2_parent_pna[order(qv2_parent_pna$id), ]
 
     ## 9c) make sure the variable labels match in the dataset
     qv2_parent_clean = sjlabelled::set_label(qv2_parent_clean, label = matrix(unlist(qv2_parent_clean_labels, use.names = FALSE)))

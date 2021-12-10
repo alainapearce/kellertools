@@ -95,7 +95,7 @@ qualtrics_parent_v1dat <- function(date_str, data_path) {
     qv1_parent_clean_labels <- qv1_parent_labels[c(1, 11, 18:19, 23:388, 390:396)]
 
     # 3c) removing all practice events (e.g., 999)
-    qv1_parent_clean <- qv1_parent_clean[!is.na(qv1_parent_clean[["id"]]) & qv1_parent_clean[["id"]] < 999, ]
+    qv1_parent_clean <- qv1_parent_clean[!is.na(qv1_parent_clean$ID) & qv1_parent_clean$ID < 999, ]
 
     # 4) re-ordering and re-name data columns general order #### 1) child information (sex, dob,) 2) anthro - h/w,
     # puberty, PA, parent measured h/w, parent related info, 3) general demographics, 4) meal related Q's -
@@ -212,7 +212,7 @@ qualtrics_parent_v1dat <- function(date_str, data_path) {
     ## database, 2) replace 99's with NA and make variable numeric
 
     ## make pna database
-    qv1_parent_pna <- data.frame(id = qv1_parent_clean[["id"]])
+    qv1_parent_pna <- data.frame(id = qv1_parent_clean$id)
     qv1_parent_pna_labels <- lapply(qv1_parent_pna, function(x) attributes(x)$label)
     qv1_parent_pna_labels[["id"]] <- qv1_parent_clean_labels[["id"]]
 
@@ -223,10 +223,10 @@ qualtrics_parent_v1dat <- function(date_str, data_path) {
     parent_anthro_vars <- names(qv1_parent_clean)[101:106]
 
     ## duplicate self-reported weights because set 119 = <120 lb and 400 = 400+
-    qv1_parent_clean[["sr_dad_weight_lb_cat"]] <- qv1_parent_clean[["sr_dad_weight_lb"]]
+    qv1_parent_clean$sr_dad_weight_lb_cat <- qv1_parent_clean$sr_dad_weight_lb
     qv1_parent_clean_labels[["sr_dad_weight_lb_cat"]] <- "categorical parent-reported father weight in pounds: category per pound increment with 119 = '<120 pounds' and 400 = '400+ pounds'"
 
-    qv1_parent_clean[["sr_mom_weight_lb_cat"]] <- qv1_parent_clean[["sr_mom_weight_lb"]]
+    qv1_parent_clean$sr_mom_weight_lb_cat <- qv1_parent_clean$sr_mom_weight_lb
     qv1_parent_clean_labels[["sr_mom_weight_lb_cat"]] <- "categorical parent-reported father weight in pounds: category per pound increment with 119 = '<120 pounds' and 400 = '400+ pounds'"
 
     # update weight variable labels
@@ -496,11 +496,11 @@ qualtrics_parent_v1dat <- function(date_str, data_path) {
     }
 
     ## birth order ####
-    if (is.element(99, qv1_parent_clean[["birth_order"]])) {
-        pna_dat <- ifelse(is.na(qv1_parent_clean[["birth_order"]]), 0, ifelse(qv1_parent_clean[["birth_order"]] == 99, 1, 0))
+    if (is.element(99, qv1_parent_clean$birth_order)) {
+        pna_dat <- ifelse(is.na(qv1_parent_clean$birth_order), 0, ifelse(qv1_parent_clean$birth_order == 99, 1, 0))
 
         if (length(names(qv1_parent_pna)) == 0) {
-            qv1_parent_pna[["birth_order_pna"]] <- data.frame(pna_dat)
+            qv1_parent_pna$birth_order_pna <- data.frame(pna_dat)
         } else {
             qv1_parent_pna[["birth_order_pna"]] <- pna_dat
         }
@@ -514,34 +514,34 @@ qualtrics_parent_v1dat <- function(date_str, data_path) {
     }
 
     # covert to factor levels
-    qv1_parent_clean[["birth_order"]] <- haven::as_factor(qv1_parent_clean[["birth_order"]])
+    qv1_parent_clean$birth_order <- haven::as_factor(qv1_parent_clean$birth_order)
 
     # replace NA and 'Don't want to answer'
-    qv1_parent_clean[["birth_order"]] <- ifelse(is.na(qv1_parent_clean[["birth_order"]]) | qv1_parent_clean[["birth_order"]] == " Don't want to answer",
-        NA, as.character(qv1_parent_clean[["birth_order"]]))
+    qv1_parent_clean$birth_order <- ifelse(is.na(qv1_parent_clean$birth_order) | qv1_parent_clean$birth_order == " Don't want to answer",
+        NA, as.character(qv1_parent_clean$birth_order))
 
     # split components
-    birth_split <- matrix(unlist(strsplit(qv1_parent_clean[["birth_order"]], " of ")), ncol = 2, byrow = TRUE)
+    birth_split <- matrix(unlist(strsplit(qv1_parent_clean$birth_order, " of ")), ncol = 2, byrow = TRUE)
 
     # assign to 2 variables and make numeric
-    qv1_parent_clean[["birth_order"]] <- birth_split[, 1]
-    qv1_parent_clean[["n_siblingsbirth"]] <- as.numeric(birth_split[, 2])
+    qv1_parent_clean$birth_order <- birth_split[, 1]
+    qv1_parent_clean$n_siblingsbirth <- as.numeric(birth_split[, 2])
 
     # replace 'st', 'nd', 'rd', and 'th' in birth order
-    qv1_parent_clean[["birth_order"]] <- as.numeric(gsub("st|nd|rd|th", "", qv1_parent_clean[["birth_order"]]))
+    qv1_parent_clean$birth_order <- as.numeric(gsub("st|nd|rd|th", "", qv1_parent_clean$birth_order))
 
     # update labels
     qv1_parent_clean_labels[["birth_order"]] <- paste0(qv1_parent_clean_labels[["birth_order"]], " - converted to numeric by R")
     qv1_parent_clean_labels[["n_siblingsbirth"]] <- "number of siblings birthed - extracted from original birth_order variable now labeled birth_order_cat by R"
 
     #### 7) reformatting dates/times #### 7a) dates (start, dobs) ####
-    qv1_parent_clean[["start_date"]] <- lubridate::ymd(as.Date(qv1_parent_clean[["start_date"]]))
+    qv1_parent_clean$start_date <- lubridate::ymd(as.Date(qv1_parent_clean$start_date))
     qv1_parent_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
-    qv1_parent_clean[["dob"]] <- as.Date(qv1_parent_clean[["dob"]], format = "%m/%d/%Y")
+    qv1_parent_clean$dob <- as.Date(qv1_parent_clean$dob, format = "%m/%d/%Y")
     qv1_parent_clean_labels[["dob"]] <- "date of birth converted to format yyyy-mm-dd in R"
 
-    qv1_parent_clean[["parent_dob"]] <- as.Date(qv1_parent_clean[["parent_dob"]], format = "%m/%d/%Y")
+    qv1_parent_clean$parent_dob <- as.Date(qv1_parent_clean$parent_dob, format = "%m/%d/%Y")
     qv1_parent_clean_labels[["parent_dob"]] <- "parent date of birth converted to format yyyy-mm-dd in R"
 
     ## 7b) time data from PA (waketime, bedtime) ####
@@ -560,49 +560,49 @@ qualtrics_parent_v1dat <- function(date_str, data_path) {
     # 8) re-calculate manual variables ####
 
     ## 8a) parent anthropometrics ####
-    qv1_parent_clean[["parent_height_avg"]] <- ifelse(is.na(qv1_parent_clean[["parent_height1"]]) | is.na(qv1_parent_clean[["parent_height2"]]),
+    qv1_parent_clean$parent_height_avg <- ifelse(is.na(qv1_parent_clean$parent_height1) | is.na(qv1_parent_clean$parent_height2),
         NA, rowSums(qv1_parent_clean[c("parent_height1", "parent_height2")], na.rm = TRUE)/2)
     qv1_parent_clean_labels[["parent_height1"]] <- "measured parent height 1 in lab"
     qv1_parent_clean_labels[["parent_height2"]] <- "measured parent height 2 in lab"
     qv1_parent_clean_labels[["parent_height_avg"]] <- "measured parent average height calculated in R"
 
     # avg parent weight, update label
-    qv1_parent_clean[["parent_weight_avg"]] <- ifelse(is.na(qv1_parent_clean[["parent_weight1"]]) | is.na(qv1_parent_clean[["parent_weight2"]]),
+    qv1_parent_clean$parent_weight_avg <- ifelse(is.na(qv1_parent_clean$parent_weight1) | is.na(qv1_parent_clean$parent_weight2),
         NA, rowSums(qv1_parent_clean[c("parent_weight1", "parent_weight2")], na.rm = TRUE)/2)
     qv1_parent_clean_labels[["parent_weight1"]] <- "measured parent weight 1 in lab"
     qv1_parent_clean_labels[["parent_weight2"]] <- "measured parent weight 2 in lab"
     qv1_parent_clean_labels[["parent_weight_avg"]] <- "measured parent average weight calculated in R"
 
     # parent bmi, update label
-    if (class(qv1_parent_clean[["parent_bmi"]]) == "character") {
-        qv1_parent_clean[["parent_bmi"]] <- as.numeric(qv1_parent_clean[["parent_bmi"]])
+    if (class(qv1_parent_clean$parent_bmi) == "character") {
+        qv1_parent_clean$parent_bmi <- as.numeric(qv1_parent_clean$parent_bmi)
     }
 
-    qv1_parent_clean[["parent_bmi"]] <- ifelse(is.na(qv1_parent_clean[["parent_height_avg"]]) | is.na(qv1_parent_clean[["parent_weight_avg"]]),
-        NA, round(qv1_parent_clean[["parent_weight_avg"]]/((qv1_parent_clean[["parent_height_avg"]]/100)^2), digits = 2))
+    qv1_parent_clean$parent_bmi <- ifelse(is.na(qv1_parent_clean$parent_height_avg) | is.na(qv1_parent_clean$parent_weight_avg),
+        NA, round(qv1_parent_clean$parent_weight_avg/((qv1_parent_clean$parent_height_avg/100)^2), digits = 2))
     qv1_parent_clean_labels[["parent_bmi"]] <- "measured parent bmi calculated in R package using scripted average height and weight"
 
     # convert to cm and kg
-    qv1_parent_clean[["sr_dad_height_cm"]] <- (qv1_parent_clean[["sr_dad_height_ft"]] * 12 + qv1_parent_clean[["sr_dad_height_in"]]) *
+    qv1_parent_clean$sr_dad_height_cm <- (qv1_parent_clean$sr_dad_height_ft * 12 + qv1_parent_clean$sr_dad_height_in) *
         2.54
     qv1_parent_clean_labels[["sr_dad_height_cm"]] <- "parent-reported father height in feet and inches converted to cm in R"
 
-    qv1_parent_clean[["sr_mom_height_cm"]] <- (qv1_parent_clean[["sr_mom_height_ft"]] * 12 + qv1_parent_clean[["sr_mom_height_in"]]) *
+    qv1_parent_clean$sr_mom_height_cm <- (qv1_parent_clean$sr_mom_height_ft * 12 + qv1_parent_clean$sr_mom_height_in) *
         2.54
     qv1_parent_clean_labels[["sr_mom_height_cm"]] <- "parent-reported mother height in feet and inches converted to cm in R"
 
-    qv1_parent_clean[["sr_dad_weight_kg"]] <- qv1_parent_clean[["sr_dad_weight_lb"]]/2.205
+    qv1_parent_clean$sr_dad_weight_kg <- qv1_parent_clean$sr_dad_weight_lb/2.205
     qv1_parent_clean_labels[["sr_dad_weight_kg"]] <- "parent-reported father weight in pounds converted to kg in R"
 
-    qv1_parent_clean[["sr_mom_weight_kg"]] <- qv1_parent_clean[["sr_mom_weight_lb"]]/2.205
+    qv1_parent_clean$sr_mom_weight_kg <- qv1_parent_clean$sr_mom_weight_lb/2.205
     qv1_parent_clean_labels[["sr_mom_weight_kg"]] <- "parent-reported mother weight in pounds converted to kg in R"
 
     # parent-report bmi, update label
-    qv1_parent_clean[["sr_dad_bmi"]] <- round(qv1_parent_clean[["sr_dad_weight_kg"]]/((qv1_parent_clean[["sr_dad_height_cm"]]/100)^2),
+    qv1_parent_clean$sr_dad_bmi <- round(qv1_parent_clean$sr_dad_weight_kg/((qv1_parent_clean$sr_dad_height_cm/100)^2),
         digits = 2)
     qv1_parent_clean_labels[["sr_dad_bmi"]] <- "computed bmi from parent-reported father height and weight in R"
 
-    qv1_parent_clean[["sr_mom_bmi"]] <- round(qv1_parent_clean[["sr_mom_weight_kg"]]/((qv1_parent_clean[["sr_mom_height_cm"]]/100)^2),
+    qv1_parent_clean$sr_mom_bmi <- round(qv1_parent_clean$sr_mom_weight_kg/((qv1_parent_clean$sr_mom_height_cm/100)^2),
         digits = 2)
     qv1_parent_clean_labels[["sr_mom_bmi"]] <- "computed bmi from parent-reported mother height and weight in R"
 
@@ -640,7 +640,7 @@ qualtrics_parent_v1dat <- function(date_str, data_path) {
 
     ## sex - make sure always matches across parent/child and visits
     qv1_parent_clean[['sex']] <- sjlabelled::set_labels(qv1_parent_clean[['sex']], labels = c(Male = 0, Female = 1))
-    set_attr <- attributes(qv1_parent_clean[["sex"]])
+    set_attr <- attributes(qv1_parent_clean$sex)
     qv1_parent_clean[['sex']] <- ifelse(is.na(qv1_parent_clean[['sex']]), NA, ifelse(qv1_parent_clean[['sex']] == 1, 0, 1))
     attributes(qv1_parent_clean[['sex']]) <- set_attr
     qv1_parent_clean_labels[["sex"]] <- paste0(qv1_parent_clean_labels[["sex"]], " re-leveled in R to start with 0")
@@ -687,8 +687,8 @@ qualtrics_parent_v1dat <- function(date_str, data_path) {
         labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
 
     # 11c) put data in order of participant ID for ease
-    qv1_parent_clean <- qv1_parent_clean[order(qv1_parent_clean[["id"]]), ]
-    qv1_parent_pna <- qv1_parent_pna[order(qv1_parent_pna[["id"]]), ]
+    qv1_parent_clean <- qv1_parent_clean[order(qv1_parent_clean$id), ]
+    qv1_parent_pna <- qv1_parent_pna[order(qv1_parent_pna$id), ]
 
     # 11d) make sure the variable labels match in the dataset
     qv1_parent_clean = sjlabelled::set_label(qv1_parent_clean, label = matrix(unlist(qv1_parent_clean_labels, use.names = FALSE)))

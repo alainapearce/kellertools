@@ -95,7 +95,7 @@ qualtrics_child_v2dat <- function(date_str, data_path) {
 
 
     # 3) removing all practice events (e.g., 999)
-    qv2_child_clean <- qv2_child_clean[!is.na(qv2_child_clean[["ID"]]) & qv2_child_clean[["ID"]] < 999, ]
+    qv2_child_clean <- qv2_child_clean[!is.na(qv2_child_clean$ID) & qv2_child_clean$ID < 999, ]
 
     # 4) re-ordering and re-name data columns general order: 1) child information (ID), 2) freddies, 3) food VAS 4)
     # intakes (meal, meal duration), 5) KFQ, TESQE, RCMAS 6) notes
@@ -133,7 +133,7 @@ qualtrics_child_v2dat <- function(date_str, data_path) {
     names(qv2_child_clean_labels) <- names(qv2_child_clean)
 
     # 5) reformatting dates to be appropriate and computer readable #### YYYY-MM-DD
-    qv2_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv2_child_clean[["start_date"]]))
+    qv2_child_clean$start_date <- lubridate::ymd(as.Date(qv2_child_clean$start_date))
     qv2_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
     # 6) re-calculate manual variables ####
@@ -189,7 +189,7 @@ qualtrics_child_v2dat <- function(date_str, data_path) {
             `Less than once in 7 days` = 1, `1-2 times in 7 days` = 2, `3-5 times in 7 days` = 3, `6-7 times in 7 days` = 4,
             `More than 7 times in 7 days` = 5))
 
-        set_attr <- attributes(qv2_child_clean[[var_name]])
+        set_attr <- attributes(qv2_child_clean$var_name)
 
         qv2_child_clean[[var_name]] <- ifelse(is.na(qv2_child_clean[[var_name]]), NA, ifelse(qv2_child_clean[[var_name]] ==
             1, 0, ifelse(qv2_child_clean[[var_name]] == 2, 1, ifelse(qv2_child_clean[[var_name]] == 3, 2, ifelse(qv2_child_clean[[var_name]] ==
@@ -210,7 +210,7 @@ qualtrics_child_v2dat <- function(date_str, data_path) {
         qv2_child_clean[[var_name]] <- sjlabelled::set_labels(qv2_child_clean[[var_name]], labels = c(Never = 1, Rarely = 2,
             Sometimes = 3, Regularly = 4, Often = 5, `Dont know` = -99))
 
-        set_attr <- attributes(qv2_child_clean[[var_name]])
+        set_attr <- attributes(qv2_child_clean$var_name)
 
         # convert 99s to -99 and make numeric variable labels only update
         qv2_child_clean[[var_name]] <- ifelse(qv2_child_clean[[var_name]] == 99, -99, qv2_child_clean[[var_name]])
@@ -223,7 +223,7 @@ qualtrics_child_v2dat <- function(date_str, data_path) {
 
 
     #### 8) Format for export #### put data in order of participant ID for ease
-    qv2_child_clean <- qv2_child_clean[order(qv2_child_clean[["ID"]]), ]
+    qv2_child_clean <- qv2_child_clean[order(qv2_child_clean$id), ]
 
     # make sure the variable labels match in the dataset
     qv2_child_clean = sjlabelled::set_label(qv2_child_clean, label = matrix(unlist(qv2_child_clean_labels, use.names = FALSE)))

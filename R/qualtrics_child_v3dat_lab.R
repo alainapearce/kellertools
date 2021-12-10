@@ -94,7 +94,7 @@ qualtrics_child_v3dat_lab <- function(date_str, data_path) {
     qv3_child_clean_labels <- qv3_child_labels[c(1, 18, 22:30, 36:38, 41:69)]
 
     # 3) removing all practice events (e.g., 999)
-    qv3_child_clean <- qv3_child_clean[!is.na(qv3_child_clean[["id"]]) & qv3_child_clean[["id"]] < 999, ]
+    qv3_child_clean <- qv3_child_clean[!is.na(qv3_child_clean$ID) & qv3_child_clean$ID < 999, ]
 
     # 4) re-ordering and re-name data columns general order: 1) child information (ID, date), 2) freddies, 3) food
     # VAS 4) intakes (meal, meal duration) 5) notes
@@ -116,7 +116,7 @@ qualtrics_child_v3dat_lab <- function(date_str, data_path) {
     names(qv3_child_clean_labels) <- names(qv3_child_clean)
 
     # 5) reformatting dates to be appropriate and computer readable #### YYYY-MM-DD
-    qv3_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv3_child_clean[["start_date"]]))
+    qv3_child_clean$start_date <- lubridate::ymd(as.Date(qv3_child_clean$start_date))
     qv3_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
     # 6) re-calculate manual variables ####
@@ -167,7 +167,7 @@ qualtrics_child_v3dat_lab <- function(date_str, data_path) {
     qv3_child_clean_labels[["meal_end"]] <- "V3 meal end time"
 
     #### 9) Format for export #### put data in order of participant ID for ease
-    qv3_child_clean <- qv3_child_clean[order(qv3_child_clean[["id"]]), ]
+    qv3_child_clean <- qv3_child_clean[order(qv3_child_clean$id), ]
 
     # make sure the variable labels match in the dataset
     qv3_child_clean = sjlabelled::set_label(qv3_child_clean, label = matrix(unlist(qv3_child_clean_labels, use.names = FALSE)))
