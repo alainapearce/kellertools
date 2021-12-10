@@ -94,7 +94,7 @@ qualtrics_child_v2dat_lab <- function(date_str, data_path) {
     qv2_child_clean_labels <- qv2_child_labels[c(1, 18, 23:31, 37:39, 43:71)]
 
     # 3) removing all practice events (e.g., 999)
-    qv2_child_clean <- qv2_child_clean[!is.na(qv2_child_clean$ID) & qv2_child_clean$ID < 999, ]
+    qv2_child_clean <- qv2_child_clean[!is.na(qv2_child_clean[["ID"]]) & qv2_child_clean[["ID"]] < 999, ]
 
     # 4) re-ordering and re-name data columns general order: 1) child information (ID, date), 2) freddies, 3) food
     # VAS 4) intakes (meal, meal duration) 5) notes
@@ -116,7 +116,7 @@ qualtrics_child_v2dat_lab <- function(date_str, data_path) {
     names(qv2_child_clean_labels) <- names(qv2_child_clean)
 
     # 5) reformatting dates to be appropriate and computer readable #### YYYY-MM-DD
-    qv2_child_clean$start_date <- lubridate::ymd(as.Date(qv2_child_clean$start_date))
+    qv2_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv2_child_clean[["start_date"]]))
     qv2_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
     # 6) re-calculate manual variables ####
@@ -165,7 +165,7 @@ qualtrics_child_v2dat_lab <- function(date_str, data_path) {
     # 8) random fixes to factor level names and variable descriptions no levels or variables descriptions to fix
 
     #### 9) Format for export #### put data in order of participant ID for ease
-    qv2_child_clean <- qv2_child_clean[order(qv2_child_clean$id), ]
+    qv2_child_clean <- qv2_child_clean[order(qv2_child_clean[["id"]]), ]
 
     # make sure the variable labels match in the dataset
     qv2_child_clean = sjlabelled::set_label(qv2_child_clean, label = matrix(unlist(qv2_child_clean_labels, use.names = FALSE)))

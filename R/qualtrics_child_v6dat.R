@@ -173,7 +173,7 @@ qualtrics_child_v6dat <- function(date_str, data_path) {
 
     # 5) reformatting dates to be appropriate and computer readable ####
     # YYYY-MM-DD
-    qv6_child_clean$start_date <- lubridate::ymd(as.Date(qv6_child_clean$start_date))
+    qv6_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv6_child_clean[["start_date"]]))
     qv6_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
     # 6) re-calculate manual variables ####
@@ -261,7 +261,7 @@ qualtrics_child_v6dat <- function(date_str, data_path) {
     qv6_child_clean[[var_name]] <- sjlabelled::set_labels(qv6_child_clean[[var_name]], labels = c(`0` = 0,
                                                                                                       `1` = 1, `2` = 2, `3` = 3, `4` = 4,`5` = 5,
                                                                                                       `6` = 6, `7` = 7,`8` = 8,`9` = 9, `10` = 10))
-    set_attr <- attributes(qv6_child_clean$var_name)
+    set_attr <- attributes(qv6_child_clean[[var_name]])
     qv6_child_clean[[var_name]] <- ifelse(is.na(qv6_child_clean[[var_name]]), NA, ifelse(qv6_child_clean[[var_name]] ==
                                                                                                  1, 0, ifelse(qv6_child_clean[[var_name]] == 2, 1,
                                                                                                               ifelse(qv6_child_clean[[var_name]] == 3, 2,
@@ -277,7 +277,7 @@ qualtrics_child_v6dat <- function(date_str, data_path) {
 
 
     # 9) Format for export #### put data in order of participant ID for ease
-    qv6_child_clean <- qv6_child_clean[order(qv6_child_clean$id), ]
+    qv6_child_clean <- qv6_child_clean[order(qv6_child_clean[["id"]]), ]
 
     # make sure the variable labels match in the dataset
     qv6_child_clean = sjlabelled::set_label(qv6_child_clean, label = matrix(unlist(qv6_child_clean_labels,

@@ -76,24 +76,24 @@ score_cshqa <- function(cshqa_data, study = 'fbs', parID) {
     # set up database for results
     ## create empty matrix
     if (study == 'fbs' | study == 'FBS'){
-        cshqa_score_dat <- data.frame(cshq_a_bedtime_resit = rep(NA, nrow(cshqa_data)),
-                                      cshq_a_sleep_delay = rep(NA, nrow(cshqa_data)),
-                                      cshq_a_sleepdur = rep(NA, nrow(cshqa_data)),
-                                      cshq_a_anxiety = rep(NA, nrow(cshqa_data)),
-                                      cshq_a_nightwake = rep(NA, nrow(cshqa_data)),
-                                      cshq_a_parasomnias = rep(NA, nrow(cshqa_data)),
-                                      cshq_a_dis_breathing = rep(NA, nrow(cshqa_data)),
-                                      cshq_a_total = rep(NA, nrow(cshqa_data)))
+        cshqa_score_dat <- data.frame(cshqa_bedtime_resit = rep(NA, nrow(cshqa_data)),
+                                      cshqa_sleep_delay = rep(NA, nrow(cshqa_data)),
+                                      cshqa_sleepdur = rep(NA, nrow(cshqa_data)),
+                                      cshqa_anxiety = rep(NA, nrow(cshqa_data)),
+                                      cshqa_nightwake = rep(NA, nrow(cshqa_data)),
+                                      cshqa_parasomnias = rep(NA, nrow(cshqa_data)),
+                                      cshqa_dis_breathing = rep(NA, nrow(cshqa_data)),
+                                      cshqa_total = rep(NA, nrow(cshqa_data)))
     } else {
-        cshqa_score_dat <- data.frame(cshq_a_bedtime_resit = rep(NA, nrow(cshqa_data)),
-                                      cshq_a_sleep_delay = rep(NA, nrow(cshqa_data)),
-                                      cshq_a_sleepdur = rep(NA, nrow(cshqa_data)),
-                                      cshq_a_anxiety = rep(NA, nrow(cshqa_data)),
-                                      cshq_a_nightwake = rep(NA, nrow(cshqa_data)),
-                                      cshq_a_parasomnias = rep(NA, nrow(cshqa_data)),
-                                      cshq_a_dis_breathing = rep(NA, nrow(cshqa_data)),
-                                      cshq_a_daysleepy = rep(NA, nrow(cshqa_data)),
-                                      cshq_a_total = rep(NA, nrow(cshqa_data)))
+        cshqa_score_dat <- data.frame(cshqa_bedtime_resit = rep(NA, nrow(cshqa_data)),
+                                      cshqa_sleep_delay = rep(NA, nrow(cshqa_data)),
+                                      cshqa_sleepdur = rep(NA, nrow(cshqa_data)),
+                                      cshqa_anxiety = rep(NA, nrow(cshqa_data)),
+                                      cshqa_nightwake = rep(NA, nrow(cshqa_data)),
+                                      cshqa_parasomnias = rep(NA, nrow(cshqa_data)),
+                                      cshqa_dis_breathing = rep(NA, nrow(cshqa_data)),
+                                      cshqa_daysleepy = rep(NA, nrow(cshqa_data)),
+                                      cshqa_total = rep(NA, nrow(cshqa_data)))
     }
 
     if (isTRUE(ID_arg)) {
@@ -128,71 +128,71 @@ score_cshqa <- function(cshqa_data, study = 'fbs', parID) {
 
     # Bedtime Resistance
     bedtime_vars <- c('cshq_a1_rev', 'cshq_a3_rev', 'cshq_a4', 'cshq_a7', 'cshq_a8')
-    cshqa_score_dat[['cshq_a_bedtime_resit']] <- rowSums(cshqa_data[bedtime_vars])
+    cshqa_score_dat[['cshqa_bedtime_resit']] <- rowSums(cshqa_data[bedtime_vars])
 
     ##add labels to data
-    cshqa_score_dat_labels[['cshq_a_bedtime_resit']] <- 'CSHQ-A Bedtime Resistance Total Score'
+    cshqa_score_dat_labels[['cshqa_bedtime_resit']] <- 'CSHQ-A Bedtime Resistance Total Score'
 
     # Sleep Onset Delay
-    cshqa_score_dat[['cshq_a_bedtime_resit']] <- cshqa_data['cshq_a2_rev']
+    cshqa_score_dat[['cshqa_bedtime_resit']] <- cshqa_data['cshq_a2_rev']
 
     ##add labels to data
-    cshqa_score_dat_labels[['cshq_a_bedtime_resit']] <- 'CSHQ-A Sleep Onset Delay Total Score'
+    cshqa_score_dat_labels[['cshqa_bedtime_resit']] <- 'CSHQ-A Sleep Onset Delay Total Score'
 
     # Sleep Duration
     sleepdur_vars <- c('cshq_a10_rev')
-    cshqa_score_dat[['cshq_a_sleepdur']] <- rowSums(cshqa_data[sleepdur_vars])
+    cshqa_score_dat[['cshqa_sleepdur']] <- rowSums(cshqa_data[sleepdur_vars])
 
     ##add labels to data
-    cshqa_score_dat_labels[['cshq_a_sleepdur']] <- 'CSHQ-A Sleep Duration Total Score'
+    cshqa_score_dat_labels[['cshqa_sleepdur']] <- 'CSHQ-A Sleep Duration Total Score'
 
     # Sleep Anxiety
     sleepanx_vars <- c('cshq_a7', 'cshq_a9',)
-    cshqa_score_dat[['cshq_a_anxiety']] <- rowSums(cshqa_data[sleepanx_vars])
+    cshqa_score_dat[['cshqa_anxiety']] <- rowSums(cshqa_data[sleepanx_vars])
 
     ##add labels to data
-    cshqa_score_dat_labels[['cshq_a_anxiety']] <- 'CSHQ-A Sleep Anxiety Total Score'
+    cshqa_score_dat_labels[['cshqa_anxiety']] <- 'CSHQ-A Sleep Anxiety Total Score'
 
     # Night Wakings
     nightwake_vars <- c('cshq_a12',  'cshq_a17', 'cshq_a18')
-    cshqa_score_dat[['cshq_a_nightwake']] <- rowSums(cshqa_data[nightwake_vars])
+    cshqa_score_dat[['cshqa_nightwake']] <- rowSums(cshqa_data[nightwake_vars])
 
     ##add labels to data
-    cshqa_score_dat_labels[['cshq_a_nightwake']] <- 'CSHQ-A Night Wakings Total Score'
+    cshqa_score_dat_labels[['cshqa_nightwake']] <- 'CSHQ-A Night Wakings Total Score'
 
     # Parasomnias
     parasomnias_vars <- c('cshq_a11', 'cshq_a13', 'cshq_a15')
-    cshqa_score_dat[['cshq_a_parasomnias']] <- rowSums(cshqa_data[parasomnias_vars])
+    cshqa_score_dat[['cshqa_parasomnias']] <- rowSums(cshqa_data[parasomnias_vars])
 
     ##add labels to data
-    cshqa_score_dat_labels[['cshq_a_nightwake']] <- 'CSHQ-A Night Wakings Total Score'
+    cshqa_score_dat_labels[['cshqa_nightwake']] <- 'CSHQ-A Night Wakings Total Score'
 
     # Sleep Disordered Breathing
-    cshqa_score_dat[['cshq_a_dis_breathing']] <- cshqa_data['cshq_a14']
+    cshqa_score_dat[['cshqa_dis_breathing']] <- cshqa_data['cshq_a14']
 
     ##add labels to data
-    cshqa_score_dat_labels[['cshq_a_nightwake']] <- 'CSHQ-A Night Wakings Total Score'
+    cshqa_score_dat_labels[['cshqa_nightwake']] <- 'CSHQ-A Night Wakings Total Score'
 
     # Daytime Sleepiness
     if (study != 'fbs' & study != 'FBS'){
         morning_vars <- c('cshq_a19_rev', 'cshq_a21', 'cshq_a22')
-        cshqa_score_dat[['cshq_a_daysleepy']] <- rowSums(cshqa_data[morningwake_vars])
+        cshqa_score_dat[['cshqa_daysleepy']] <- rowSums(cshqa_data[morningwake_vars])
 
         ##add labels to data
-        cshqa_score_dat_labels[['cshq_a_daysleepy']] <- 'CSHQ-A Morning Wake Up Total Score'
+        cshqa_score_dat_labels[['cshqa_daysleepy']] <- 'CSHQ-A Morning Wake Up Total Score'
     }
 
     # Total Score
     if (study == 'fbs' | study == 'FBS'){
-        cshqa_score_dat[['cshq_a_total']] <- rowSums(cshqa_score_dat[c('cshq_a_bedtime', 'cshq_a_sleepbeh', 'cshq_a_nightwake')])
+        cshqa_score_dat[['cshqa_total']] <- rowSums(cshqa_score_dat[c('cshqa_bedtime', 'cshqa_sleepbeh', 'cshqa_nightwake')])
 
         ##add labels to data
-        cshqa_score_dat_labels[['cshq_a_total']] <- 'CSHQ-A Total Score - only three subscales included so cannot compare to total sleep problmes cuttoffs'
+        cshqa_score_dat_labels[['cshqa_total']] <- 'CSHQ-A Total Score - only three subscales included so cannot compare to total sleep problmes cuttoffs'
     } else {
-        cshqa_score_dat[['cshq_a_total']] <- rowSums(cshqa_score_dat[c('cshq_a_bedtime', 'cshq_a_sleepbeh', 'cshq_a_nightwake', 'cshq_a_morning')])
+        cshqa_score_dat[['cshqa_total']] <- rowSums(cshqa_score_dat[c('cshqa_bedtime', 'cshqa_sleepbeh', 'cshqa_nightwake', 'cshqa_morning')])
 
         ##add labels to data
-        cshqa_score_dat_labels[['cshq_a_total']] <- 'CSHQ-A Total Score'
+        cshqa_score_dat_labels[['cshqa_total']] <- 'CSHQ-A Total Score'
     }
 
     #### 3. Clean Export/Scored Data #####

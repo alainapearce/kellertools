@@ -58,11 +58,11 @@ qualtrics_child_v2dat_lab <- function(date_str, data_path) {
         }
     }
 
-    
+
     #### 2. Load Data #####
 
     if (isTRUE(datapath_arg)) {
-        qv5_child_path <- paste0(data_path, "/Final_CovidAtHome/Child_V5_Lab_", 
+        qv5_child_path <- paste0(data_path, "/Final_CovidAtHome/Child_V5_Lab_",
             date_str, ".sav")
     } else {
         qv5_child_path <- paste0("Final_CovidAtHome/Child_V5_Lab", date_str, ".sav")
@@ -89,25 +89,25 @@ qualtrics_child_v2dat_lab <- function(date_str, data_path) {
     qv5_child_labels <- lapply(qv5_child_dat, function(x) attributes(x)$label)
 
     # 2) selecting relevant data columns
-    qv5_child_clean <- qv5_child_dat[c(1, 18, 22:30, 36:38, 40:62, 63:153, 154, 
+    qv5_child_clean <- qv5_child_dat[c(1, 18, 22:30, 36:38, 40:62, 63:153, 154,
         155:184, 186)]
 
     ## update labels
-    qv5_child_clean_labels <- qv5_child_labels[c(1, 18, 22:30, 36:38, 40:62, 63:153, 
+    qv5_child_clean_labels <- qv5_child_labels[c(1, 18, 22:30, 36:38, 40:62, 63:153,
         154, 155:184, 186)]
 
     # 3) removing all practice events (e.g., 999)
-    qv5_child_clean <- qv5_child_clean[!is.na(qv5_child_clean$ID) & qv5_child_clean$ID < 
+    qv5_child_clean <- qv5_child_clean[!is.na(qv5_child_clean[["id"]]) & qv5_child_clean[["id"]] <
         999, ]
 
     # 4) re-ordering and re-name data columns general order: 1) child information
     # (ID, date), 2) freddies, 3) food VAS 4) intakes (meal, meal duration) 5)
     # LOC, interoception 6) notes
 
-    qv5_child_clean <- qv5_child_clean[c(2, 1, 130:131, 3:14, 132:156, 15:37, 
+    qv5_child_clean <- qv5_child_clean[c(2, 1, 130:131, 3:14, 132:156, 15:37,
         38:128, 129, 158:159, 157, 160)]
 
-    qv5_child_clean_labels <- qv5_child_clean_labels[c(2, 1, 130:131, 3:14, 132:156, 
+    qv5_child_clean_labels <- qv5_child_clean_labels[c(2, 1, 130:131, 3:14, 132:156,
         15:37, 38:128, 129, 158:159, 157, 160)]
 
     ### UPDATE BELOW HERE ### re-name variables
@@ -127,15 +127,15 @@ qualtrics_child_v2dat_lab <- function(date_str, data_path) {
     }
 
     ## Manually rename
-    names(qv5_child_clean)[1:41] <- c("id", "start_date", "freddy_pre_meal", "freddy_post_meal", 
-        "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water", 
-        "mealrank_mac_cheese", "mealrank_chkn_nug", "mealrank_broccoli", "mealrank_grape", 
-        "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", 
-        "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g", 
-        "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g", 
-        "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", 
-        "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", 
-        "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g", 
+    names(qv5_child_clean)[1:41] <- c("id", "start_date", "freddy_pre_meal", "freddy_post_meal",
+        "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water",
+        "mealrank_mac_cheese", "mealrank_chkn_nug", "mealrank_broccoli", "mealrank_grape",
+        "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g",
+        "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g",
+        "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g",
+        "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g",
+        "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g",
+        "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g",
         "plate_water_g", "post_water_g", "consumed_water_g")
 
     ## update data labels
@@ -143,7 +143,7 @@ qualtrics_child_v2dat_lab <- function(date_str, data_path) {
 
     # 5) reformatting dates to be appropriate and computer readable ####
     # YYYY-MM-DD
-    qv5_child_clean$start_date <- lubridate::ymd(as.Date(qv5_child_clean$start_date))
+    qv5_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv5_child_clean[["start_date"]]))
     qv5_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
     # 6) re-calculate manual variables ####
@@ -151,24 +151,24 @@ qualtrics_child_v2dat_lab <- function(date_str, data_path) {
     ## re-calculate all intake values
 
     # get all intake variables
-    intake_vars <- names(qv4_child_clean)[c(17:41)]
+    intake_vars <- names(qv5_child_clean)[c(17:41)]
 
     # make all intake variables numeric
     for (var in 1:length(intake_vars)) {
         var_name <- intake_vars[[var]]
 
-        qv4_child_clean[[var_name]] <- ifelse(qv4_child_clean[[var_name]] == "-" | 
-            qv4_child_clean[[var_name]] == "NA", NA, qv4_child_clean[[var_name]])
+        qv5_child_clean[[var_name]] <- ifelse(qv5_child_clean[[var_name]] == "-" |
+            qv5_child_clean[[var_name]] == "NA", NA, qv5_child_clean[[var_name]])
 
-        if (is.character(qv4_child_clean[[var_name]])) {
-            qv4_child_clean[[var_name]] <- as.numeric(qv4_child_clean[[var_name]])
+        if (is.character(qv5_child_clean[[var_name]])) {
+            qv5_child_clean[[var_name]] <- as.numeric(qv5_child_clean[[var_name]])
         }
     }
 
     # get all foods served - extract prefix and thne postfix in name
-    food_strs_g <- unique(sapply(intake_vars, function(x) gsub(".*plate_|.*post_|.*consumed_", 
+    food_strs_g <- unique(sapply(intake_vars, function(x) gsub(".*plate_|.*post_|.*consumed_",
         "\\1", x), USE.NAMES = FALSE))
-    food_strs <- unique(sapply(food_strs_g, function(x) gsub("_g.*", "\\1", x), 
+    food_strs <- unique(sapply(food_strs_g, function(x) gsub("_g.*", "\\1", x),
         USE.NAMES = FALSE))
 
     # loop through foods
@@ -182,13 +182,13 @@ qualtrics_child_v2dat_lab <- function(date_str, data_path) {
             consumed_var <- paste0("consumed_", food_strs[f], "_g")
 
             # calculate amount consumed
-            qv4_child_clean[[consumed_var]] <- qv4_child_clean[[plate_var]] - 
-                qv4_child_clean[[post_var]]
-            qv4_child_clean[[consumed_var]] <- ifelse(qv4_child_clean[[consumed_var]] < 
-                0, 0, qv4_child_clean[[consumed_var]])
+            qv5_child_clean[[consumed_var]] <- qv5_child_clean[[plate_var]] -
+                qv5_child_clean[[post_var]]
+            qv5_child_clean[[consumed_var]] <- ifelse(qv5_child_clean[[consumed_var]] <
+                0, 0, qv5_child_clean[[consumed_var]])
 
             # update labels
-            qv4_child_clean_labels[[consumed_var]] <- paste0(qv4_child_clean_labels[[consumed_var]], 
+            qv5_child_clean_labels[[consumed_var]] <- paste0(qv5_child_clean_labels[[consumed_var]],
                 " - recalcuated difference in R with values < 0 set to 0")
         }
     }
@@ -200,10 +200,10 @@ qualtrics_child_v2dat_lab <- function(date_str, data_path) {
     qv5_child_clean_labels[["meal_end"]] <- "V3 meal end time"
 
     #### 9) Format for export #### put data in order of participant ID for ease
-    qv5_child_clean <- qv5_child_clean[order(qv5_child_clean$id), ]
+    qv5_child_clean <- qv5_child_clean[order(qv5_child_clean[["id"]]), ]
 
     # make sure the variable labels match in the dataset
-    qv5_child_clean = sjlabelled::set_label(qv5_child_clean, label = matrix(unlist(qv5_child_clean_labels, 
+    qv5_child_clean = sjlabelled::set_label(qv5_child_clean, label = matrix(unlist(qv5_child_clean_labels,
         use.names = FALSE)))
 
     ## make list of data frame and associated labels
