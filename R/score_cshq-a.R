@@ -20,7 +20,7 @@
 #'
 #' @param cshqa_data a data.frame all items for the Child Sleep Habits Questionnaire - Abbreviated following the naming conventions described above
 #' @param study a string indicating which study collected the data. Currently, only option and default is 'fbs'. This parameter is included so this script can be adapted for future studies that collect all subscales.
-#' @param parID (optional) name of participant ID column in cshqa_data. If included the output dataset  will be matched by parID, if not included the output dataset will be in the order of cshqa_data but will have no participant identifier.
+#' @inheritParams fbs_intake
 #'
 #'
 #' @return A dataset with total and subscale scores for the Child Sleep Habits Questionnaire - Abbreviated
@@ -56,9 +56,7 @@ score_cshqa <- function(cshqa_data, study = 'fbs', parID) {
 
     if (isTRUE(study_arg)) {
         if (study != "fbs" & study != "FBS") {
-            stop("only option currently available for study is 'fbs'. If have an alternative
-                 study you wish to use this script for please contact package maintainers to
-                 get your study added")
+            stop("only option currently available for study is 'fbs'. If have an alternative study you wish to use this script for please contact package maintainers to get your study added")
         }
     }
 

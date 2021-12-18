@@ -84,21 +84,21 @@ qualtrics_child_v2dat <- function(date_str, data_path) {
 
     #### 3. Clean Data #####
 
-    # 1) extract variable labels/descriptions
+    # 1) extract variable labels/descriptions ####
     qv2_child_labels <- lapply(qv2_child_dat, function(x) attributes(x)$label)
 
-    # 2) selecting relevant data columns
+    # 2) selecting relevant data columns ####
     qv2_child_clean <- qv2_child_dat[c(1, 18, 23:31, 36:38, 40:146, 149:177)]
 
     ## update labels
     qv2_child_clean_labels <- qv2_child_labels[c(1, 18, 23:31, 36:38, 40:146, 149:177)]
 
 
-    # 3) removing all practice events (e.g., 999)
+    # 3) removing all practice events (e.g., 999) ####
     qv2_child_clean <- qv2_child_clean[!is.na(qv2_child_clean[["ID"]]) & qv2_child_clean[["ID"]] < 999, ]
 
-    # 4) re-ordering and re-name data columns general order: 1) child information (ID), 2) freddies, 3) food VAS 4)
-    # intakes (meal, meal duration), 5) KFQ, TESQE, RCMAS 6) notes
+    # 4) re-ordering and re-name data columns  ####
+    # general order: 1) child information (ID), 2) freddies, 3) food VAS 4), intakes (meal, meal duration), 5) KFQ, TESQE, RCMAS 6) notes
 
     qv2_child_clean <- qv2_child_clean[c(2, 1, 122:123, 3:14, 124:148, 15:121, 149:150)]
 
@@ -121,18 +121,12 @@ qualtrics_child_v2dat <- function(date_str, data_path) {
     ## manually update variables
     names(qv2_child_clean)[names(qv2_child_clean) == "childnotes"] <- "child_notes"
 
-    names(qv2_child_clean)[2:41] <- c("start_date", "freddy_pre_meal", "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug",
-        "vas_broccoli", "vas_grape", "vas_water", "mealrank_mac_cheese", "mealrank_chkn_nug", "mealrank_broccoli", "mealrank_grape",
-        "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g", "consumed_chkn_nug_g",
-        "noplate_mac_cheese_g", "plate_mac_cheese_g", "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g",
-        "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", "plate_broccoli_g",
-        "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g",
-        "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g")
+    names(qv2_child_clean)[2:41] <- c("start_date", "freddy_pre_meal", "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water", "mealrank_mac_cheese", "mealrank_chkn_nug", "mealrank_broccoli", "mealrank_grape", "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g", "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g")
 
     ## update data labels
     names(qv2_child_clean_labels) <- names(qv2_child_clean)
 
-    # 5) reformatting dates to be appropriate and computer readable #### YYYY-MM-DD
+    # 5) reformatting dates to be appropriate and computer readable YYYY-MM-DD ####
     qv2_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv2_child_clean[["start_date"]]))
     qv2_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
@@ -200,7 +194,7 @@ qualtrics_child_v2dat <- function(date_str, data_path) {
         qv2_child_clean_labels[[var_name]] <- paste0(qv2_child_clean_labels[[var_name]], " - re-leveled in R to start with 0")
     }
 
-    # 8) random fixes to factor level names and variable descriptions
+    # 8) random fixes to factor level names and variable descriptions ####
 
     ## tesqe: Change value for 'Don't know' from 99 to -99
     tesqe_names <- names(qv2_child_clean)[88:111]
@@ -221,8 +215,9 @@ qualtrics_child_v2dat <- function(date_str, data_path) {
 
     }
 
+    #### 9) Format for export ####
 
-    #### 8) Format for export #### put data in order of participant ID for ease
+    #put data in order of participant ID for ease
     qv2_child_clean <- qv2_child_clean[order(qv2_child_clean[["id"]]), ]
 
     # make sure the variable labels match in the dataset

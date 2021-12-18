@@ -85,30 +85,28 @@ qualtrics_child_v2dat_lab <- function(date_str, data_path) {
 
     #### 3. Clean Data #####
 
-    # 1) extract variable labels/descriptions
+    # 1) extract variable labels/descriptions #####
     qv5_child_labels <- lapply(qv5_child_dat, function(x) attributes(x)$label)
 
-    # 2) selecting relevant data columns
+    # 2) selecting relevant data columns #####
     qv5_child_clean <- qv5_child_dat[c(1, 18, 22:30, 36:38, 40:62, 63:153, 154,
         155:184, 186)]
 
-    ## update labels
+    ## update labels #####
     qv5_child_clean_labels <- qv5_child_labels[c(1, 18, 22:30, 36:38, 40:62, 63:153,
         154, 155:184, 186)]
 
-    # 3) removing all practice events (e.g., 999)
+    # 3) removing all practice events (e.g., 999) #####
     qv5_child_clean <- qv5_child_clean[!is.na(qv5_child_clean[["id"]]) & qv5_child_clean[["id"]] <
         999, ]
 
-    # 4) re-ordering and re-name data columns general order: 1) child information
-    # (ID, date), 2) freddies, 3) food VAS 4) intakes (meal, meal duration) 5)
-    # LOC, interoception 6) notes
+    # 4) re-ordering and re-name data columns  #####
 
-    qv5_child_clean <- qv5_child_clean[c(2, 1, 130:131, 3:14, 132:156, 15:37,
-        38:128, 129, 158:159, 157, 160)]
+    # general order: 1) child information (ID, date), 2) freddies, 3) food VAS 4) intakes (meal, meal duration) 5) LOC, interoception 6) notes
 
-    qv5_child_clean_labels <- qv5_child_clean_labels[c(2, 1, 130:131, 3:14, 132:156,
-        15:37, 38:128, 129, 158:159, 157, 160)]
+    qv5_child_clean <- qv5_child_clean[c(2, 1, 130:131, 3:14, 132:156, 15:37, 38:128, 129, 158:159, 157, 160)]
+
+    qv5_child_clean_labels <- qv5_child_clean_labels[c(2, 1, 130:131, 3:14, 132:156, 15:37, 38:128, 129, 158:159, 157, 160)]
 
     ### UPDATE BELOW HERE ### re-name variables
 

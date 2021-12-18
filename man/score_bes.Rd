@@ -36,7 +36,6 @@ bes_score_data <- score_bes(bes_data, parID = 'ID')
 
 }
 \references{
-Primary References for the Binge Eating Scale and Scoring:
 Gormally, J., Black, S., Daston, S., & Rardin, D. (1982). The assessment of binge eating severity among obese persons. Addictive Behaviors, 7(1), 47–55. https://doi.org/10.1016/0306-4603(82)90024-7  (\href{https://pubmed.ncbi.nlm.nih.gov/7080884/}{PubMed})
 
 Timmerman, G. M. (1999). Binge Eating Scale: Further Assessment of Validity and Reliability. Journal of Applied Biobehavioral Research, 4(1), 1–12. https://doi.org/10.1111/j.1751-9861.1999.tb00051.x

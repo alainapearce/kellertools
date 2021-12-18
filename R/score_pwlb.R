@@ -13,7 +13,7 @@
 #' Primary References for the Parent Weight-Loss Behavior Questionnaire and Scoring:
 #' Savage JS, Birch LL. Patterns of weight control strategies predict differences in women’s 4 y weight gain. Obesity (Silver Spring). 2010;18(3):513-520. doi:10.1038/oby.2009.265 (\href{https://pubmed.ncbi.nlm.nih.gov/19696759/}{PubMed})
 #'
-#' Measure Adpated from:
+#' Measure Adapted from:
 #' French SA, Perry CL, Leon GR, Fulkerson JA. Dieting behaviors and weight change history in female adolescents. Health Psychology. 1995;14(6):548-555. doi:http://dx.doi.org/10.1037/0278-6133.14.6.548 (\href{https://pubmed.ncbi.nlm.nih.gov/8565929/}{PubMed})
 #'
 #' @param pwlb_data a data.frame all items for the Parent Weight-Loss Behavior Questionnaire following the naming conventions described above

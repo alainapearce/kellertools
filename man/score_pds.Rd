@@ -32,12 +32,25 @@ Note, as long as variable names match those listed, pds_data can include only da
 }
 \examples{
 #default male/female
-pds_tanner_data <- pds_data(pds_data, respondent = 'parent', parID = 'ID')
+pds_tanner_data <- score_pds(pds_data, respondent = 'parent', parID = 'ID')
 
 #specify male/female
-pds_tanner_data <- pds_data(pds_data, respondent = 'parent', male = 'male', female = 'female', parID = 'ID')
+pds_tanner_data <- score_pds(pds_data, respondent = 'parent', male = 'male', female = 'female', parID = 'ID')
 
 \dontrun{
+
+# male and female specification must match the data in brief_data. Do not give the value label if pds_data has label attributes for sex.
+
+#check attributes for sex
+attributes(pds_data$sex)
+
+#$labels
+#Male Female
+# 0      1
+
+#with the above attributes, the following will not run as the data.frame contains 0's and 1's, not the labels
+pds_tanner_data <- score_pds(pds_data, age_var = 'age', sex_var = 'sex', male = 'Male', female = 'Female')
+
 }
 
 }
@@ -47,5 +60,5 @@ Carskadon, Mary A., and Christine Acebo. A self-administered rating scale for pu
 Crockett, L. J. Pubertal development scale: Pubertal categories. Unpublished manuscript (1988).
 }
 \seealso{
-For the Food and Brain Study, raw data from Qualtrics was processed using \code{\link{qualtrics_parent_v1dat}}
+For the Food and Brain Study, raw data from Qualtrics was processed using \code{\link{qualtrics_parent_v1dat}}, \code{\link{qualtrics_child_v1dat}}, and \code{\link{qualtrics_child_v1dat_home}},
 }

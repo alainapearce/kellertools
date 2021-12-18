@@ -4,25 +4,31 @@
 \alias{score_brief2}
 \title{score_brief2: Scored data from the Behavioral Rating Inventory of Executive Function-2}
 \usage{
-score_brief2(brief_data, parID)
+score_brief2(brief_data, age_var, sex_var, male = 0, female = 1, parID)
 }
 \arguments{
 \item{brief_data}{a data.frame all items for the Behavioral Rating Inventory of Executive Function-2 following the naming conventions described above}
+
+\item{age_var}{a string with the name of the age variable in brief_data}
+
+\item{sex_var}{a string with the name of the sex variable in brief_data}
+
+\item{male}{(optional) value for male. Default value is male = 0}
+
+\item{female}{(optional) value for female. Default value is female = 1}
 }
 \value{
 A dataset with subscale scores for the Behavioral Rating Inventory of Executive Function-2
 }
 \description{
-This function scores the Behavioral Rating Inventory of Executive Function-2 and provides subscale scores for the following behaviors: Inhibit, Self-Monitor, Shift, Emotional Control, Initiate, Working Memory, Plan/Organize, Task Monitoring, Organization of Materials. There are also 4 index scores: Behavioral Regulation Index, Emotion Regulation Index, Cognitive Regulation Index, and the General Executive Composite. Three scores help indicate if responses were valid: Negativity Score, Inconsistency Score, and Infrequency Score
+This function scores the Behavioral Rating Inventory of Executive Function-2 and provides subscale scores for the following behaviors: brief2_inhibit, Self-Monitor, Shift, Emotional Control, Initiate, Working Memory, Plan/Organize, Task Monitoring, Organization of Materials. There are also 4 index scores: Behavioral Regulation Index, Emotion Regulation Index, Cognitive Regulation Index, and the General Executive Composite. Three scores help indicate if responses were valid: Negativity Score, Inconsistency Score, and Infrequency Score
 }
 \details{
-Note - the factor structure of this questionnaire has been repeatedly questioned so may want to look further to decide on best approach for each study. The provided subscales are based on the canonical approach in the literature and should not be taken as a recommendation or 'best' factoring approach.
-
 These data are scored using the brief2_scoretables data available in the kellertools package to look up age- and sex-nomed t-scores and percentiles.
 
 To use this function, the data must be prepared according to the following criteria:
-1) The data must include all individual questionnaire items
-2) The  columns/variables must match the following naming convention: 'brief#' where # is the question number (1-63)
+1) The data must include sex, age in years, and all individual questionnaire items
+2) The questionnaire items must match the following naming convention: brief#' where # is the question number (1-63)
 3) Questions must have the numeric value for the choices: 1 - Never, 2 - Sometimes, 3 - Often
 
 Note, as long as variable names match those listed, the dataset can include other variables
@@ -30,10 +36,28 @@ Note, as long as variable names match those listed, the dataset can include othe
 \examples{
 
 # scoring for the brief with IDs
-brief_score_data <- score_brief2(brief_data, parID = 'ID')
+brief_score_data <- score_brief2(brief_data, age_var = 'age', sex_var = 'sex', parID = 'ID')
 
+# scoring for the brief with specified levels for male and female
+brief_score_data <- score_brief2(brief_data, age_var = 'age', sex_var = 'sex', male = 'male', female = 'female', parID = 'ID')
 
 \dontrun{
+
+# age and sex variable names must be strings - the following would not be correct
+brief_score_data <- score_brief2(brief_data, age_var = age, sex_var = sex)
+
+# male and female specification must match the data in brief_data. Do not give the value label if brief_data has label attributes for sex.
+
+#check attributes for sex
+attributes(brief_data$sex)
+
+#$labels
+#Male Female
+# 0      1
+
+#with the above attributes, the following will not run as the data.frame contains 0's and 1's, not the labels
+brief_score_data <- score_brief2(brief_data, age_var = 'age', sex_var = 'sex', male = 'Male', female = 'Female')
+
 }
 
 }
@@ -41,5 +65,5 @@ brief_score_data <- score_brief2(brief_data, parID = 'ID')
 Gioia GA, Isquith PK, Guy SC, Kenworthy L. BRIEF-2: Behavior Rating Inventory of Executive Function: Professional Manual. Psychological Assessment Resources; 2015.
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v4dat}}
+Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v4dat}}. Normed values were be identified using \code{\link{ref_brief2_lookup}} but could also be done through \code{\link{ref_lookup_fm}}
 }

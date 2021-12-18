@@ -35,7 +35,7 @@
 #'
 #' @export
 #'
-qualtrics_child_v4dat <- function(date_str, data_path) {
+qualtrics_child_v5dat <- function(date_str, data_path) {
 
     #### 1. Set up/initial checks #####
 
@@ -84,89 +84,34 @@ qualtrics_child_v4dat <- function(date_str, data_path) {
 
     #### 3. Clean Data #####
 
-    # 1) extract variable labels/descriptions
+    # 1) extract variable labels/descriptions ####
     qv5_child_labels <- lapply(qv5_child_dat, function(x) attributes(x)$label)
 
-    # 2) selecting relevant data columns
-    qv5_child_clean <- qv5_child_dat[c(1, 18, 22:30, 35:37, 39:77, 80:89, 91:131,
-        133:168, 169:199, 201)]
+    # 2) selecting relevant data columns ####
+    qv5_child_clean <- qv5_child_dat[c(1, 18, 22:30, 35:37, 39:77, 80:89, 91:131, 133:168, 169:199, 201)]
 
     ## update labels
-    qv5_child_clean_labels <- qv5_child_labels[c(1, 18, 22:30, 35:37, 39:77, 80:89,
-        91:131, 133:168, 169:199, 201)]
+    qv5_child_clean_labels <- qv5_child_labels[c(1, 18, 22:30, 35:37, 39:77, 80:89,  91:131, 133:168, 169:199, 201)]
 
 
-    # 3) removing all practice events (e.g., 999)
-    qv5_child_clean <- qv5_child_clean[!is.na(qv5_child_clean[["ID"]]) & qv5_child_clean[["ID"]] <
-        999, ]
+    # 3) removing all practice events (e.g., 999) ####
+    qv5_child_clean <- qv5_child_clean[!is.na(qv5_child_clean[["ID"]]) & qv5_child_clean[["ID"]] < 999, ]
 
-    # 4) re-ordering and re-name data columns general order: 1) child information
-    # (ID. date), 2) freddies, 3) food VAS 4) intakes (meal, meal duration), 5)
-    # LOC, CtC, Interoception, Mock 6) notes
+    # 4) re-ordering and re-name data columns ####
 
-    qv5_child_clean <- qv5_child_clean[c(2, 1, 142:143, 3:14, 144:168, 15:141,
-        170:171, 169, 172)]
+    # general order: 1) child information (ID. date), 2) freddies, 3) food VAS 4) intakes (meal, meal duration), 5) LOC, CtC, Interoception, Mock 6) notes
 
-    qv5_child_clean_labels <- qv5_child_clean_labels[c(2, 1, 142:143, 3:14, 144:168,
-        15:141, 170:171, 169, 172)]
+    qv5_child_clean <- qv5_child_clean[c(2, 1, 142:143, 3:14, 144:168, 15:141, 170:171, 169, 172)]
+
+    qv5_child_clean_labels <- qv5_child_clean_labels[c(2, 1, 142:143, 3:14, 144:168,  15:141, 170:171, 169, 172)]
 
     ## re-name variables
-
-    names(qv5_child_clean) <- c("id", "start_date", "freddy_pre_meal", "freddy_post_meal",
-        "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water",
-        "mealrank_mac_cheese", "mealrank_chkn_nug", "mealrank_broccoli", "mealrank_grape",
-        "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g",
-        "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g",
-        "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g",
-        "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g",
-        "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g",
-        "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g",
-        "plate_water_g", "post_water_g", "consumed_water_g", "loc1", "loc2a",
-        "loc2b", "loc2c", "loc3", "loc4", "loc5", "loc6", "loc7", "loc8", "loc9",
-        "loc10", "loc11", "loc12", "loc13", "loc14", "loc15", "loc16a", "loc17",
-        "loc18", "loc19", "loc16b", "loc20", "ctc1", "ctc2", "ctc3", "ctc4", "ctc5",
-        "ctc6", "ctc7", "ctc8", "ctc9", "ctc10", "ctc11", "ctc12", "ctc13", "ctc14",
-        "ctc15", "ctc16", "hrv_watch_duration", "hrv_watch_starttime", "intero_practice_start_target",
-        "intero_practice_start_actual", "intero_practice_stop_target", "intero_practice_stop_actual",
-        "intero_practice_heartbeat_count", "intero_practice_watch_duration", "intero_practice_watch_starttime",
-        "intero_practice_notes", "intero_practice2_start_target", "intero_practice2_start_actual",
-        "intero_practice2_stop_target", "intero_practice2_stop_actual", "intero_practice2_heartbeat_count",
-        "intero_practice2_watch_duration", "intero_practice2_watch_starttime",
-        "intero_practice2_notes", "intero_15s_start_target", "intero_15s_start_actual",
-        "intero_15s_stop_target", "intero_15s_stop_actual", "intero_15s_heartbeat_count",
-        "intero_15s_watch_duration", "intero_15s_watch_starttime", "intero_15s_notes",
-        "intero_20s_start_target", "intero_20s_start_actual", "intero_20s_stop_target",
-        "intero_20s_stop_actual", "intero_20s_heartbeat_count", "intero_20s_watch_duration",
-        "intero_20s_watch_starttime", "intero_20s_notes", "intero_18s_start_target",
-        "intero_18s_start_actual", "intero_18s_stop_target", "intero_18s_stop_actual",
-        "intero_18s_heartbeat_count", "intero_18s_watch_duration", "intero_18s_watch_starttime",
-        "intero_18s_notes", "interomeasure_practice_start_target", "interomeasure_practice_start_actual",
-        "interomeasure_practice_stop_target", "interomeasure_practice_stop_actual",
-        "interomeasure_practice_heartbeat_count", "interomeasure_practice_watch_duration",
-        "interomeasure_practice_watch_starttime", "interomeasure_practice_location",
-        "interomeasure_practice_notes", "interomeasure_practice2_start_target",
-        "interomeasure_practice2_start_actual", "interomeasure_practice2_stop_target",
-        "interomeasure_practice2_stop_actual", "interomeasure_practice2_heartbeat_count",
-        "interomeasure_practice2_watch_duration", "interomeasure_practice2_watch_starttime",
-        "interomeasure_practice2_location", "interomeasure_practice2_notes", "interomeasure_15s_start_target",
-        "interomeasure_15s_start_actual", "interomeasure_15s_stop_target", "interomeasure_15s_stop_actual",
-        "interomeasure_15s_heartbeat_count", "interomeasure_15s_watch_duration",
-        "interomeasure_15s_watch_starttime", "interomeasure_15s_location", "interomeasure_15s_notes",
-        "interomeasure_20s_start_target", "interomeasure_20s_start_actual", "interomeasure_20s_stop_target",
-        "interomeasure_20s_stop_actual", "interomeasure_20s_heartbeat_count",
-        "interomeasure_20s_watch_duration", "interomeasure_20s_watch_starttime",
-        "interomeasure_20s_location", "interomeasure_20s_notes", "interomeasure_18s_start_target",
-        "interomeasure_18s_start_actual", "interomeasure_18s_stop_target", "interomeasure_18s_stop_actual",
-        "interomeasure_18s_heartbeat_count", "interomeasure_18s_watch_duration",
-        "interomeasure_18s_watch_starttime", "interomeasure_18s_location", "interomeasure_18s_notes",
-        "mockscan2_complete", "extra_mock_needed", "mockscan2_notes", "food_initials",
-        "child_notes")
+    names(qv5_child_clean) <- c("id", "start_date", "freddy_pre_meal", "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water", "mealrank_mac_cheese", "mealrank_chkn_nug", "mealrank_broccoli", "mealrank_grape",  "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g",  "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g", "loc1", "loc2a", "loc2b", "loc2c", "loc3", "loc4", "loc5", "loc6", "loc7", "loc8", "loc9",  "loc10", "loc11", "loc12", "loc13", "loc14", "loc15", "loc16a", "loc17", "loc18", "loc19", "loc16b", "loc20", "ctc1", "ctc2", "ctc3", "ctc4", "ctc5", "ctc6", "ctc7", "ctc8", "ctc9", "ctc10", "ctc11", "ctc12", "ctc13", "ctc14", "ctc15", "ctc16", "hrv_dur", "hrv_starttime", "intero_prac_start_target", "intero_prac_start_actual", "intero_prac_stop_target", "intero_prac_stop_actual",  "intero_prac_hbcount", "intero_prac_dur", "intero_prac_starttime", "intero_prac_notes", "intero_prac2_start_target", "intero_prac2_start_actual", "intero_prac2_stop_target", "intero_prac2_stop_actual", "intero_prac2_hbcount", "intero_prac2_dur", "intero_prac2_starttime", "intero_prac2_notes", "intero_15s_start_target", "intero_15s_start_actual", "intero_15s_stop_target", "intero_15s_stop_actual", "intero_15s_hbcount", "intero_15s_dur", "intero_15s_starttime", "intero_15s_notes", "intero_20s_start_target", "intero_20s_start_actual", "intero_20s_stop_target", "intero_20s_stop_actual", "intero_20s_hbcount", "intero_20s_dur", "intero_20s_starttime", "intero_20s_notes", "intero_18s_start_target", "intero_18s_start_actual", "intero_18s_stop_target", "intero_18s_stop_actual", "intero_18s_hbcount", "intero_18s_dur", "intero_18s_starttime", "intero_18s_notes", "intero_pulse_prac_start_target", "intero_pulse_prac_start_actual", "intero_pulse_prac_stop_target", "intero_pulse_prac_stop_actual", "intero_pulse_prac_hbcount", "intero_pulse_prac_dur", "intero_pulse_prac_starttime", "intero_pulse_prac_loc", "intero_pulse_prac_notes", "intero_pulse_prac2_start_target", "intero_pulse_prac2_start_actual", "intero_pulse_prac2_stop_target", "intero_pulse_prac2_stop_actual", "intero_pulse_prac2_hbcount", "intero_pulse_prac2_dur", "intero_pulse_prac2_starttime", "intero_pulse_prac2_loc", "intero_pulse_prac2_notes", "intero_pulse_15s_start_target",  "intero_pulse_15s_start_actual", "intero_pulse_15s_stop_target", "intero_pulse_15s_stop_actual",  "intero_pulse_15s_hbcount", "intero_pulse_15s_dur",  "intero_pulse_15s_starttime", "intero_pulse_15s_loc", "intero_pulse_15s_notes",  "intero_pulse_20s_start_target", "intero_pulse_20s_start_actual", "intero_pulse_20s_stop_target", "intero_pulse_20s_stop_actual", "intero_pulse_20s_hbcount", "intero_pulse_20s_dur", "intero_pulse_20s_starttime", "intero_pulse_20s_loc", "intero_pulse_20s_notes", "intero_pulse_18s_start_target", "intero_pulse_18s_start_actual", "intero_pulse_18s_stop_target", "intero_pulse_18s_stop_actual", "intero_pulse_18s_hbcount", "intero_pulse_18s_dur", "intero_pulse_18s_starttime", "intero_pulse_18s_loc", "intero_pulse_18s_notes",  "mockscan2_complete", "extra_mock_needed", "mockscan2_notes", "food_initials", "child_notes")
 
     ## update data labels
     names(qv5_child_clean_labels) <- names(qv5_child_clean)
 
-    # 5) reformatting dates to be appropriate and computer readable ####
-    # YYYY-MM-DD
+    # 5) reformatting dates to be appropriate and computer readable YYYY-MM-DD  ####
     qv5_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv5_child_clean[["start_date"]]))
     qv5_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
@@ -220,9 +165,7 @@ qualtrics_child_v4dat <- function(date_str, data_path) {
 
     # 7) fix 99's ####
 
-    ## check for labels/99 option: 1) if 99's exist, make a 'prefer not to answer'
-    ## (pna) variable to go in pna database, 2) replace 99's with NA and make
-    ## variable numeric
+    ## check for labels/99 option: 1) if 99's exist, make a 'prefer not to answer' (pna) variable to go in pna database, 2) replace 99's with NA and make variable numeric
 
     ## make pna database
     qv5_child_pna <- data.frame(id = qv5_child_clean[["id"]])
@@ -258,8 +201,7 @@ qualtrics_child_v4dat <- function(date_str, data_path) {
 
         }
 
-        # drop 99 level label labels only update if had 99 - done in if statement
-        # above
+        # drop 99 level label labels only update if had 99 - done in if statement above
         qv5_child_clean[[pvar]] <- sjlabelled::remove_labels(qv5_child_clean[[pvar]],
             labels = "Don't want to answer")
 
@@ -281,21 +223,14 @@ qualtrics_child_v4dat <- function(date_str, data_path) {
         var_name <- as.character(ctc_names[var])
 
         if (var < 9) {
-            qv5_child_clean[[var_name]] <- sjlabelled::set_labels(qv5_child_clean[[var_name]],
-                labels = c(`Not at all` = 0, `A little` = 1, `Not sure/in the middle` = 2,
-                  Somewhat = 3, `A lot` = 4))
+            qv5_child_clean[[var_name]] <- sjlabelled::set_labels(qv5_child_clean[[var_name]], labels = c(`Not at all` = 0, `A little` = 1, `Not sure/in the middle` = 2,  Somewhat = 3, `A lot` = 4))
         } else {
-            qv5_child_clean[[var_name]] <- sjlabelled::set_labels(qv5_child_clean[[var_name]],
-                labels = c(`Not at all` = 0, `A little` = 1, `Not sure/in the middle` = 2,
-                  Somewhat = 3, `A lot` = 4))
+            qv5_child_clean[[var_name]] <- sjlabelled::set_labels(qv5_child_clean[[var_name]], labels = c(`Not at all` = 0, `A little` = 1, `Not sure/in the middle` = 2, Somewhat = 3, `A lot` = 4))
         }
 
         set_attr <- attributes(qv5_child_clean[[var_name]])
 
-        qv5_child_clean[[var_name]] <- ifelse(is.na(qv5_child_clean[[var_name]]),
-            NA, ifelse(qv5_child_clean[[var_name]] == 1, 0, ifelse(qv5_child_clean[[var_name]] ==
-                2, 1, ifelse(qv5_child_clean[[var_name]] == 3, 2, ifelse(qv5_child_clean[[var_name]] ==
-                4, 3, 5)))))
+        qv5_child_clean[[var_name]] <- ifelse(is.na(qv5_child_clean[[var_name]]),  NA, ifelse(qv5_child_clean[[var_name]] == 1, 0, ifelse(qv5_child_clean[[var_name]] == 2, 1, ifelse(qv5_child_clean[[var_name]] == 3, 2, ifelse(qv5_child_clean[[var_name]] == 4, 3, 5)))))
 
         attributes(qv5_child_clean[[var_name]]) <- set_attr
 
@@ -303,16 +238,17 @@ qualtrics_child_v4dat <- function(date_str, data_path) {
             " - re-leveled in R to start with 0")
     }
 
-
-
-
     # 8) random fixes to factor level names and variable descriptions
     qv5_child_clean_labels[["meal_start"]] <- "V4 meal start time"
     qv5_child_clean_labels[["meal_end"]] <- "V4 meal end time"
 
+    ### FIX INTEROCEPTION CONTINUOUS DATA CODED AS CATEGORICAL (HBCOUNT)
+
     ### FIX INTEROCEPTION DESCRIPTIONS
 
-    # 9) Format for export #### put data in order of participant ID for ease
+    # 9) Format for export ####
+
+    #put data in order of participant ID for ease
     qv5_child_clean <- qv5_child_clean[order(qv5_child_clean[["id"]]), ]
 
     # make sure the variable labels match in the dataset
@@ -320,6 +256,7 @@ qualtrics_child_v4dat <- function(date_str, data_path) {
         use.names = FALSE)))
 
     ## make list of data frame and associated labels
+    ### ADD PNA OUTPUTS TO LIST
     qv5_child <- list(data = qv5_child_clean, dict = qv5_child_clean_labels)
 
     ## want an export options??

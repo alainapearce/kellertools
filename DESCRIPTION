@@ -27,7 +27,11 @@ Imports:
     childsds,
     lubridate,
     readxl,
-    ggplot2
+    ggplot2,
+    digest,
+    reshape
+Remotes:
+    miyamot0/discountingtools
 Suggests: 
     knitr,
     rmarkdown,

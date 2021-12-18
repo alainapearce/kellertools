@@ -86,14 +86,14 @@ qualtrics_child_v6dat <- function(date_str, data_path) {
 
     ##### NOTE: TROUBLESHOOT F2_FULL RATINGS. they are not currently making it into the clean database #####
 
-    # 1) extract variable labels/descriptions
+    # 1) extract variable labels/descriptions ####
     qv6_child_labels <- lapply(qv6_child_dat, function(x) attributes(x)$label)
 
-    # 2) removing all practice events (e.g., 999)
+    # 2) removing all practice events (e.g., 999)  ####
     qv6_child_clean <- qv6_child_dat[!is.na(qv6_child_dat$ID) & qv6_child_dat$ID <
         999, ]
 
-    # 3) selecting relevant data columns
+    # 3) selecting relevant data columns  ####
 
     ## Extract ID and Version A MRI VAS ratings
     MRIVAS_A <- qv6_child_clean[c(18, 58:207, 210:359)]
@@ -134,20 +134,19 @@ qualtrics_child_v6dat <- function(date_str, data_path) {
     MRIVAS_combined <- rbind(MRIVAS_A, MRIVAS_B)
 
     ## Extract additional variables from qualtrics database
-    qv6_child_clean <- qv6_child_clean[c(1, 18, 33, 37, 40:45, 50, 57, 661:667,
-        668:686)]
+    qv6_child_clean <- qv6_child_clean[c(1, 18, 33, 37, 40:45, 50, 57, 661:667, 668:686)]
 
     ## merge MRIVAS_combined and qv6_child_clean
     qv6_child_clean <- merge(qv6_child_clean, MRIVAS_combined, by = "ID")
 
     ## update labels and label names Note: MRIVAS labels (version A order) are
     ## added to the end
-    qv6_child_clean_labels <- qv6_child_labels[c(1, 18, 33, 37, 40:45, 50, 57,
-        661:667, 668:686, 58:207, 210:359)]
+    qv6_child_clean_labels <- qv6_child_labels[c(1, 18, 33, 37, 40:45, 50, 57, 661:667, 668:686, 58:207, 210:359)]
     names(qv6_child_clean_labels) <- names(qv6_child_clean)
 
-    # 4) re-ordering and re-name data columns general order: 1) child information
-    # (ID. date), 2) freddies, 3) intake (snack), 4) MRIVAS 5) notes
+    # 4) re-ordering and re-name data columns ####
+
+    # general order: 1) child information (ID. date), 2) freddies, 3) intake (snack), 4) MRIVAS 5) notes
 
     qv6_child_clean <- qv6_child_clean[c(1:2, 13:30, 3:12, 39:338, 31:38)]
 
@@ -157,22 +156,14 @@ qualtrics_child_v6dat <- function(date_str, data_path) {
     ### make lowercase
     names(qv6_child_clean) <- tolower(names(qv6_child_clean))
 
-    names(qv6_child_clean)[1:30] <- c("id", "start_date", "freddy_pre_mrisnack", "freddy_post_mrisnack", "freddy_post_mrisnack2",
-        "freddy_pre_mri", "freddy_pre_dg", "freddy_pre_mrivas", "freddy_pre_sst",
-        "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g",
-        "noplate_ritz_g", "plate_ritz_g", "post_ritz_g", "consumed_ritz_g",
-        "noplate_juice_g", "post_juice_g", "consumed_juice_g", "cams_pre_mri", "cams_post_mri",
-        "dg_foodchoice", "dg_foodchoice2", "dg_foodchoice_amount", "dg_foodchoice_amount2",
-        "dg_foodchoice2_amount", "dg_foodchoice2_amount2", "dg_wait", "mri_taskversion")
+    names(qv6_child_clean)[1:30] <- c("id", "start_date", "freddy_pre_mrisnack", "freddy_post_mrisnack", "freddy_post_mrisnack2",  "freddy_pre_mri", "freddy_pre_dg", "freddy_pre_mrivas", "freddy_pre_sst", "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_ritz_g", "plate_ritz_g", "post_ritz_g", "consumed_ritz_g", "noplate_juice_g", "post_juice_g", "consumed_juice_g", "cams_pre_mri", "cams_post_mri", "dg_foodchoice", "dg_foodchoice2", "dg_foodchoice_amount", "dg_foodchoice_amount2", "dg_foodchoice2_amount", "dg_foodchoice2_amount2", "dg_wait", "mri_taskversion")
 
-    names(qv6_child_clean)[331:338] <- c("notes_mri_mprage", "notes_mri_restingstate", "notes_mri_run1", "notes_mri_run2",
-        "notes_mri_run3", "notes_mri_run4", "notes_mri_run5", "notes")
+    names(qv6_child_clean)[331:338] <- c("notes_mri_mprage", "notes_mri_restingstate", "notes_mri_run1", "notes_mri_run2", "notes_mri_run3", "notes_mri_run4", "notes_mri_run5", "notes")
 
     ## update data labels
     names(qv6_child_clean_labels) <- names(qv6_child_clean)
 
-    # 5) reformatting dates to be appropriate and computer readable ####
-    # YYYY-MM-DD
+    # 5) reformatting dates to be appropriate and computer readable YYYY-MM-DD  ####
     qv6_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv6_child_clean[["start_date"]]))
     qv6_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
@@ -213,14 +204,12 @@ qualtrics_child_v6dat <- function(date_str, data_path) {
             consumed_var <- paste0("consumed_", food_strs[f], "_g")
 
             # calculate amount consumed
-            qv6_child_clean[[consumed_var]] <- qv6_child_clean[[plate_var]] -
-                qv6_child_clean[[post_var]]
-            qv6_child_clean[[consumed_var]] <- ifelse(qv6_child_clean[[consumed_var]] <
-                0, 0, qv6_child_clean[[consumed_var]])
+            qv6_child_clean[[consumed_var]] <- qv6_child_clean[[plate_var]] - qv6_child_clean[[post_var]]
+
+            qv6_child_clean[[consumed_var]] <- ifelse(qv6_child_clean[[consumed_var]] < 0, 0, qv6_child_clean[[consumed_var]])
 
             # update labels
-            qv6_child_clean_labels[[consumed_var]] <- paste0(qv6_child_clean_labels[[consumed_var]],
-                " - recalcuated difference in R with values < 0 set to 0")
+            qv6_child_clean_labels[[consumed_var]] <- paste0(qv6_child_clean_labels[[consumed_var]], " - recalcuated difference in R with values < 0 set to 0")
 
         } else {
             # get variable names for noplate* and post* weights
@@ -229,21 +218,16 @@ qualtrics_child_v6dat <- function(date_str, data_path) {
             consumed_var <- paste0("consumed_", food_strs[f], "_g")
 
             # calculate amount consumed
-            qv6_child_clean[[consumed_var]] <- qv6_child_clean[[noplate_var]] -
-                qv6_child_clean[[post_var]]
-            qv6_child_clean[[consumed_var]] <- ifelse(qv6_child_clean[[consumed_var]] <
-                                                          0, 0, qv6_child_clean[[consumed_var]])
+            qv6_child_clean[[consumed_var]] <- qv6_child_clean[[noplate_var]] - qv6_child_clean[[post_var]]
+
+            qv6_child_clean[[consumed_var]] <- ifelse(qv6_child_clean[[consumed_var]] < 0, 0, qv6_child_clean[[consumed_var]])
 
             # update labels
-            qv6_child_clean_labels[[consumed_var]] <- paste0(qv6_child_clean_labels[[consumed_var]],
-                                                             " - recalcuated difference in R with values < 0 set to 0")
+            qv6_child_clean_labels[[consumed_var]] <- paste0(qv6_child_clean_labels[[consumed_var]], " - recalcuated difference in R with values < 0 set to 0")
         }
     }
 
-    # 7) fix 99's ####
-        # No 99s to fix
-
-    # 8) random fixes to factor level names and variable descriptions
+    # 7) random fixes to factor level names and variable descriptions
     qv6_child_clean_labels[["id"]] <- "participant id"
     qv6_child_clean_labels[["cams_post_mri"]] <- "Post-scan CAMS"
     qv6_child_clean_labels[["notes_mri_mprage"]] <- "notes about MRI: mprage scan"
@@ -258,25 +242,21 @@ qualtrics_child_v6dat <- function(date_str, data_path) {
 
     ## fix preMRI cams factor levels to start at 0
     var_name = "cams_pre_mri"
-    qv6_child_clean[[var_name]] <- sjlabelled::set_labels(qv6_child_clean[[var_name]], labels = c(`0` = 0,
-                                                                                                      `1` = 1, `2` = 2, `3` = 3, `4` = 4,`5` = 5,
-                                                                                                      `6` = 6, `7` = 7,`8` = 8,`9` = 9, `10` = 10))
+
+    #note - if you aren't changing the labels - value pairings you do not need to do the set_labels. This is only if you are changing things...
+    qv6_child_clean[[var_name]] <- sjlabelled::set_labels(qv6_child_clean[[var_name]], labels = c(`0` = 0, `1` = 1, `2` = 2, `3` = 3, `4` = 4,`5` = 5, `6` = 6, `7` = 7,`8` = 8, `9` = 9, `10` = 10))
     set_attr <- attributes(qv6_child_clean[[var_name]])
-    qv6_child_clean[[var_name]] <- ifelse(is.na(qv6_child_clean[[var_name]]), NA, ifelse(qv6_child_clean[[var_name]] ==
-                                                                                                 1, 0, ifelse(qv6_child_clean[[var_name]] == 2, 1,
-                                                                                                              ifelse(qv6_child_clean[[var_name]] == 3, 2,
-                                                                                                                     ifelse(qv6_child_clean[[var_name]] == 4, 3,
-                                                                                                                            ifelse(qv6_child_clean[[var_name]] == 5, 4,
-                                                                                                                                   ifelse(qv6_child_clean[[var_name]] == 6, 5,
-                                                                                                                                          ifelse(qv6_child_clean[[var_name]] == 7, 6,
-                                                                                                                                                 ifelse(qv6_child_clean[[var_name]] == 8, 7,
-                                                                                                                                                        ifelse(qv6_child_clean[[var_name]] == 9, 8,
-                                                                                                                                                               ifelse(qv6_child_clean[[var_name]] == 10, 9, 10)))))))))))
+
+    qv6_child_clean[[var_name]] <- ifelse(is.na(qv6_child_clean[[var_name]]), NA, ifelse(qv6_child_clean[[var_name]] == 1, 0, ifelse(qv6_child_clean[[var_name]] == 2, 1, ifelse(qv6_child_clean[[var_name]] == 3, 2, ifelse(qv6_child_clean[[var_name]] == 4, 3,  ifelse(qv6_child_clean[[var_name]] == 5, 4,  ifelse(qv6_child_clean[[var_name]] == 6, 5, ifelse(qv6_child_clean[[var_name]] == 7, 6, ifelse(qv6_child_clean[[var_name]] == 8, 7, ifelse(qv6_child_clean[[var_name]] == 9, 8, ifelse(qv6_child_clean[[var_name]] == 10, 9, 10)))))))))))
+
     attributes(qv6_child_clean[[var_name]]) <- set_attr
+
     qv6_child_clean_labels[[var_name]] <- paste0(qv6_child_clean_labels[[var_name]], " - re-leveled in R to start with 0")
 
 
-    # 9) Format for export #### put data in order of participant ID for ease
+    # 8) Format for export ####
+
+    #put data in order of participant ID for ease
     qv6_child_clean <- qv6_child_clean[order(qv6_child_clean[["id"]]), ]
 
     # make sure the variable labels match in the dataset

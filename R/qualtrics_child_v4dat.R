@@ -84,34 +84,33 @@ qualtrics_child_v4dat <- function(date_str, data_path) {
 
     #### 3. Clean Data #####
 
-    # 1) extract variable labels/descriptions
+    # 1) extract variable labels/descriptions ####
     qv4_child_labels <- lapply(qv4_child_dat, function(x) attributes(x)$label)
 
-    # 2) selecting relevant data columns
+    # 2) selecting relevant data columns ####
     qv4_child_clean <- qv4_child_dat[c(1, 18, 25:33, 38:40, 42:46, 48:51, 57:66, 71, 73:101, 213)]
 
     ## update labels
     qv4_child_clean_labels <- qv4_child_labels[c(1, 18, 25:33, 38:40, 42:46, 48:51, 57:66, 71, 73:101, 213)]
 
 
-    # 3) removing all practice events (e.g., 999)
-    qv4_child_clean <- qv4_child_clean[!is.na(qv4_child_clean[["id"]]) & qv4_child_clean[["id"]] < 999, ]
+    # 3) removing all practice events (e.g., 999) ####
+    qv4_child_clean <- qv4_child_clean[!is.na(qv4_child_clean[["ID"]]) & qv4_child_clean[["ID"]] < 999, ]
 
-    # 4) re-ordering and re-name data columns general order: 1) child information (ID. date), 2) freddies, 3) food
-    # VAS 4) intakes (meal, meal duration), 5) CWC, CBIS, Parent Responsiveness, alien snack, mock 6) notes
+    # 4) re-ordering and re-name data columns ####
+    # general order: 1) child information (ID. date), 2) freddies, 3) food VAS 4) intakes (meal, meal duration), 5) CWC, CBIS, Parent Responsiveness, alien snack, mock 6) notes
 
     qv4_child_clean <- qv4_child_clean[c(2, 1, 36:37, 3:14, 38:62, 15:35, 63:64)]
 
     qv4_child_clean_labels <- qv4_child_clean_labels[c(2, 1, 36:37, 3:14, 38:62, 15:35, 63:64)]
 
-    ## re-name variables
-
-    names(qv4_child_clean) <- c("id", "start_date", "freddy_pre_meal", "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water", "mealrank_mac_cheese", "mealrank_chkn_nug", "mealrank_broccoli", "mealrank_grape", "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g", "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g", "cwc1", "cwc2", "cwc3", "cwc4", "cwc5", "cbis_percieved_male", "cbis_ideal_male", "cbis_percieved_female", "cbis_ideal_female", "psi_responsive_mom1", "psi_responsive_mom2", "psi_responsive_mom3", "psi_responsive_mom4", "psi_responsive_mom5", "psi_responsive_dad1", "psi_responsive_dad2", "psi_responsive_dad3", "psi_responsive_dad4", "psi_responsive_dad5", "spacegame_reward", "mockscan1_complete", "food_initials", "child_notes")
+    ## re-name variables\
+    names(qv4_child_clean) <- c("id", "start_date", "freddy_pre_meal", "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water", "mealrank_mac_cheese", "mealrank_chkn_nug", "mealrank_broccoli", "mealrank_grape", "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g", "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g", "cwc1", "cwc2", "cwc3", "cwc4", "cwc5", "cbis_perc_male", "cbis_ideal_male", "cbis_perc_female", "cbis_ideal_female", "psi_resp_mom1", "psi_resp_mom2", "psi_resp_mom3", "psi_resp_mom4", "psi_resp_mom5", "psi_resp_dad1", "psi_resp_dad2", "psi_resp_dad3", "psi_resp_dad4", "psi_resp_dad5", "spacegame_reward", "mockscan1", "food_initials", "child_notes")
 
     ## update data labels
     names(qv4_child_clean_labels) <- names(qv4_child_clean)
 
-    # 5) reformatting dates to be appropriate and computer readable #### YYYY-MM-DD
+    # 5) reformatting dates to be appropriate and computer readable YYYY-MM-DD ####
     qv4_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv4_child_clean[["start_date"]]))
     qv4_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
@@ -207,23 +206,21 @@ qualtrics_child_v4dat <- function(date_str, data_path) {
         attributes(qv4_child_clean[[pvar]]) <- pvar_attr
     }
 
-
-    # 8) random fixes to factor level names and variable descriptions
+    # 8) random fixes to factor level names and variable descriptions ####
     qv4_child_clean_labels[["meal_start"]] <- "V4 meal start time"
     qv4_child_clean_labels[["meal_end"]] <- "V4 meal end time"
     qv4_child_clean_labels[["spacegame_reward"]] <- "Type of candy selected for Space Game reward"
-    qv4_child_clean_labels[["mockscan1_complete"]] <- "Completion of Mock Scan Training 1 (viewing mock MRI environment)"
+    qv4_child_clean_labels[["mockscan1"]] <- "Completion of Mock Scan Training 1 (viewing mock MRI environment)"
 
-    # 9) Format for export #### put data in order of participant ID for ease
+    # 9) Format for export ####
+    # put data in order of participant ID for ease
     qv4_child_clean <- qv4_child_clean[order(qv4_child_clean[["id"]]), ]
 
     # make sure the variable labels match in the dataset
     qv4_child_clean = sjlabelled::set_label(qv4_child_clean, label = matrix(unlist(qv4_child_clean_labels, use.names = FALSE)))
 
     ## make list of data frame and associated labels
-    qv4_child <- list(data = qv4_child_clean, dict = qv4_child_clean_labels)
-
-    ## want an export options??
+    qv4_child <- list(data = qv4_child_clean, dict = qv4_child_clean_labels, pna_data = qv4_child_pna, pna_dict = qv4_child_pna_labels)
 
     return(qv4_child)
 }

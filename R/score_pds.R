@@ -47,7 +47,7 @@
 #'
 #' }
 #'
-#' @seealso For the Food and Brain Study, raw data from Qualtrics was processed using \code{\link{qualtrics_parent_v1dat}}
+#' @seealso For the Food and Brain Study, raw data from Qualtrics was processed using \code{\link{qualtrics_parent_v1dat}}, \code{\link{qualtrics_child_v1dat}}, and \code{\link{qualtrics_child_v1dat_home}},
 #'
 #' @export
 

@@ -10,8 +10,6 @@ score_cshqa(cshqa_data, study = "fbs", parID)
 \item{cshqa_data}{a data.frame all items for the Child Sleep Habits Questionnaire - Abbreviated following the naming conventions described above}
 
 \item{study}{a string indicating which study collected the data. Currently, only option and default is 'fbs'. This parameter is included so this script can be adapted for future studies that collect all subscales.}
-
-\item{parID}{(optional) name of participant ID column in cshqa_data. If included the output dataset  will be matched by parID, if not included the output dataset will be in the order of cshqa_data but will have no participant identifier.}
 }
 \value{
 A dataset with total and subscale scores for the Child Sleep Habits Questionnaire - Abbreviated

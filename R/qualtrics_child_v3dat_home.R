@@ -85,20 +85,25 @@ qualtrics_child_v3dat_home <- function(date_str, data_path) {
 
     #### 3. Clean Data #####
 
-    # 1) extract variable labels/descriptions
+    # 1) extract variable labels/descriptions ####
     qv3_child_labels <- lapply(qv3_child_dat, function(x) attributes(x)$label)
 
-    # 2) selecting relevant data columns
+    # 2) selecting relevant data columns ####
     qv3_child_clean <- qv3_child_dat[c(1, 18:87)]
 
     ## update labels
     qv3_child_clean_labels <- qv3_child_labels[c(1, 18:87)]
 
 
-    # 3) removing all practice events (e.g., 999) Note, ID variable is ID_number
+    # 3) removing all practice events (e.g., 999)  ####
+
+    #Note, ID variable is ID_number
+
     qv3_child_clean <- qv3_child_clean[!is.na(qv3_child_clean[["ID_number"]]) & qv3_child_clean[["ID_number"]] < 999, ]
 
-    # 4) re-ordering and re-name data columns general order: 1) child information (ID, start date), 2) DD
+    # 4) re-ordering and re-name data columns  ####
+
+    # general order: 1) child information (ID, start date), 2) DD
 
     qv3_child_clean <- qv3_child_clean[c(2, 1, 3:71)]
 
@@ -114,20 +119,18 @@ qualtrics_child_v3dat_home <- function(date_str, data_path) {
     ## update data labels
     names(qv3_child_clean_labels) <- names(qv3_child_clean)
 
-    # 5) reformatting dates to be appropriate and computer readable #### YYYY-MM-DD
+    # 5) reformatting dates to be appropriate and computer readable YYYY-MM-DD  ####
     qv3_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv3_child_clean[["start_date"]]))
     qv3_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
-    # 6) re-calculate manual variables #### no manual variables to calculate
-
-    # 7) re-ordering factor levels to start with value 0 #### levels to re-order
-
-    # 8) random fixes to factor level names and variable descriptions
+    # 6) random fixes to factor level names and variable descriptions ####
 
     ## id label
     qv3_child_clean_labels[["id"]] <- "participant ID"
 
-    #### 9) Format for export #### put data in order of participant ID for ease
+    #### 7) Format for export ####
+
+    #put data in order of participant ID for ease
     qv3_child_clean <- qv3_child_clean[order(qv3_child_clean[["id"]]), ]
 
     # make sure the variable labels match in the dataset

@@ -105,10 +105,7 @@ qualtrics_child_v4dat_home <- function(date_str, data_path) {
     qv4_child_clean_labels <- qv4_child_clean_labels[c(2, 1, 3:21)]
 
     ## manually update variable names
-    names(qv4_child_clean) <- c("id", "start_date", "cwc1", "cwc2", "cwc3", "cwc4", "cwc5", "cbis_percieved_male", "cbis_ideal_male",
-        "cbis_percieved_female", "cbis_ideal_female", "psi_responsive_mom1", "psi_responsive_mom2", "psi_responsive_mom3",
-        "psi_responsive_mom4", "psi_responsive_mom5", "psi_responsive_dad1", "psi_responsive_dad2", "psi_responsive_dad3",
-        "psi_responsive_dad4", "psi_responsive_dad5")
+    names(qv4_child_clean) <- c("id", "start_date", "cwc1", "cwc2", "cwc3", "cwc4", "cwc5", "cbis_percieved_male", "cbis_ideal_male", "cbis_perc_female", "cbis_ideal_female", "psi_resp_mom1", "psi_resp_mom2", "psi_resp_mom3", "psi_resp_mom4", "psi_resp_mom5", "psi_resp_dad1", "psi_resp_dad2", "psi_resp_dad3", "psi_resp_dad4", "psi_resp_dad5")
 
     ## update data labels
     names(qv4_child_clean_labels) <- names(qv4_child_clean)
@@ -117,9 +114,7 @@ qualtrics_child_v4dat_home <- function(date_str, data_path) {
     qv4_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv4_child_clean[["start_date"]]))
     qv4_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
-    # 6) re-calculate manual variables #### no manual variables to calculate
-
-    # 7) fix 99's ####
+    # 6) fix 99's ####
 
     ## check for labels/99 option: 1) if 99's exist, make a 'prefer not to answer' (pna) variable to go in pna
     ## database, 2) replace 99's with NA and make variable numeric
@@ -170,19 +165,19 @@ qualtrics_child_v4dat_home <- function(date_str, data_path) {
         attributes(qv4_child_clean[[pvar]]) <- pvar_attr
     }
 
-    # 8) random fixes to factor level names and variable descriptions
+    # 7) random fixes to factor level names and variable descriptions
 
     ## id label
     qv4_child_clean_labels[["id"]] <- "participant ID"
 
-    #### 9) Format for export #### put data in order of participant ID for ease
+    #### 8) Format for export #### put data in order of participant ID for ease
     qv4_child_clean <- qv4_child_clean[order(qv4_child_clean[["ID"]]), ]
 
     # make sure the variable labels match in the dataset
     qv4_child_clean = sjlabelled::set_label(qv4_child_clean, label = matrix(unlist(qv4_child_clean_labels, use.names = FALSE)))
 
     ## make list of data frame and associated labels
-    qv4_child <- list(data = qv4_child_clean, dict = qv4_child_clean_labels)
+    qv4_child <- list(data = qv4_child_clean, dict = qv4_child_clean_labels, pna_data = qv4_child_pna, pna_dict = qv4_child_pna_labels)
 
     ## want an export options??
 
