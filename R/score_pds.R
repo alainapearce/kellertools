@@ -17,7 +17,7 @@
 #'
 #'
 #' @param pds_data a data.frame with child sex and all questions from the Pubertal Development Scale. The required data to score the Pubertal Development Scale include sex, questions 1-3, and male/female specific questions 4-5. These questions must have the following names in the dataset: 'sex', 'pds_1', 'pds_2', 'pds_3', 'pds_4m', 'pds_5m', 'pds_4f', 'pds_5fa'. Note, as long as variable names match those listed, pds_data can include only data from male and/or female version scales.
-#' @param respondent string indicate if parent or child completed the Pubertal Development Scale. Must enter either 'parent' or 'child'
+#' @param respondent string to indicate if parent or child completed the Pubertal Development Scale. Must enter either 'parent' or 'child'
 #' @param male (optional) value for male. Default value is male = 0
 #' @param female (optional) value for female. Default value is female = 1
 #' @inheritParams fbs_intake
@@ -47,7 +47,7 @@
 #'
 #' }
 #'
-#' @seealso For the Food and Brain Study, raw data from Qualtrics was processed using \code{\link{qualtrics_parent_v1dat}}, \code{\link{qualtrics_child_v1dat}}, and \code{\link{qualtrics_child_v1dat_home}},
+#' @seealso For the Food and Brain Study, raw data from Qualtrics was processed using \code{\link{qualtrics_parent_v1dat}}, \code{\link{qualtrics_child_v7dat}}, and \code{\link{qualtrics_child_v7dat_home}},
 #'
 #' @export
 
@@ -67,13 +67,18 @@ score_pds <- function(pds_data, respondent, male = 0, female = 1, parID) {
     # make a working dataset to preserve original data
     pds_data_edits <- pds_data
 
+    if(class(pds_data_edits['sex'])[1] == 'haven_labelled'){
+        haven::labelled(pds_data_edits[['sex']], labels = NULL)
+        haven::labelled(pds_data_edits[['sex']], label = NULL)
+    }
+
     # check that respondent exist and is a string
     resp_arg <- methods::hasArg(respondent)
 
     if (isTRUE(resp_arg)) {
         if (!is.character(respondent)) {
             stop("respondent must be entered as a string and can either be 'parent' or 'child'")
-        } else if (respondent != "parent" | respondent != "child") {
+        } else if (respondent != "parent" & respondent != "child") {
             stop("the optional values for respondent are: 'parent' or 'child'")
         }
     } else if (isFALSE(resp_arg)) {
@@ -118,33 +123,41 @@ score_pds <- function(pds_data, respondent, male = 0, female = 1, parID) {
     ID_arg <- methods::hasArg(parID)
 
     if (isTRUE(ID_arg)){
-        if (!(parID %in% names(pwlb_data))) {
-            stop("variable name entered as parID is not in pwlb_data")
+        if (!(parID %in% names(pds_data))) {
+            stop("variable name entered as parID is not in pds_data")
         }
     }
 
     # check variables in pds_data
 
     ## standard variable names
-    pds_varnames <- c("pds_1", "pds_2", "pds_3", "pds_4m", "pds_5m", "pds_4f",
-        "pds_5fa")
+    pds_varnames <- c("pds_1", "pds_2", "pds_3", "pds_4m", "pds_5m", "pds_4f", "pds_5fa")
 
     if (sum(pds_varnames[1:3] %in% names(pds_data_edits)) < 3) {
         stop("Not all required variable are in pds_data or variable names match: 'pds_1', 'pds_2', 'pds_3'")
     }
 
     ## determine single or mixed sex
-    sex_levels <- levels(pds_data_edits[["sex_default"]])
+
+    sex_levels <- unique(pds_data_edits[["sex"]])
 
     # check male variable names
-    if (length(sex_nlevels) == 2 | sex_levels == "0") {
+    if (length(sex_levels) == 2) {
+        if (sum(pds_varnames[4:5] %in% names(pds_data_edits)) < 2) {
+            stop("The dataset contains data from males - Not all required male variable names are in pds_data or not all variable names match required namining: 'pds_4m', 'pds_5m'")
+        }
+    } else if (sex_levels == "0") {
         if (sum(pds_varnames[4:5] %in% names(pds_data_edits)) < 2) {
             stop("The dataset contains data from males - Not all required male variable names are in pds_data or not all variable names match required namining: 'pds_4m', 'pds_5m'")
         }
     }
 
     # check female variable names
-    if (length(sex_nlevels) == 2 | sex_levels == "1") {
+    if (length(sex_levels) == 2) {
+        if (sum(pds_varnames[6:7] %in% names(pds_data_edits)) < 2) {
+            stop("The dataset contains data from female - Not all required female variable names are in pds_data or not all variable names match required namining: 'pds_4f', 'pds_5fa'")
+        }
+    } else if (sex_levels == "1"){
         if (sum(pds_varnames[6:7] %in% names(pds_data_edits)) < 2) {
             stop("The dataset contains data from female - Not all required female variable names are in pds_data or not all variable names match required namining: 'pds_4f', 'pds_5fa'")
         }
@@ -159,12 +172,10 @@ score_pds <- function(pds_data, respondent, male = 0, female = 1, parID) {
 
         if (var_name %in% names(pds_data_edits)) {
             # convert 'I Don't Know'/99
-            pds_data_edits[[var_name]] <- ifelse(pds_data_edits[[var_name]] ==
-                99, NA, pds_data_edits[[var_name]])
+            pds_data_edits[[var_name]] <- ifelse(pds_data_edits[[var_name]] == 99, NA, pds_data_edits[[var_name]])
 
             # check range of values
-            if (min(pds_data_edits[[var_name]], na.rm = TRUE) < 1 & max(pds_data_edits[[var_name]],
-                na.rm = TRUE) > 4) {
+            if (min(pds_data_edits[[var_name]], na.rm = TRUE) < 1 & max(pds_data_edits[[var_name]], na.rm = TRUE) > 4) {
                 stop("coded level values should fall between the values 1 and 4")
             }
 
@@ -235,9 +246,7 @@ score_pds <- function(pds_data, respondent, male = 0, female = 1, parID) {
     pds_score_dat_labels[["pds_tanner"]] <- "Tanner equivaluent category"
 
     ## add attributes to for tanner category to data
-    pds_score_dat[["pds_tanner_cat"]] <- sjlabelled::add_labels(pds_score_dat[["pds_tanner_cat"]],
-        labels = c(Prepubertal = 1, `Early Puberty` = 2, `Mid-Puberty` = 3, `Late Puberty` = 4,
-            Postpubertal = 5))
+    pds_score_dat[["pds_tanner_cat"]] <- sjlabelled::add_labels(pds_score_dat[["pds_tanner_cat"]], labels = c(`Prepubertal` = 1, `Early Puberty` = 2, `Mid-Puberty` = 3, `Late Puberty` = 4,  `Postpubertal` = 5))
     pds_score_dat[["pds_tanner_cat"]] <- sjlabelled::as_numeric(pds_score_dat[["pds_tanner_cat"]])
 
     ## set names based on respondent
@@ -249,13 +258,6 @@ score_pds <- function(pds_data, respondent, male = 0, female = 1, parID) {
             names(pds_score_dat)[2:3] <- c("pds_score_self", "pds_tanner_self")
             names(pds_score_dat_labels)[2:3] <- c("pds_score_self", "pds_tanner_self")
         }
-    }
-
-    ## round data
-    if (isTRUE(ID_arg)){
-        pds_score_dat[2:ncol(pds_score_dat)] <- round(pds_score_dat[2:ncol(pds_score_dat)], digits = 3)
-    } else {
-        pds_score_dat <- round(pds_score_dat, digits = 3)
     }
 
     ## make sure the variable labels match in the dataset

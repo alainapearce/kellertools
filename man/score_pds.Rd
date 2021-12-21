@@ -9,7 +9,7 @@ score_pds(pds_data, respondent, male = 0, female = 1, parID)
 \arguments{
 \item{pds_data}{a data.frame with child sex and all questions from the Pubertal Development Scale. The required data to score the Pubertal Development Scale include sex, questions 1-3, and male/female specific questions 4-5. These questions must have the following names in the dataset: 'sex', 'pds_1', 'pds_2', 'pds_3', 'pds_4m', 'pds_5m', 'pds_4f', 'pds_5fa'. Note, as long as variable names match those listed, pds_data can include only data from male and/or female version scales.}
 
-\item{respondent}{string indicate if parent or child completed the Pubertal Development Scale. Must enter either 'parent' or 'child'}
+\item{respondent}{string to indicate if parent or child completed the Pubertal Development Scale. Must enter either 'parent' or 'child'}
 
 \item{male}{(optional) value for male. Default value is male = 0}
 
@@ -60,5 +60,5 @@ Carskadon, Mary A., and Christine Acebo. A self-administered rating scale for pu
 Crockett, L. J. Pubertal development scale: Pubertal categories. Unpublished manuscript (1988).
 }
 \seealso{
-For the Food and Brain Study, raw data from Qualtrics was processed using \code{\link{qualtrics_parent_v1dat}}, \code{\link{qualtrics_child_v1dat}}, and \code{\link{qualtrics_child_v1dat_home}},
+For the Food and Brain Study, raw data from Qualtrics was processed using \code{\link{qualtrics_parent_v1dat}}, \code{\link{qualtrics_child_v7dat}}, and \code{\link{qualtrics_child_v7dat_home}},
 }

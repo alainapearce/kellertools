@@ -72,9 +72,7 @@ score_lbc <- function(lbc_data, study = "fbs", parID) {
     #### 2. Set Up Data #####
 
     # set up database for results create empty matrix
-    lbc_score_dat <- data.frame(lbc_misbeh = rep(NA, nrow(lbc_data)), lbc_overeat = rep(NA,
-        nrow(lbc_data)), lbc_em_overweight = rep(NA, nrow(lbc_data)), lbc_pa = rep(NA,
-        nrow(lbc_data)), lbc_total = rep(NA, nrow(lbc_data)))
+    lbc_score_dat <- data.frame(lbc_misbeh = rep(NA, nrow(lbc_data)), lbc_overeat = rep(NA, nrow(lbc_data)), lbc_em_overweight = rep(NA, nrow(lbc_data)), lbc_pa = rep(NA, nrow(lbc_data)), lbc_total = rep(NA, nrow(lbc_data)))
 
     if (isTRUE(ID_arg)) {
         lbc_score_dat <- data.frame(lbc_data[[parID]], lbc_score_dat)
