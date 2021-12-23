@@ -124,10 +124,25 @@ util_child_v5dat_home <- function(date_str, data_path) {
 
     qv5_child_clean_labels <- qv5_child_clean_labels[c(2, 1, 3:18)]
 
+    ## re-name variables -- make lowercase
+    names(qv5_child_clean) <- tolower(names(qv5_child_clean))
+
+    ## re-name variables -- remove v5 prefix
+    for (var in 1:length(names(qv5_child_clean))) {
+        var_name <- as.character(names(qv5_child_clean)[var])
+
+        # remove v5 prefix from labels
+        if (grepl("v5_", var_name, fixed = TRUE)) {
+            names(qv5_child_clean)[var] <- gsub("v5_", "", names(qv5_child_clean)[var])
+        }
+
+        if (grepl("v5", var_name, fixed = TRUE)) {
+            names(qv5_child_clean)[var] <- gsub("v5", "", names(qv5_child_clean)[var])
+        }
+    }
+
     ## manually update variable names
-    names(qv5_child_clean) <- c("id", "start_date", "ctc1", "ctc2", "ctc3", "ctc4",
-        "ctc5", "ctc6", "ctc7", "ctc8", "ctc9", "ctc10", "ctc11", "ctc12", "ctc13",
-        "ctc14", "ctc15", "ctc16")
+    names(qv5_child_clean)[2] <- "start_date"
 
     ## update data labels
     names(qv5_child_clean_labels) <- names(qv5_child_clean)
@@ -146,9 +161,9 @@ util_child_v5dat_home <- function(date_str, data_path) {
     ## variable numeric
 
     ## make pna database
-    qv5_child_pna <- data.frame(id = qv5_child_clean[["ID"]])
+    qv5_child_pna <- data.frame(id = qv5_child_clean[["id"]])
     qv5_child_pna_labels <- lapply(qv5_child_pna, function(x) attributes(x)$label)
-    qv5_child_pna_labels[["id"]] <- qv5_child_pna_labels[["id"]]
+    qv5_child_pna_labels[["id"]] <- qv5_child_clean_labels[["id"]]
 
     pna_label <- "Note: prefer not to answer (pna) marked NA - see pna database for which were pna rather than missing NA"
 
@@ -170,40 +185,58 @@ util_child_v5dat_home <- function(date_str, data_path) {
             names(qv5_child_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv5_child_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ",
-                pvar, ": ", qv5_child_clean_labels[[pvar]])
+            qv5_child_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ",  pvar, ": ", qv5_child_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
-            qv5_child_clean_labels[[pvar]] <- paste0(qv5_child_clean_labels[[pvar]],
-                " -- ", pna_label)
+            qv5_child_clean_labels[[pvar]] <- paste0(qv5_child_clean_labels[[pvar]],  " -- ", pna_label)
 
         }
 
         # drop 99 level label labels only update if had 99 - done in if statement
         # above
-        qv5_child_clean[[pvar]] <- sjlabelled::remove_labels(qv5_child_clean[[pvar]],
-            labels = "Don't want to answer")
+        qv5_child_clean[[pvar]] <- sjlabelled::remove_labels(qv5_child_clean[[pvar]], labels = "Don't want to answer")
 
         # extract variable attributes
         pvar_attr <- attributes(qv5_child_clean[[pvar]])
 
         # replace 99 values
-        qv5_child_clean[[pvar]] <- ifelse(is.na(qv5_child_clean[[pvar]]) | qv5_child_clean[[pvar]] ==
-            99, NA, qv5_child_clean[[pvar]])
+        qv5_child_clean[[pvar]] <- ifelse(is.na(qv5_child_clean[[pvar]]) | qv5_child_clean[[pvar]] ==  99, NA, qv5_child_clean[[pvar]])
 
         # replace attributes
         attributes(qv5_child_clean[[pvar]]) <- pvar_attr
     }
 
-    # 7b) Relevel ctc FIGURE THIS OUT. ARE SOME QUESTIONS REVERSE ORDERED?
+    # 7b) # re-level ctc questions 13-16 so that higher = riskier
+    ctc_names <- names(qv5_child_clean)[15:18]
 
-    # 8) random fixes to factor level names and variable descriptions CHANGE
-    # VARIABLE DESCRIPTION OF CTC FROM VISIT '7' to '5'
+    for (var in 1:length(ctc_names)) {
+        var_name <- as.character(ctc_names[var])
+
+        qv5_child_clean[[var_name]] <- sjlabelled::set_labels(qv5_child_clean[[var_name]], labels = c(`Not at all` = 5, `A little` = 4, `Not sure/in the middle` = 3, Somewhat = 2, `A lot` = 1))
+        set_attr <- attributes(qv5_child_clean[[var_name]])
+
+        qv5_child_clean[[var_name]] <- ifelse(is.na(qv5_child_clean[[var_name]]),  NA, ifelse(qv5_child_clean[[var_name]] == 1, 5, ifelse(qv5_child_clean[[var_name]] == 2, 4, ifelse(qv5_child_clean[[var_name]] == 3, 3, ifelse(qv5_child_clean[[var_name]] == 4, 2, 1)))))
+
+        attributes(qv5_child_clean[[var_name]]) <- set_attr
+        qv5_child_clean_labels[[var_name]] <- paste0(qv5_child_clean_labels[[var_name]], " - re-leveled in R so higher = riskier")
+    }
+
+    # 8) random fixes to factor level names and variable descriptions
+    for (var in 1:length(names(qv5_child_clean))) {
+        var_name <- as.character(names(qv5_child_clean)[var])
+
+        # remove v5 prefix from labels
+        if (grepl("Visit 7", qv5_child_clean_labels[[var_name]], fixed = TRUE)) {
+            qv5_child_clean_labels[[var_name]] <- gsub("Visit 7 ", "", qv5_child_clean_labels[[var_name]])
+        }
+    }
 
     ## id label
     qv5_child_clean_labels[["id"]] <- "participant ID"
 
-    #### 9) Format for export #### put data in order of participant ID for ease
+    #### 9) Format for export ####
+
+    #put data in order of participant ID for ease
     qv5_child_clean <- qv5_child_clean[order(qv5_child_clean[["id"]]), ]
 
     qv5_child_pna <- qv5_child_pna[order(qv5_child_pna[["id"]]), ]
@@ -214,7 +247,7 @@ util_child_v5dat_home <- function(date_str, data_path) {
     qv5_child_pna = sjlabelled::set_label(qv5_child_pna, label = matrix(unlist(qv5_child_pna_labels, use.names = FALSE)))
 
     ## make list of data frame and associated labels
-    qv5_child <- list(data = qv5_child_clean, dict = qv5_child_clean_labels)
+    qv5_child <- list(data = qv5_child_clean, dict = qv5_child_clean_labels, pna_data = qv5_child_pna, pna_dict = qv5_child_pna_labels)
 
     ## want an export options??
 

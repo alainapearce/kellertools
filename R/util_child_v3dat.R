@@ -107,7 +107,7 @@ util_child_v3dat <- function(date_str, data_path) {
     names(qv3_child_clean) <- tolower(names(qv3_child_clean))
 
     ## manually update variables
-    names(qv3_child_clean)[2:41] <- c("start_date", "freddy_pre_meal", "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water", "mealrank_mac_cheese", "mealrank_chkn_nug", "mealrank_broccoli", "mealrank_grape", "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g", "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g",  "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g")
+    names(qv3_child_clean)[2:41] <- c("start_date", "freddy_pre_meal", "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water", "rank_mac_cheese", "rank_chkn_nug", "rank_broccoli", "rank_grape", "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g", "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g",  "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g")
 
     names(qv3_child_clean)[names(qv3_child_clean) == "v3childnotes"] <- "child_notes"
     names(qv3_child_clean)[names(qv3_child_clean) == "v3_food_initials"] <- "food_initials"
@@ -115,7 +115,7 @@ util_child_v3dat <- function(date_str, data_path) {
     ## update data labels
     names(qv3_child_clean_labels) <- names(qv3_child_clean)
 
-    # 5) reformatting dates to be appropriate and computer readableYYYY-MM-DD  ####
+    # 5) reformatting dates to be appropriate and computer readable YYYY-MM-DD  ####
     qv3_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv3_child_clean[["start_date"]]))
     qv3_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
@@ -164,8 +164,26 @@ util_child_v3dat <- function(date_str, data_path) {
     }
 
     # 7) random fixes to factor level names and variable descriptions ####
-    qv3_child_clean_labels[["meal_start"]] <- "V3 meal start time"
-    qv3_child_clean_labels[["meal_end"]] <- "V3 meal end time"
+    qv3_child_clean_labels[["meal_start"]] <- "Meal start time"
+    qv3_child_clean_labels[["meal_end"]] <- "Meal end time"
+
+    for (var in 1:length(names(qv3_child_clean))) {
+        var_name <- as.character(names(qv3_child_clean)[var])
+
+        # remove v3 prefix from labels
+        if (grepl("Visit 3", qv3_child_clean_labels[[var_name]], fixed = TRUE)) {
+            qv3_child_clean_labels[[var_name]] <- gsub("Visit 3 ", "", qv3_child_clean_labels[[var_name]])
+        }
+
+        if (grepl("V3 -", qv3_child_clean_labels[[var_name]], fixed = TRUE)) {
+            qv3_child_clean_labels[[var_name]] <- gsub("V3 - ", "", qv3_child_clean_labels[[var_name]])
+        }
+
+        if (grepl("V3", qv3_child_clean_labels[[var_name]], fixed = TRUE)) {
+            qv3_child_clean_labels[[var_name]] <- gsub("V3 ", "", qv3_child_clean_labels[[var_name]])
+        }
+
+    }
 
 
     # 8) Format for export ####

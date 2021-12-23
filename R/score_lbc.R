@@ -4,7 +4,7 @@
 #'
 #' To use this function, the data must be prepared according to the following criteria:
 #' 1) The data must include all individual questionnaire items
-#' 2) The  columns/variables must match the following naming convention: 'lbc#' where # is the question number (1-25; note - script will allow only has 6-25 for study = 'fbs')
+#' 2) The  columns/variables must match the following naming convention: 'lbc#' where # is the question number (1-25; note - script will allow only 6-25 for study = 'fbs')
 #' 3) All questions must have the numeric value for the choice: 1 - Not At All, 2 - A Little (-), 3 - A Little (+), 4 - Somewhat, 5 - Much (-), 6 - Much (+), 7 - Very Much
 #'
 #' Note, as long as variable names match those listed, the dataset can include other variables
@@ -64,8 +64,8 @@ score_lbc <- function(lbc_data, study = "fbs", parID) {
     ID_arg <- methods::hasArg(parID)
 
     if (isTRUE(ID_arg)){
-        if (!(parID %in% names(pwlb_data))) {
-            stop("variable name entered as parID is not in pwlb_data")
+        if (!(parID %in% names(lbc_data))) {
+            stop("variable name entered as parID is not in lbc_data")
         }
     }
 

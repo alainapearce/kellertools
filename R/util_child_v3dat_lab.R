@@ -1,4 +1,4 @@
-#' qutil_child_v3dat_lab: Process raw qualtrics visit 3 data for the child
+#' util_child_v3dat_lab: Process raw qualtrics visit 3 data for the child
 #'
 #' This function loads the .sav raw data file for the child visit 3 data that was collected via Qualtrics in the lab when the procedure was split due to covid and cleans the data. Cleaning the data involves:
 #' 1) extracting all variable descriptions,
@@ -20,21 +20,21 @@
 #'
 #' @examples
 #' #if in same working directory as data:
-#' ch_v3_dat_lab <- qutil_child_v3dat_lab('2021-10-11')
+#' ch_v3_dat_lab <- util_child_v3dat_lab('2021-10-11')
 #'
 #' \dontrun{
 #' #date must be a string. The following will not run:
-#' ch_v3_dat_lab <- qutil_child_v3dat_lab(2021-10-11)
+#' ch_v3_dat_lab <- util_child_v3dat_lab(2021-10-11)
 #'
 #' #date must match the file name - for file named 'Child_V3_Lab_2021_09_16', the
 #' following will not run:
-#' ch_v3_dat_lab <- qutil_child_v3dat_lab('2021_10_11')
+#' ch_v3_dat_lab <- util_child_v3dat_lab('2021_10_11')
 #' }
 #'
 #'
 #' @export
 #'
-qutil_child_v3dat_lab <- function(date_str, data_path) {
+util_child_v3dat_lab <- function(date_str, data_path) {
 
     #### 1. Set up/initial checks #####
 
@@ -121,7 +121,7 @@ qutil_child_v3dat_lab <- function(date_str, data_path) {
     qv3_child_clean_labels <- qv3_child_clean_labels[c(2, 1, 15:16, 3:14, 17:43)]
 
     ## re-name variables
-    names(qv3_child_clean) <- c("id", "start_date", "freddy_pre_meal", "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water", "mealrank_mac_cheese", "mealrank_chkn_nug", "mealrank_broccoli", "mealrank_grape", "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g", "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g", "food_initials", "child_notes")
+    names(qv3_child_clean) <- c("id", "start_date", "freddy_pre_meal", "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water", "rank_mac_cheese", "rank_chkn_nug", "rank_broccoli", "rank_grape", "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g", "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g", "food_initials", "child_notes")
 
     ## update data labels
     names(qv3_child_clean_labels) <- names(qv3_child_clean)
@@ -173,8 +173,26 @@ qutil_child_v3dat_lab <- function(date_str, data_path) {
     }
 
     # 7) random fixes to factor level names and variable descriptions  ####
-    qv3_child_clean_labels[["meal_start"]] <- "V3 meal start time"
-    qv3_child_clean_labels[["meal_end"]] <- "V3 meal end time"
+    qv3_child_clean_labels[["meal_start"]] <- "Meal start time"
+    qv3_child_clean_labels[["meal_end"]] <- "Meal end time"
+
+    for (var in 1:length(names(qv3_child_clean))) {
+        var_name <- as.character(names(qv3_child_clean)[var])
+
+        # remove v3 prefix from labels
+        if (grepl("Visit 3", qv3_child_clean_labels[[var_name]], fixed = TRUE)) {
+            qv3_child_clean_labels[[var_name]] <- gsub("Visit 3 ", "", qv3_child_clean_labels[[var_name]])
+        }
+
+        if (grepl("V3 -", qv3_child_clean_labels[[var_name]], fixed = TRUE)) {
+            qv3_child_clean_labels[[var_name]] <- gsub("V3 - ", "", qv3_child_clean_labels[[var_name]])
+        }
+
+        if (grepl("V3", qv3_child_clean_labels[[var_name]], fixed = TRUE)) {
+            qv3_child_clean_labels[[var_name]] <- gsub("V3 ", "", qv3_child_clean_labels[[var_name]])
+        }
+
+    }
 
     #### 8) Format for export ####
 

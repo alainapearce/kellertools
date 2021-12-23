@@ -100,27 +100,28 @@ util_child_v4dat_lab <- function(date_str, data_path) {
 
     #### 3. Clean Data #####
 
-    # 1) extract variable labels/descriptions
+    # 1) extract variable labels/descriptions ####
     qv4_child_labels <- lapply(qv4_child_dat, function(x) attributes(x)$label)
 
-    # 2) selecting relevant data columns
-    qv4_child_clean <- qv4_child_dat[c(1, 18, 25:33, 39:41, 45, 47:75, 187)]
+    # 2) selecting relevant data columns ####
+    qv4_child_clean <- qv4_child_dat[c(1, 18:20, 25:33, 39:41, 45, 48:75, 187)]
 
     ## update labels
-    qv4_child_clean_labels <- qv4_child_labels[c(1, 18, 25:33, 39:41, 45, 47:75, 187)]
+    qv4_child_clean_labels <- qv4_child_labels[c(1, 18:20, 25:33, 39:41, 45, 48:75, 187)]
 
-    # 3) removing all practice events (e.g., 999)
-    qv4_child_clean <- qv4_child_clean[!is.na(qv4_child_clean[["id"]]) & qv4_child_clean[["id"]] < 999, ]
+    # 3) removing all practice events (e.g., 999) ####
+    qv4_child_clean <- qv4_child_clean[!is.na(qv4_child_clean[["ID"]]) & qv4_child_clean[["ID"]] < 999, ]
 
-    # 4) re-ordering and re-name data columns general order: 1) child information (ID, date), 2) freddies, 3) food
-    # VAS 4) intakes (meal, meal duration) 5) notes
+    # 4) re-ordering and re-name data columns ####
 
-    qv4_child_clean <- qv4_child_clean[c(2, 1, 17:18, 3:14, 19:43, 15:16, 44:45)]
+    #general order: 1) child information (ID, date), 2) freddies, 3) food VAS 4) intakes (meal, meal duration) 5) notes
 
-    qv4_child_clean_labels <- qv4_child_clean_labels[c(2, 1, 17:18, 3:14, 19:43, 15:16, 44:45)]
+    qv4_child_clean <- qv4_child_clean[c(2, 1, 3:4, 18:19, 5:16, 20:44, 17, 45:46)]
+
+    qv4_child_clean_labels <- qv4_child_clean_labels[c(2, 1, 3:4, 18:19, 5:16, 20:44, 17, 45:46)]
 
     ## re-name variables
-    names(qv4_child_clean) <- c("id", "start_date", "freddy_pre_meal", "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water", "mealrank_mac_cheese", "mealrank_chkn_nug", "mealrank_broccoli", "mealrank_grape", "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g", "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g", "spacegame_reward", "mockscan1_complete", "food_initials", "child_notes")
+    names(qv4_child_clean) <- c("id", "start_date", "dob", "age", "freddy_pre_meal", "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water", "rank_mac_cheese", "rank_chkn_nug", "rank_broccoli", "rank_grape", "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g", "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g", "spacegame_reward", "food_initials", "child_notes")
 
     ## update data labels
     names(qv4_child_clean_labels) <- names(qv4_child_clean)
@@ -132,7 +133,7 @@ util_child_v4dat_lab <- function(date_str, data_path) {
     # 6) re-calculate manual variables ####
 
     # get all intake variables
-    intake_vars <- names(qv4_child_clean)[c(17:41)]
+    intake_vars <- names(qv4_child_clean)[c(19:43)]
 
     # make all intake variables numeric
     for (var in 1:length(intake_vars)) {
@@ -168,16 +169,32 @@ util_child_v4dat_lab <- function(date_str, data_path) {
         }
     }
 
-    # 7) re-ordering factor levels to start with value 0 #### no levels to reorder
-
-    # 8) random fixes to factor level names and variable descriptions
-    qv4_child_clean_labels[["meal_start"]] <- "V4 meal start time"
-    qv4_child_clean_labels[["meal_end"]] <- "V4 meal end time"
+    # 7) random fixes to factor level names and variable descriptions ####
+    qv4_child_clean_labels[["meal_start"]] <- "Meal start time"
+    qv4_child_clean_labels[["meal_end"]] <- "Meal end time"
     qv4_child_clean_labels[["spacegame_reward"]] <- "Type of candy selected for Space Game reward"
-    qv4_child_clean_labels[["mockscan1_complete"]] <- "Completion of Mock Scan Training 1 (viewing mock MRI environment)"
 
+    for (var in 1:length(names(qv4_child_clean))) {
+        var_name <- as.character(names(qv4_child_clean)[var])
 
-    #### 9) Format for export #### put data in order of participant ID for ease
+        # remove v4 prefix from labels
+        if (grepl("Visit 4", qv4_child_clean_labels[[var_name]], fixed = TRUE)) {
+            qv4_child_clean_labels[[var_name]] <- gsub("Visit 4 ", "", qv4_child_clean_labels[[var_name]])
+        }
+
+        if (grepl("V4 -", qv4_child_clean_labels[[var_name]], fixed = TRUE)) {
+            qv4_child_clean_labels[[var_name]] <- gsub("V4 - ", "", qv4_child_clean_labels[[var_name]])
+        }
+
+        if (grepl("V4", qv4_child_clean_labels[[var_name]], fixed = TRUE)) {
+            qv4_child_clean_labels[[var_name]] <- gsub("V4 ", "", qv4_child_clean_labels[[var_name]])
+        }
+
+    }
+
+    # 8) Format for export ####
+
+    #put data in order of participant ID for ease
     qv4_child_clean <- qv4_child_clean[order(qv4_child_clean[["id"]]), ]
 
     # make sure the variable labels match in the dataset

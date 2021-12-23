@@ -48,8 +48,8 @@ score_ffbs <- function(ffbs_data, parID) {
     ID_arg <- methods::hasArg(parID)
 
     if (isTRUE(ID_arg)){
-        if (!(parID %in% names(pwlb_data))) {
-            stop("variable name entered as parID is not in pwlb_data")
+        if (!(parID %in% names(ffbs_data))) {
+            stop("variable name entered as parID is not in ffbs_data")
         }
     }
 

@@ -48,15 +48,15 @@ score_tesqe <- function(tesqe_data, parID) {
     ID_arg <- methods::hasArg(parID)
 
     if (isTRUE(ID_arg)){
-        if (!(parID %in% names(pwlb_data))) {
-            stop("variable name entered as parID is not in pwlb_data")
+        if (!(parID %in% names(tesqe_data))) {
+            stop("variable name entered as parID is not in tesqe_data")
         }
     }
 
     #### 2. Set Up Data #####
 
     # set up database for results create empty matrix
-    tesqe_score_dat <- data.frame(tesqe_avoid = rep(NA, nrow(tesqe_data)), tesqe_avoid_nNA = rep(NA, nrow(tesqe_data)), tesqe_control = rep(NA, nrow(tesqe_data)), tesqe_control_nNA = rep(NA, nrow(tesqe_data)), tesqe_distract = rep(NA, nrow(tesqe_data)), tesqe_distract_nNA = rep(NA, nrow(tesqe_data)), tesqe_supress = rep(NA, nrow(tesqe_data)), tesqe_supress_nNA = rep(NA, nrow(tesqe_data)), tesqe_goalrules = rep(NA, nrow(tesqe_data)), tesqe_goalrules_nNA = rep(NA, nrow(tesqe_data)), tesqe_goaldeliberate = rep(NA, nrow(tesqe_data)), tesqe_goaldeliberate_nNA = rep(NA, nrow(tesqe_data)))
+    tesqe_score_dat <- data.frame(tesqe_avoid = rep(NA, nrow(tesqe_data)), tesqe_avoid_nNA = rep(NA, nrow(tesqe_data)), tesqe_control = rep(NA, nrow(tesqe_data)), tesqe_control_nNA = rep(NA, nrow(tesqe_data)), tesqe_distract = rep(NA, nrow(tesqe_data)), tesqe_distract_nNA = rep(NA, nrow(tesqe_data)), tesqe_supress = rep(NA, nrow(tesqe_data)), tesqe_supress_nNA = rep(NA, nrow(tesqe_data)), tesqe_goal_rules = rep(NA, nrow(tesqe_data)), tesqe_goal_rules_nNA = rep(NA, nrow(tesqe_data)), tesqe_goal_delib = rep(NA, nrow(tesqe_data)), tesqe_goal_delib_nNA = rep(NA, nrow(tesqe_data)))
 
     if (isTRUE(ID_arg)) {
         tesqe_score_dat <- data.frame(tesqe_data[[parID]], tesqe_score_dat)
@@ -132,30 +132,30 @@ score_tesqe <- function(tesqe_data, parID) {
     tesqe_score_dat_labels[["tesqe_supress_nNA"]] <- "TESQE Suppression Number of NA's/Don't Know"
 
     ## Setting Goals and Rules
-    tesqe_goalrules_vars <- c("tesqe17", "tesqe18", "tesqe19", "tesqe20")
+    tesqe_goal_rules_vars <- c("tesqe17", "tesqe18", "tesqe19", "tesqe20")
 
     ## check number of NAs
-    tesqe_score_dat[["tesqe_goalrules_nNA"]] <- rowSums(is.na(tesqe_data[tesqe_goalrules_vars]))
+    tesqe_score_dat[["tesqe_goal_rules_nNA"]] <- rowSums(is.na(tesqe_data[tesqe_goal_rules_vars]))
 
     #score if have at least 2 scores
-    tesqe_score_dat[["tesqe_goalrules"]] <- ifelse(tesqe_score_dat[["tesqe_goalrules_nNA"]] > 2, NA, rowMeans(tesqe_data[tesqe_goalrules_vars], na.rm = TRUE))
+    tesqe_score_dat[["tesqe_goal_rules"]] <- ifelse(tesqe_score_dat[["tesqe_goal_rules_nNA"]] > 2, NA, rowMeans(tesqe_data[tesqe_goal_rules_vars], na.rm = TRUE))
 
     ## add labels to data
-    tesqe_score_dat_labels[["tesqe_goalrules"]] <- "TESQE Setting Goals and Rules Total Score"
-    tesqe_score_dat_labels[["tesqe_goalrules_nNA"]] <- "TESQE Setting Goals and Rules Number of NA's/Don't Know"
+    tesqe_score_dat_labels[["tesqe_goal_rules"]] <- "TESQE Setting Goals and Rules Total Score"
+    tesqe_score_dat_labels[["tesqe_goal_rules_nNA"]] <- "TESQE Setting Goals and Rules Number of NA's/Don't Know"
 
     ## Goal Deliberation
-    tesqe_goaldeliberate_vars <- c("tesqe21", "tesqe22", "tesqe23", "tesqe24")
+    tesqe_goal_delib_vars <- c("tesqe21", "tesqe22", "tesqe23", "tesqe24")
 
     ## check number of NAs
-    tesqe_score_dat[["tesqe_goaldeliberate_nNA"]] <- rowSums(is.na(tesqe_data[tesqe_goaldeliberate_vars]))
+    tesqe_score_dat[["tesqe_goal_delib_nNA"]] <- rowSums(is.na(tesqe_data[tesqe_goal_delib_vars]))
 
     #score if have at least 2 scores
-    tesqe_score_dat[["tesqe_goaldeliberate"]] <- ifelse(tesqe_score_dat[["tesqe_goaldeliberate_nNA"]] > 2, NA, rowMeans(tesqe_data[tesqe_goaldeliberate_vars], na.rm = TRUE))
+    tesqe_score_dat[["tesqe_goal_delib"]] <- ifelse(tesqe_score_dat[["tesqe_goal_delib_nNA"]] > 2, NA, rowMeans(tesqe_data[tesqe_goal_delib_vars], na.rm = TRUE))
 
     ## add labels to data
-    tesqe_score_dat_labels[["tesqe_goaldeliberate"]] <- "TESQE Goal Deliberation Total Score"
-    tesqe_score_dat_labels[["tesqe_goaldeliberate_nNA"]] <- "TESQE Goal Deliberation Number of NA's/Don't Know"
+    tesqe_score_dat_labels[["tesqe_goal_delib"]] <- "TESQE Goal Deliberation Total Score"
+    tesqe_score_dat_labels[["tesqe_goal_delib_nNA"]] <- "TESQE Goal Deliberation Number of NA's/Don't Know"
 
     #### 3. Clean Export/Scored Data #####
 

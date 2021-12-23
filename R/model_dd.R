@@ -19,6 +19,7 @@
 #' @param dd_data a data.frame all items for the Delay Discounting following the naming conventions described above
 #' @inheritParams fbs_intake
 #'
+#'
 #' @return A dataset with a score for the Delay Discounting
 #'
 #' @examples
@@ -51,8 +52,8 @@ model_dd <- function(dd_data, parID) {
     ID_arg <- methods::hasArg(parID)
 
     if (isTRUE(ID_arg)){
-        if (!(parID %in% names(pwlb_data))) {
-            stop("variable name entered as parID is not in pwlb_data")
+        if (!(parID %in% names(dd_data))) {
+            stop("variable name entered as parID is not in dd_data")
         }
     }
 
@@ -153,17 +154,17 @@ model_dd <- function(dd_data, parID) {
     dd_data_long_use <- dd_data_long[!is.na(dd_data_long[['values']]), ]
 
     ## set up models
-    fitobj <- fitDDCurves(data = dd_data_long_use, settings = list(Delays = delay, Values = values, Individual = id),  maxValue = 1, verbose  = TRUE)
+    fitobj <- discountingtools::fitDDCurves(data = dd_data_long_use, settings = list(Delays = delay, Values = values, Individual = id),  maxValue = 1, verbose  = TRUE)
 
-    fitobj <- dd_modelOptions(fitobj, plan = c("mazur", "bleichrodt", "ebertprelec", "exponential", "greenmyerson", "laibson", "noise", "rachlin", "rodriguezlogue"))
+    fitobj <- discountingtools::dd_modelOptions(fitobj, plan = c("mazur", "bleichrodt", "ebertprelec", "exponential", "greenmyerson", "laibson", "noise", "rachlin", "rodriguezlogue"))
 
-    fitobj <- dd_metricOptions(fitobj, metrics = c("lned50", "mbauc", "logmbauc"))
+    fitobj <- discountingtools::dd_metricOptions(fitobj, metrics = c("lned50", "mbauc", "logmbauc"))
 
-    fitobj <- dd_screenOption(fitobj, screen = FALSE)
+    fitobj <- discountingtools::dd_screenOption(fitobj, screen = FALSE)
 
-    results <- dd_analyze(fitobj)
+    results <- discountingtools::dd_analyze(fitobj)
 
-    results_sum <- summary(results)
+    results_sum <- discountingtools::summary.discountingtools(results)
 
     ## add data to data.frame
     #rename summary ID and get desired summary results

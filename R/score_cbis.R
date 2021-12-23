@@ -46,8 +46,8 @@ score_cbis <- function(cbis_data, parID) {
     ID_arg <- methods::hasArg(parID)
 
     if (isTRUE(ID_arg)){
-        if (!(parID %in% names(pwlb_data))) {
-            stop("variable name entered as parID is not in pwlb_data")
+        if (!(parID %in% names(cbis_data))) {
+            stop("variable name entered as parID is not in cbis_data")
         }
     }
 

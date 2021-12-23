@@ -3,7 +3,7 @@
 #' This function scores the Revised Children's Manifest Anxiety Scale for total score and the following subscales: Physiological Manifestations, Worry and Oversensitivity, and Fear/Concentration
 #'
 #' To use this function, the data must be prepared according to the following criteria:
-#' 1) The data must include all individual questionnaire items and child grade
+#' 1) The data must include all individual questionnaire items and child grade. If child grade is not included some variables will be exported with NA's.
 #' 2) The columns/variables must match the following naming convention: 'rcmas#' where # is the question number (1-37) and child's grade must be labeled 'grade'
 #' 3) All questions must have the numeric value for the choice:
 #' 0 - No, 1 - Yes
@@ -52,15 +52,23 @@ score_rcmas <- function(rcmas_data, parID) {
     ID_arg <- methods::hasArg(parID)
 
     if (isTRUE(ID_arg)){
-        if (!(parID %in% names(pwlb_data))) {
-            stop("variable name entered as parID is not in pwlb_data")
+        if (!(parID %in% names(rcmas_data))) {
+            stop("variable name entered as parID is not in rcmas_data")
         }
+    }
+
+    # check for child grade
+    if (('grade' %in% names(rcmas_data))) {
+        grad_include <- TRUE
+    } else {
+        grad_include <- FALSE
+        message("variable 'grade' is not in rcmas_data so not all variables will be computed")
     }
 
     #### 2. Set Up Data #####
 
     # set up database for results create empty matrix
-    rcmas_score_dat <- data.frame(rcmas_phys = rep(NA, nrow(rcmas_data)), rcmas_worry = rep(NA, nrow(rcmas_data)), rcmas_concentration = rep(NA, nrow(rcmas_data)), rcmas_total = rep(NA, nrow(rcmas_data)), rcmas_total_normcat = rep(NA, nrow(rcmas_data)), rcmas_total_cutcat = rep(NA, nrow(rcmas_data)), rcmas_sd1  = rep(NA, nrow(rcmas_data)), rcmas_sd1  = rep(NA, nrow(rcmas_data)), rcmas_sd_total  = rep(NA, nrow(rcmas_data)), rcmas_sd_total_normcat  = rep(NA, nrow(rcmas_data)))
+    rcmas_score_dat <- data.frame(rcmas_phys = rep(NA, nrow(rcmas_data)), rcmas_worry = rep(NA, nrow(rcmas_data)), rcmas_concentration = rep(NA, nrow(rcmas_data)), rcmas_total = rep(NA, nrow(rcmas_data)), rcmas_total_normcat = rep(NA, nrow(rcmas_data)), rcmas_total_cutcat = rep(NA, nrow(rcmas_data)), rcmas_sd1  = rep(NA, nrow(rcmas_data)), rcmas_sd2  = rep(NA, nrow(rcmas_data)), rcmas_sd_total  = rep(NA, nrow(rcmas_data)), rcmas_sd_total_normcat  = rep(NA, nrow(rcmas_data)))
 
     if (isTRUE(ID_arg)) {
         rcmas_score_dat <- data.frame(rcmas_data[[parID]], rcmas_score_dat)
@@ -104,11 +112,16 @@ score_rcmas <- function(rcmas_data, parID) {
     ## add labels to data
     rcmas_score_dat_labels[["rcmas_total"]] <- "RCMAS Total Score"
 
-    ## get category scale using norms
-    rcmas_score_dat[["rcmas_total_normcat"]] <- ifelse(rcmas_data[["grade"]] == 1, ifelse(rcmas_score_dat[["rcmas_total"]] < 18.55, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 2, ifelse(rcmas_score_dat[["rcmas_total"]] < 22.52, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 3, ifelse(rcmas_score_dat[["rcmas_total"]] < 19.28, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 4, ifelse(rcmas_score_dat[["rcmas_total"]] < 22.34, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 5, ifelse(rcmas_score_dat[["rcmas_total"]] < 17.85, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 6, ifelse(rcmas_score_dat[["rcmas_total"]] < 19.1, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 7, ifelse(rcmas_score_dat[["rcmas_total"]] < 17.12, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 8, ifelse(rcmas_score_dat[["rcmas_total"]] < 19.72, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 9, ifelse(rcmas_score_dat[["rcmas_total"]] < 19.52, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 10, ifelse(rcmas_score_dat[["rcmas_total"]] < 19.08, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 11, ifelse(rcmas_score_dat[["rcmas_total"]] < 19.83, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 12, ifelse(rcmas_score_dat[["rcmas_total"]] < 18.25, 'Typical', 'Clinical Interest'), 'grade not 1-12'))))))))))))
+    if (isTRUE(grad_include)){
+        ## get category scale using norms
+        rcmas_score_dat[["rcmas_total_normcat"]] <- ifelse(rcmas_data[["grade"]] == 1, ifelse(rcmas_score_dat[["rcmas_total"]] < 18.55, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 2, ifelse(rcmas_score_dat[["rcmas_total"]] < 22.52, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 3, ifelse(rcmas_score_dat[["rcmas_total"]] < 19.28, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 4, ifelse(rcmas_score_dat[["rcmas_total"]] < 22.34, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 5, ifelse(rcmas_score_dat[["rcmas_total"]] < 17.85, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 6, ifelse(rcmas_score_dat[["rcmas_total"]] < 19.1, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 7, ifelse(rcmas_score_dat[["rcmas_total"]] < 17.12, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 8, ifelse(rcmas_score_dat[["rcmas_total"]] < 19.72, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 9, ifelse(rcmas_score_dat[["rcmas_total"]] < 19.52, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 10, ifelse(rcmas_score_dat[["rcmas_total"]] < 19.08, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 11, ifelse(rcmas_score_dat[["rcmas_total"]] < 19.83, 'Typical', 'Clinical Interest'), ifelse(rcmas_data[["grade"]] == 12, ifelse(rcmas_score_dat[["rcmas_total"]] < 18.25, 'Typical', 'Clinical Interest'), 'grade not 1-12'))))))))))))
+    } else {
+        # no grade in data so cannot calculate normed categories
+        rcmas_score_dat[["rcmas_total_normcat"]] <- NA
+    }
 
     ## get category scale using cutoff score
-    rcmas_score_dat[["rcmas_total_cutcat"]] <- ifelse(rcmas_data[["rcmas_total"]] > 19, 'Clinically Significant', 'Typical')
+    rcmas_score_dat[["rcmas_total_cutcat"]] <- ifelse(rcmas_score_dat[["rcmas_total"]] > 19, 'Clinically Significant', 'Typical')
 
     ## add labels
     rcmas_score_dat_labels[["rcmas_total_normcat"]] <- "RCMAS Total Category Score Based on Grade Norms - Clinical Interest = score > 1SD above mean for grade; Reynolds & Richmond (1978)"
@@ -134,16 +147,21 @@ score_rcmas <- function(rcmas_data, parID) {
     rcmas_score_dat_labels[["rcmas_sd2"]] <- "RCMAS Social Desirability Score 2"
     rcmas_score_dat_labels[["rcmas_sd_total"]] <- "RCMAS Social Desirability Total Score"
 
+
     ## get category scale using norms
-    rcmas_score_dat[["rcmas_sd_total_normcat"]] <- ifelse(rcmas_data[["grade"]] == 1, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 7.95, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 2, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 7.18, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 3, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 6.15, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 4, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 3.9, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 5, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 5.17, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 6, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 6.22, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 7, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 3.6, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 8, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 4.44, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 9, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 5.54, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 10, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 6.16, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 11, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 6.43, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 12, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 5.93, 'Typical', 'Elevated'), 'grade not 1-12'))))))))))))
+    if (isTRUE(grad_include)){
+        rcmas_score_dat[["rcmas_sd_total_normcat"]] <- ifelse(rcmas_data[["grade"]] == 1, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 7.95, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 2, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 7.18, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 3, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 6.15, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 4, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 3.9, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 5, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 5.17, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 6, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 6.22, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 7, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 3.6, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 8, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 4.44, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 9, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 5.54, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 10, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 6.16, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 11, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 6.43, 'Typical', 'Elevated'), ifelse(rcmas_data[["grade"]] == 12, ifelse(rcmas_score_dat[["rcmas_sd_total"]] < 5.93, 'Typical', 'Elevated'), 'grade not 1-12'))))))))))))
+    } else {
+        # no grade in data so cannot calculate normed categories
+        rcmas_score_dat[["rcmas_sd_total_normcat"]] <- NA
+    }
 
     rcmas_score_dat_labels[["rcmas_sd_total_normcat"]] <- "RCMAS Social Desirability Category Based on Grade Norms - Elevated = score > 1SD above mean for grade; Reynolds & Richmond (1978)"
 
     #### 3. Clean Export/Scored Data #####
 
     ## make sure the variable labels match in the dataset
-    rcmas_score_dat = sjlabelled::set_label(rcmas_score_dat, label = matrix(unlist(rcmas_score_dat_labels,
-        use.names = FALSE)))
+    rcmas_score_dat = sjlabelled::set_label(rcmas_score_dat, label = matrix(unlist(rcmas_score_dat_labels, use.names = FALSE)))
 
     return(rcmas_score_dat)
 }

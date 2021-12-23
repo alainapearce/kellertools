@@ -64,8 +64,8 @@ score_cshqa <- function(cshqa_data, study = 'fbs', parID) {
     ID_arg <- methods::hasArg(parID)
 
     if (isTRUE(ID_arg)){
-        if (!(parID %in% names(pwlb_data))) {
-            stop("variable name entered as parID is not in pwlb_data")
+        if (!(parID %in% names(cshqa_data))) {
+            stop("variable name entered as parID is not in cshqa_data")
         }
     }
 
@@ -132,10 +132,10 @@ score_cshqa <- function(cshqa_data, study = 'fbs', parID) {
     cshqa_score_dat_labels[['cshqa_bedtime_resit']] <- 'CSHQ-A Bedtime Resistance Total Score'
 
     # Sleep Onset Delay
-    cshqa_score_dat[['cshqa_bedtime_resit']] <- cshqa_data['cshq_a2_rev']
+    cshqa_score_dat[['cshqa_sleep_delay']] <- cshqa_data['cshq_a2_rev']
 
     ##add labels to data
-    cshqa_score_dat_labels[['cshqa_bedtime_resit']] <- 'CSHQ-A Sleep Onset Delay Total Score'
+    cshqa_score_dat_labels[['cshqa_sleep_delay']] <- 'CSHQ-A Sleep Onset Delay Total Score'
 
     # Sleep Duration
     sleepdur_vars <- c('cshq_a10_rev')
@@ -145,7 +145,7 @@ score_cshqa <- function(cshqa_data, study = 'fbs', parID) {
     cshqa_score_dat_labels[['cshqa_sleepdur']] <- 'CSHQ-A Sleep Duration Total Score'
 
     # Sleep Anxiety
-    sleepanx_vars <- c('cshq_a7', 'cshq_a9',)
+    sleepanx_vars <- c('cshq_a7', 'cshq_a9')
     cshqa_score_dat[['cshqa_anxiety']] <- rowSums(cshqa_data[sleepanx_vars])
 
     ##add labels to data
@@ -163,13 +163,13 @@ score_cshqa <- function(cshqa_data, study = 'fbs', parID) {
     cshqa_score_dat[['cshqa_parasomnias']] <- rowSums(cshqa_data[parasomnias_vars])
 
     ##add labels to data
-    cshqa_score_dat_labels[['cshqa_nightwake']] <- 'CSHQ-A Night Wakings Total Score'
+    cshqa_score_dat_labels[['cshqa_parasomnias']] <- 'CSHQ-A Parasomnias Total Score'
 
     # Sleep Disordered Breathing
     cshqa_score_dat[['cshqa_dis_breathing']] <- cshqa_data['cshq_a14']
 
     ##add labels to data
-    cshqa_score_dat_labels[['cshqa_nightwake']] <- 'CSHQ-A Night Wakings Total Score'
+    cshqa_score_dat_labels[['cshqa_dis_breathing']] <- 'CSHQ-A Sleep Disordered Breathing Total Score'
 
     # Daytime Sleepiness
     if (study != 'fbs' & study != 'FBS'){
@@ -182,24 +182,23 @@ score_cshqa <- function(cshqa_data, study = 'fbs', parID) {
 
     # Total Score
     if (study == 'fbs' | study == 'FBS'){
-        cshqa_score_dat[['cshqa_total']] <- rowSums(cshqa_score_dat[c('cshqa_bedtime', 'cshqa_sleepbeh', 'cshqa_nightwake')])
+        all_vars <- c('cshq_a1_rev', 'cshq_a2_rev', 'cshq_a3_rev', 'cshq_a4', 'cshq_a5', 'cshq_a6', 'cshq_a7', 'cshq_a8', 'cshq_a9', 'cshq_a10_rev', 'cshq_a11', 'cshq_a12', 'cshq_a13', 'cshq_a14', 'cshq_a15', 'cshq_a16',  'cshq_a17', 'cshq_a18')
+
+        cshqa_score_dat[['cshqa_total']] <- rowSums(cshqa_data[all_vars])
 
         ##add labels to data
-        cshqa_score_dat_labels[['cshqa_total']] <- 'CSHQ-A Total Score - only three subscales included so cannot compare to total sleep problmes cuttoffs'
+        cshqa_score_dat_labels[['cshqa_total']] <- 'CSHQ-A Total Score - questions 19-22 omitted so cannot compare to total sleep problmes cuttoffs'
+
     } else {
-        cshqa_score_dat[['cshqa_total']] <- rowSums(cshqa_score_dat[c('cshqa_bedtime', 'cshqa_sleepbeh', 'cshqa_nightwake', 'cshqa_morning')])
+        all_vars <- c('cshq_a1_rev', 'cshq_a2_rev', 'cshq_a3_rev', 'cshq_a4', 'cshq_a5', 'cshq_a6', 'cshq_a7', 'cshq_a8', 'cshq_a9', 'cshq_a10_rev', 'cshq_a11', 'cshq_a12', 'cshq_a13', 'cshq_a14', 'cshq_a15', 'cshq_a16',  'cshq_a17', 'cshq_a18', 'cshq_a19_rev', 'cshq_a20', 'cshq_a21', 'cshq_a22')
+
+        cshqa_score_dat[['cshqa_total']] <- rowSums(cshqa_data[all_vars])
 
         ##add labels to data
         cshqa_score_dat_labels[['cshqa_total']] <- 'CSHQ-A Total Score'
     }
 
     #### 3. Clean Export/Scored Data #####
-    ## round data
-    if (isTRUE(ID_arg)){
-        cshqa_score_dat[2:ncol(cshqa_score_dat)] <- round(cshqa_score_dat[2:ncol(cshqa_score_dat)], digits = 3)
-    } else {
-        cshqa_score_dat <- round(cshqa_score_dat, digits = 3)
-    }
 
     ## make sure the variable labels match in the dataset
     cshqa_score_dat = sjlabelled::set_label(cshqa_score_dat, label = matrix(unlist(cshqa_score_dat_labels, use.names = FALSE)))

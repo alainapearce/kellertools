@@ -121,7 +121,7 @@ util_child_v2dat <- function(date_str, data_path) {
     ## manually update variables
     names(qv2_child_clean)[names(qv2_child_clean) == "childnotes"] <- "child_notes"
 
-    names(qv2_child_clean)[2:41] <- c("start_date", "freddy_pre_meal", "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water", "mealrank_mac_cheese", "mealrank_chkn_nug", "mealrank_broccoli", "mealrank_grape", "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g", "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g")
+    names(qv2_child_clean)[2:41] <- c("start_date", "freddy_pre_meal", "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water", "rank_mac_cheese", "rank_chkn_nug", "rank_broccoli", "rank_grape", "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g", "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g")
 
     ## update data labels
     names(qv2_child_clean_labels) <- names(qv2_child_clean)
@@ -183,9 +183,7 @@ util_child_v2dat <- function(date_str, data_path) {
 
         set_attr <- attributes(qv2_child_clean[[var_name]])
 
-        qv2_child_clean[[var_name]] <- ifelse(is.na(qv2_child_clean[[var_name]]), NA, ifelse(qv2_child_clean[[var_name]] ==
-            1, 0, ifelse(qv2_child_clean[[var_name]] == 2, 1, ifelse(qv2_child_clean[[var_name]] == 3, 2, ifelse(qv2_child_clean[[var_name]] ==
-            4, 3, ifelse(qv2_child_clean[[var_name]] == 5, 4, 5))))))
+        qv2_child_clean[[var_name]] <- ifelse(is.na(qv2_child_clean[[var_name]]), NA, ifelse(qv2_child_clean[[var_name]] ==  1, 0, ifelse(qv2_child_clean[[var_name]] == 2, 1, ifelse(qv2_child_clean[[var_name]] == 3, 2, ifelse(qv2_child_clean[[var_name]] ==  4, 3, ifelse(qv2_child_clean[[var_name]] == 5, 4, 5))))))
 
         attributes(qv2_child_clean[[var_name]]) <- set_attr
 
@@ -199,8 +197,7 @@ util_child_v2dat <- function(date_str, data_path) {
 
     for (var in 1:length(tesqe_names)) {
         var_name <- as.character(tesqe_names[var])
-        qv2_child_clean[[var_name]] <- sjlabelled::set_labels(qv2_child_clean[[var_name]], labels = c(Never = 1, Rarely = 2,
-            Sometimes = 3, Regularly = 4, Often = 5, `Dont know` = -99))
+        qv2_child_clean[[var_name]] <- sjlabelled::set_labels(qv2_child_clean[[var_name]], labels = c(Never = 1, Rarely = 2, Sometimes = 3, Regularly = 4, Often = 5, `Dont know` = -99))
 
         set_attr <- attributes(qv2_child_clean[[var_name]])
 
@@ -210,6 +207,24 @@ util_child_v2dat <- function(date_str, data_path) {
         attributes(qv2_child_clean[[var_name]]) <- set_attr
 
         qv2_child_clean_labels[[var_name]] <- paste0(qv2_child_clean_labels[[var_name]], " - values modified in R so Dont know = -99")
+
+    }
+
+    for (var in 1:length(names(qv2_child_clean))) {
+        var_name <- as.character(names(qv2_child_clean)[var])
+
+        # remove v2 prefix from labels
+        if (grepl("Visit 2", qv2_child_clean_labels[[var_name]], fixed = TRUE)) {
+            qv2_child_clean_labels[[var_name]] <- gsub("Visit 2 ", "", qv2_child_clean_labels[[var_name]])
+        }
+
+        if (grepl("V2 -", qv2_child_clean_labels[[var_name]], fixed = TRUE)) {
+            qv2_child_clean_labels[[var_name]] <- gsub("V2 - ", "", qv2_child_clean_labels[[var_name]])
+        }
+
+        if (grepl("V2", qv2_child_clean_labels[[var_name]], fixed = TRUE)) {
+            qv2_child_clean_labels[[var_name]] <- gsub("V2 ", "", qv2_child_clean_labels[[var_name]])
+        }
 
     }
 

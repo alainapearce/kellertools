@@ -17,7 +17,7 @@ This function scores the Revised Children's Manifest Anxiety Scale for total sco
 }
 \details{
 To use this function, the data must be prepared according to the following criteria:
-1) The data must include all individual questionnaire items and child grade
+1) The data must include all individual questionnaire items and child grade. If child grade is not included some variables will be exported with NA's.
 2) The columns/variables must match the following naming convention: 'rcmas#' where # is the question number (1-37) and child's grade must be labeled 'grade'
 3) All questions must have the numeric value for the choice:
 0 - No, 1 - Yes

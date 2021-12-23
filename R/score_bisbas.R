@@ -77,10 +77,7 @@ score_bisbas <- function(bisbas_data, parID) {
         var_name <- reverse_qs[var]
         reverse_name <- paste0(var_name, "_rev")
 
-        bisbas_data[[reverse_name]] <- ifelse(is.na(bisbas_data[[var_name]]), NA,
-                                            ifelse(bisbas_data[[var_name]] == 1, 4,
-                                                   ifelse(bisbas_data[[var_name]] == 2, 3,
-                                                          ifelse(bisbas_data[[var_name]] == 3, 2, 1))))
+        bisbas_data[[reverse_name]] <- ifelse(is.na(bisbas_data[[var_name]]), NA, ifelse(bisbas_data[[var_name]] == 1, 4, ifelse(bisbas_data[[var_name]] == 2, 3,  ifelse(bisbas_data[[var_name]] == 3, 2, 1))))
     }
 
     ## Score Subscales
@@ -115,6 +112,8 @@ score_bisbas <- function(bisbas_data, parID) {
 
     # BAS
     bisbas_score_dat[["bas"]] <- rowMeans(bisbas_data[c(funseek_vars, drive_vars, reward_vars)])
+    ## add labels to data
+    bisbas_score_dat_labels[["bas"]] <- "BIS/BAS BAS Total Score"
 
     ## add labels to data
     bisbas_score_dat_labels[["bas_rewardresp"]] <- "BIS/BAS BAS Total Score"
@@ -129,8 +128,7 @@ score_bisbas <- function(bisbas_data, parID) {
     }
 
     ## make sure the variable labels match in the dataset
-    bisbas_score_dat = sjlabelled::set_label(bisbas_score_dat, label = matrix(unlist(bisbas_score_dat_labels,
-        use.names = FALSE)))
+    bisbas_score_dat = sjlabelled::set_label(bisbas_score_dat, label = matrix(unlist(bisbas_score_dat_labels, use.names = FALSE)))
 
     return(bisbas_score_dat)
 }

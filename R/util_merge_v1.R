@@ -14,19 +14,19 @@
 #' @return A list containing: 1) data: data.frame with raw, cleaned data from parent visit 1 Qualtrics; 2) dict: all variable descriptions; 3) pna_data: data.frame marking participants who 'preferred not to answer' (pna) specific questions; and 4) pna_dict: all variable descriptions for pna_data
 #'
 #' @examples
-#' #if in same working directory as data:
-#' v1dat_scored <- util_merge(date_str = '2021-10-11')
+#' #if in same working directory as data with all data having the same date in filename:
+#' v1dat_scored <- util_merge_v1(date_str = '2021-10-11')
 #'
 #' #if in same working directory as data and covid collecte data has different dates:
-#' v1dat_scored <- util_merge(child_date_str = '2021-10-11', child_home_date_str = '2021-9-15', child_lab_date_str = = '2021-9-15', parent_date_str = '2021-10-11')
+#' v1dat_scored <- util_merge_v1(child_date_str = '2021-10-11', child_home_date_str = '2021-9-15', child_lab_date_str = = '2021-9-15', parent_date_str = '2021-10-11')
 #'
 #' \dontrun{
 #' #date must be a string. The following will not run:
-#' v1dat_scored <- util_merge(2021-10-11)
+#' v1dat_scored <- util_merge_v1(2021-10-11)
 #'
 #' #date must match the file name - for file named 'Child_V1_Home_2021_09_15', the
 #' following will not run:
-#' v1dat_scored <- util_merge('2021_10_11')
+#' v1dat_scored <- util_merge_v1('2021_10_11')
 #' }
 #'
 #' @seealso Raw data from Qualtrics is processed using the following scripts: \code{\link{util_child_v1dat}}, \code{\link{util_child_v1dat_home}}, \code{\link{util_child_v1dat_lab}}, \code{\link{util_parent_v1dat}}. Visit 1 data is scored using the following scripts: \code{\link{score_pds}}, \code{\link{score_paq}}, \code{\link{score_risk}}
@@ -227,7 +227,7 @@ util_merge_v1 <- function(date_str, child_date_str, child_home_date_str, child_l
 
     #### 6. Organize V1 data and score #####
 
-    # order of vars: 1) Demographics, 2) Anthro (hw, DXA, sleep, PA), 3) Intake (FF, linking, intake, want), 4) feeding/food Q's, 5) cog/trait Q's, 6) Delay Discounting, 7) MRI related (CAMS, FF, snack info, image ratings), 8) Notes
+    # order of vars: 1) Demographics, 2) Anthro (hw, DXA, sleep, PA), 3) Intake (FF, liking, intake, want), 4) feeding/food Q's, 5) cog/trait Q's, 6) Delay Discounting, 7) MRI related (CAMS, FF, snack info, image ratings), 8) Notes
 
     v1dat_org <- v1dat[c(1:2, 16, 360:361, 3:6, 258:279, 362:364, 386:420, 429:440, 7:15, 255:257, 365:385, 280:359, 17:160, 421:428, 441:500, 161:252, 501:656, 657:658, 253:254)]
 

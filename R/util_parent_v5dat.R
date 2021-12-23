@@ -142,11 +142,10 @@ util_parent_v5dat <- function(date_str, data_path) {
 
     #### 6) fix 99's and other poor categories ####
 
-    ## check for labels/99 option: 1) if 99's exist, make a 'prefere not to answer' (pna) variable to go in pna
-    ## database, 2) replace 99's with NA and make variable numeric
+    ## check for labels/99 option: 1) if 99's exist, make a 'prefere not to answer' (pna) variable to go in pna database, 2) replace 99's with NA and make variable numeric
 
     ## make pna database
-    qv5_parent_pna <- data.frame(id = qv5_parent_clean[["ID"]])
+    qv5_parent_pna <- data.frame(id = qv5_parent_clean[["id"]])
     qv5_parent_pna_labels <- lapply(qv5_parent_pna, function(x) attributes(x)$label)
     qv5_parent_pna_labels[["id"]] <- qv5_parent_clean_labels[["id"]]
 
@@ -169,8 +168,7 @@ util_parent_v5dat <- function(date_str, data_path) {
             names(qv5_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv5_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,
-                ": ", qv5_parent_clean_labels[[pvar]])
+            qv5_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,  ": ", qv5_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
             qv5_parent_clean_labels[[pvar]] <- paste0(qv5_parent_clean_labels[[pvar]], " -- ", pna_label)
@@ -198,8 +196,7 @@ util_parent_v5dat <- function(date_str, data_path) {
 
     ## 8a) add attributes to pna data
     n_pna_cols <- length(names(qv5_parent_pna))
-    qv5_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv5_parent_pna[2:n_pna_cols], function(x) sjlabelled::add_labels(x,
-        labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+    qv5_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv5_parent_pna[2:n_pna_cols], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
 
     ## 8b) put data in order of participant ID for ease
     qv5_parent_clean <- qv5_parent_clean[order(qv5_parent_clean[["id"]]), ]
@@ -207,12 +204,11 @@ util_parent_v5dat <- function(date_str, data_path) {
 
     ## 8c) make sure the variable labels match in the dataset
     qv5_parent_clean = sjlabelled::set_label(qv5_parent_clean, label = matrix(unlist(qv5_parent_clean_labels, use.names = FALSE)))
+
     qv5_parent_pna = sjlabelled::set_label(qv5_parent_pna, label = matrix(unlist(qv5_parent_pna_labels, use.names = FALSE)))
 
     # make list of data frame and associated labels
     qv5_parent <- list(data = qv5_parent_clean, dict = qv5_parent_clean_labels, pna_data = qv5_parent_pna, pna_dict = qv5_parent_pna_labels)
-
-    ## want an export options??
 
     return(qv5_parent)
 }

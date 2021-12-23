@@ -36,19 +36,19 @@ This function merges the following visit 1 raw data into a single database and o
 The databases MUST follow the naming convention: Child_V1_YYYY-MM-DD.sav, Child_V1_Home_YYY-MM-DD.sav, Child_V1_Lab_YYY-MM-DD.sav, and Parent_V1_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered. If it is entered, it must follow
 }
 \examples{
-#if in same working directory as data:
-v1dat_scored <- util_merge(date_str = '2021-10-11')
+#if in same working directory as data with all data having the same date in filename:
+v1dat_scored <- util_merge_v1(date_str = '2021-10-11')
 
 #if in same working directory as data and covid collecte data has different dates:
-v1dat_scored <- util_merge(child_date_str = '2021-10-11', child_home_date_str = '2021-9-15', child_lab_date_str = = '2021-9-15', parent_date_str = '2021-10-11')
+v1dat_scored <- util_merge_v1(child_date_str = '2021-10-11', child_home_date_str = '2021-9-15', child_lab_date_str = = '2021-9-15', parent_date_str = '2021-10-11')
 
 \dontrun{
 #date must be a string. The following will not run:
-v1dat_scored <- util_merge(2021-10-11)
+v1dat_scored <- util_merge_v1(2021-10-11)
 
 #date must match the file name - for file named 'Child_V1_Home_2021_09_15', the
 following will not run:
-v1dat_scored <- util_merge('2021_10_11')
+v1dat_scored <- util_merge_v1('2021_10_11')
 }
 
 }

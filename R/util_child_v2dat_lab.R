@@ -121,7 +121,7 @@ util_child_v2dat_lab <- function(date_str, data_path) {
     qv2_child_clean_labels <- qv2_child_clean_labels[c(2, 1, 15:16, 3:14, 17:43)]
 
     ## re-name variables -- make lowercase
-    names(qv2_child_clean) <- c("id", "start_date", "freddy_pre_meal", "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water", "mealrank_mac_cheese", "mealrank_chkn_nug", "mealrank_broccoli", "mealrank_grape", "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g", "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g", "food_initials", "child_notes")
+    names(qv2_child_clean) <- c("id", "start_date", "freddy_pre_meal", "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water", "rank_mac_cheese", "rank_chkn_nug", "rank_broccoli", "rank_grape", "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g", "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g", "food_initials", "child_notes")
 
     ## update data labels
     names(qv2_child_clean_labels) <- names(qv2_child_clean)
@@ -171,7 +171,26 @@ util_child_v2dat_lab <- function(date_str, data_path) {
         }
     }
 
-    #### 7) Format for export ####
+    # 7) random fixes to factor level names and variable descriptions ####
+    for (var in 1:length(names(qv2_child_clean))) {
+        var_name <- as.character(names(qv2_child_clean)[var])
+
+        # remove v2 prefix from labels
+        if (grepl("Visit 2", qv2_child_clean_labels[[var_name]], fixed = TRUE)) {
+            qv2_child_clean_labels[[var_name]] <- gsub("Visit 2 ", "", qv2_child_clean_labels[[var_name]])
+        }
+
+        if (grepl("V2 -", qv2_child_clean_labels[[var_name]], fixed = TRUE)) {
+            qv2_child_clean_labels[[var_name]] <- gsub("V2 - ", "", qv2_child_clean_labels[[var_name]])
+        }
+
+        if (grepl("V2", qv2_child_clean_labels[[var_name]], fixed = TRUE)) {
+            qv2_child_clean_labels[[var_name]] <- gsub("V2 ", "", qv2_child_clean_labels[[var_name]])
+        }
+
+    }
+
+    ## 8) Format for export ####
 
     #put data in order of participant ID for ease
     qv2_child_clean <- qv2_child_clean[order(qv2_child_clean[["id"]]), ]

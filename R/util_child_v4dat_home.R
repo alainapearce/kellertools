@@ -100,32 +100,34 @@ util_child_v4dat_home <- function(date_str, data_path) {
 
     #### 3. Clean Data #####
 
-    # 1) extract variable labels/descriptions
+    # 1) extract variable labels/descriptions ####
     qv4_child_labels <- lapply(qv4_child_dat, function(x) attributes(x)$label)
 
-    # 2) selecting relevant data columns
+    # 2) selecting relevant data columns ####
     qv4_child_clean <- qv4_child_dat[c(1, 18:23, 25:38)]
 
     ## update labels
     qv4_child_clean_labels <- qv4_child_labels[c(1, 18:23, 25:38)]
 
 
-    # 3) removing all practice events (e.g., 999) Note, ID variable is 'ID'
+    # 3) removing all practice events (e.g., 999) Note, ID variable is 'ID' ####
     qv4_child_clean <- qv4_child_clean[!is.na(qv4_child_clean[["ID"]]) & qv4_child_clean[["ID"]] < 999, ]
 
-    # 4) re-ordering and re-name data columns general order: 1) child information (ID, start date), 2) DD
+    # 4) re-ordering and re-name data columns ####
+
+    # general order: 1) child information (ID, start date), 2) DD
 
     qv4_child_clean <- qv4_child_clean[c(2, 1, 3:21)]
 
     qv4_child_clean_labels <- qv4_child_clean_labels[c(2, 1, 3:21)]
 
     ## manually update variable names
-    names(qv4_child_clean) <- c("id", "start_date", "cwc1", "cwc2", "cwc3", "cwc4", "cwc5", "cbis_percieved_male", "cbis_ideal_male", "cbis_perc_female", "cbis_ideal_female", "psi_resp_mom1", "psi_resp_mom2", "psi_resp_mom3", "psi_resp_mom4", "psi_resp_mom5", "psi_resp_dad1", "psi_resp_dad2", "psi_resp_dad3", "psi_resp_dad4", "psi_resp_dad5")
+    names(qv4_child_clean) <- c("id", "start_date", "cwc1", "cwc2", "cwc3", "cwc4", "cwc5", "cbis_perc_male", "cbis_ideal_male", "cbis_perc_female", "cbis_ideal_female", "psi_resp_mom1", "psi_resp_mom2", "psi_resp_mom3", "psi_resp_mom4", "psi_resp_mom5", "psi_resp_dad1", "psi_resp_dad2", "psi_resp_dad3", "psi_resp_dad4", "psi_resp_dad5")
 
     ## update data labels
     names(qv4_child_clean_labels) <- names(qv4_child_clean)
 
-    # 5) reformatting dates to be appropriate and computer readable #### YYYY-MM-DD
+    # 5) reformatting dates to be appropriate and computer readable #### YYYY-MM-DD ####
     qv4_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv4_child_clean[["start_date"]]))
     qv4_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
@@ -137,7 +139,7 @@ util_child_v4dat_home <- function(date_str, data_path) {
     ## make pna database
     qv4_child_pna <- data.frame(id = qv4_child_clean[["id"]])
     qv4_child_pna_labels <- lapply(qv4_child_pna, function(x) attributes(x)$label)
-    qv4_child_pna_labels[["id"]] <- qv4_child_pna_labels[["id"]]
+    qv4_child_pna_labels[["id"]] <- qv4_child_clean_labels[["id"]]
 
     pna_label <- "Note: prefer not to answer (pna) marked NA - see pna database for which were pna rather than missing NA"
 
@@ -180,12 +182,12 @@ util_child_v4dat_home <- function(date_str, data_path) {
         attributes(qv4_child_clean[[pvar]]) <- pvar_attr
     }
 
-    # 7) random fixes to factor level names and variable descriptions
+    # 7) random fixes to factor level names and variable descriptions ####
 
     ## id label
     qv4_child_clean_labels[["id"]] <- "participant ID"
 
-    #### 8) Format for export #### put data in order of participant ID for ease
+    #### 8) Format for export #### put data in order of participant ID for ease ####
     qv4_child_clean <- qv4_child_clean[order(qv4_child_clean[["id"]]), ]
 
     qv4_child_pna <- qv4_child_pna[order(qv4_child_pna[["id"]]), ]

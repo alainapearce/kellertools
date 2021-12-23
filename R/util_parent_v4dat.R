@@ -88,10 +88,10 @@ util_parent_v4dat <- function(date_str, data_path) {
     qv4_parent_labels <- lapply(qv4_parent_dat, function(x) attributes(x)$label)
 
     # 3b) selecting relevant data columns
-    qv4_parent_clean <- qv4_parent_dat[c(1, 11:161)]
+    qv4_parent_clean <- qv4_parent_dat[c(1, 11:162)]
 
     ## update labels
-    qv4_parent_clean_labels <- qv4_parent_labels[c(1, 11:161)]
+    qv4_parent_clean_labels <- qv4_parent_labels[c(1, 11:162)]
 
     # 3c) removing all practice events (e.g., 999)
     qv4_parent_clean <- qv4_parent_clean[!is.na(qv4_parent_clean[["ID"]]) & qv4_parent_clean[["ID"]] < 999, ]
@@ -99,9 +99,9 @@ util_parent_v4dat <- function(date_str, data_path) {
     # 4) re-ordering and re-name data columns general order #### 1) demographics - HFSSM, HFIAS, CCHIP, 2) fasting,
     # 3) BRIEF, 4) updates
 
-    qv4_parent_clean <- qv4_parent_clean[c(2, 1, 17:85, 3, 86:152, 4:16)]
+    qv4_parent_clean <- qv4_parent_clean[c(2, 1, 86:88, 17:85, 3, 89, 91:153, 4:16)]
 
-    qv4_parent_clean_labels <- qv4_parent_clean_labels[c(2, 1, 17:85, 3, 86:152, 4:16)]
+    qv4_parent_clean_labels <- qv4_parent_clean_labels[c(2, 1, 86:88, 17:85, 3, 89, 91:153, 4:16)]
 
     ## re-name variables
 
@@ -127,7 +127,7 @@ util_parent_v4dat <- function(date_str, data_path) {
     }
 
     ## fix HFSSM names
-    names(qv4_parent_clean)[c(3:21)] <- c("hfssm_hh1", "hfssm_hh2", "hfssm_hh3", "hfssm_hh4", "hfssm_ad1", "hfssm_ad1a", "hfssm_ad2", "hfssm_ad3", "hfssm_ad4", "hfssm_ad5", "hfssm_ad5a", "hfssm_ch1", "hfssm_ch2", "hfssm_ch3", "hfssm_ch4", "hfssm_ch5", "hfssm_ch5a", "hfssm_ch6", "hfssm_ch7")
+    names(qv4_parent_clean)[c(6:24)] <- c("hfssm_hh1", "hfssm_hh2", "hfssm_hh3", "hfssm_hh4", "hfssm_ad1", "hfssm_ad1a", "hfssm_ad2", "hfssm_ad3", "hfssm_ad4", "hfssm_ad5", "hfssm_ad5a", "hfssm_ch1", "hfssm_ch2", "hfssm_ch3", "hfssm_ch4", "hfssm_ch5", "hfssm_ch5a", "hfssm_ch6", "hfssm_ch7")
 
     ## update data labels
     names(qv4_parent_clean_labels) <- names(qv4_parent_clean)
@@ -151,7 +151,7 @@ util_parent_v4dat <- function(date_str, data_path) {
     }
 
     ## fix HFSSM labels
-    hfssm_vars <- names(qv4_parent_clean)[c(3:21)]
+    hfssm_vars <- names(qv4_parent_clean)[c(6:24)]
 
     for (var in 1:length(hfssm_vars)) {
         var_name <- hfssm_vars[var]
@@ -165,14 +165,14 @@ util_parent_v4dat <- function(date_str, data_path) {
     ## check for labels/99 option: 1) if 99's exist, make a 'prefere not to answer' (pna) variable to go in pna database, 2) replace 99's with NA and make variable numeric
 
     ## make pna database
-    qv4_parent_pna <- data.frame(id = qv4_parent_clean[["ID"]])
+    qv4_parent_pna <- data.frame(id = qv4_parent_clean[["id"]])
     qv4_parent_pna_labels <- lapply(qv4_parent_pna, function(x) attributes(x)$label)
     qv4_parent_pna_labels[["id"]] <- qv4_parent_clean_labels[["id"]]
 
     pna_label <- "Note: prefer not to answer (pna) marked NA - see pna database for which were pna rather than missing NA"
 
     ## 6a) categorical variables with 99's data ####
-    level99_issue_catvars <- names(qv4_parent_clean)[c(22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 44, 48, 52, 56, 60, 64, 68, 72:73, 75:146)]
+    level99_issue_catvars <- names(qv4_parent_clean)[c(25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 47, 51, 55, 59, 63, 67, 71, 75:146)]
 
     for (v in 1:length(level99_issue_catvars)) {
         # get variable name
@@ -214,7 +214,7 @@ util_parent_v4dat <- function(date_str, data_path) {
     }
 
     ## 6a) continuous variables with 99's data ####
-    level99_issue_contvars <- names(qv4_parent_clean)[c(41:43, 45:47, 49:51, 53:55, 57:59, 61:63, 65:67, 69:71, 74)]
+    level99_issue_contvars <- names(qv4_parent_clean)[c(4:5, 44:46, 48:50, 52:54, 56:58, 60:62, 64:66, 68:70, 72:74)]
 
     for (v in 1:length(level99_issue_contvars)) {
         # get variable name
@@ -257,9 +257,7 @@ util_parent_v4dat <- function(date_str, data_path) {
             set_attr <- attributes(qv4_parent_clean[[var_name]])
 
             #re-level
-            qv4_parent_clean[[var_name]] <- ifelse(is.na(qv4_parent_clean[[var_name]]), NA,
-                                                   ifelse(qv4_parent_clean[[var_name]] >= 1, 1,
-                                                          ifelse(qv4_parent_clean[[var_name]] == 99, -99, 0)))
+            qv4_parent_clean[[var_name]] <- ifelse(is.na(qv4_parent_clean[[var_name]]), NA, ifelse(qv4_parent_clean[[var_name]] >= 1, 1, ifelse(qv4_parent_clean[[var_name]] == 99, -99, 0)))
 
             #set attributes
             attributes(qv4_parent_clean[[var_name]]) <- set_attr
@@ -278,10 +276,7 @@ util_parent_v4dat <- function(date_str, data_path) {
             set_attr <- attributes(qv4_parent_clean[[var_name]])
 
             #re-level
-            qv4_parent_clean[[var_name]] <- ifelse(is.na(qv4_parent_clean[[var_name]]), NA,
-                                                   ifelse(qv4_parent_clean[[var_name]] > 1, 1,
-                                                          ifelse(qv4_parent_clean[[var_name]] == 1, 0,
-                                                                 ifelse(qv4_parent_clean[[var_name]] == 99, -99, qv4_parent_clean[[var_name]]))))
+            qv4_parent_clean[[var_name]] <- ifelse(is.na(qv4_parent_clean[[var_name]]), NA, ifelse(qv4_parent_clean[[var_name]] > 1, 1, ifelse(qv4_parent_clean[[var_name]] == 1, 0, ifelse(qv4_parent_clean[[var_name]] == 99, -99, qv4_parent_clean[[var_name]]))))
 
             #set attributes
             attributes(qv4_parent_clean[[var_name]]) <- set_attr
@@ -299,8 +294,7 @@ util_parent_v4dat <- function(date_str, data_path) {
             set_attr <- attributes(qv4_parent_clean[[var_name]])
 
             # update values
-            qv4_parent_clean[[var_name]] <- ifelse(is.na(qv4_parent_clean[[var_name]]), NA,
-                                                   ifelse(qv4_parent_clean[[var_name]] == 99, -99, qv4_parent_clean[[var_name]]))
+            qv4_parent_clean[[var_name]] <- ifelse(is.na(qv4_parent_clean[[var_name]]), NA, ifelse(qv4_parent_clean[[var_name]] == 99, -99, qv4_parent_clean[[var_name]]))
 
             # reset attributes
             attributes(qv4_parent_clean[[var_name]]) <- set_attr
@@ -332,8 +326,7 @@ util_parent_v4dat <- function(date_str, data_path) {
 
     ## 8a) add attributes to pna data
     n_pna_cols <- length(names(qv4_parent_pna))
-    qv4_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv4_parent_pna[2:n_pna_cols], function(x) sjlabelled::add_labels(x,
-                                                                                                                          labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+    qv4_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv4_parent_pna[2:n_pna_cols], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
 
     ## 8b) put data in order of participant ID for ease
     qv4_parent_clean <- qv4_parent_clean[order(qv4_parent_clean[["id"]]), ]

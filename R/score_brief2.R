@@ -157,7 +157,7 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     brief_score_dat[["brief2_inhibit"]] <- rowSums(brief_data[inhib_vars])
 
     # look up T-score and percentile
-    inhib_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_inhibit"]], sex = brief_data[['sex']], age = brief_data[['age']], MoreArgs = list(item = 'brief2_inhibit'))
+    inhib_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_inhibit"]], sex = brief_data[['sex']], age = brief_data[['age']], MoreArgs = list(item = 'inhibit'))
 
     inhib_scores <- as.data.frame(matrix(unlist(inhib_scores_list), byrow = TRUE, ncol = 3))
     names(inhib_scores) <- c('item', 't', 'p')
@@ -175,7 +175,7 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     brief_score_dat[["brief2_selfmon"]] <- rowSums(brief_data[brief2_selfmon_vars])
 
     # look up T-score and percentile
-    brief2_selfmon_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_selfmon"]], sex = brief_data[['sex']], age = brief_data[['age']], MoreArgs = list(item = 'brief2_selfmon'))
+    brief2_selfmon_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_selfmon"]], sex = brief_data[['sex']], age = brief_data[['age']], MoreArgs = list(item = 'selfmon'))
 
     brief2_selfmon_scores <- as.data.frame(matrix(unlist(brief2_selfmon_scores_list), byrow = TRUE, ncol = 3))
     names(brief2_selfmon_scores) <- c('item', 't', 'p')
@@ -205,24 +205,6 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     brief_score_dat_labels[["brief2_shift"]] <- "BRIEF2 Shifting Raw Score"
     brief_score_dat_labels[["brief2_shift_t"]] <- "BRIEF2 Shifting T-Score"
     brief_score_dat_labels[["brief2_shift_p"]] <- "BRIEF2 Shifting Percentile"
-
-    # Self-Monitoring
-    brief2_selfmon_vars <- c("brief4", "brief13", "brief20", "brief26")
-    brief_score_dat[["brief2_selfmon"]] <- rowSums(brief_data[brief2_selfmon_vars])
-
-    # look up T-score and percentile
-    brief2_selfmon_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_selfmon"]], sex = brief_data[['sex']], age = brief_data[['age']], MoreArgs = list(item = 'brief2_selfmon'))
-
-    brief2_selfmon_scores <- as.data.frame(matrix(unlist(brief2_selfmon_scores_list), byrow = TRUE, ncol = 3))
-    names(brief2_selfmon_scores) <- c('item', 't', 'p')
-
-    brief_score_dat[["brief2_selfmon_t"]] <- as.numeric(brief2_selfmon_scores[['t']])
-    brief_score_dat[["brief2_selfmon_p"]] <- brief2_selfmon_scores[['p']]
-
-    ## add labels to data
-    brief_score_dat_labels[["brief2_selfmon"]] <- "BRIEF2 Self-Monitoring Raw Score"
-    brief_score_dat_labels[["brief2_selfmon_t"]] <- "BRIEF2 Self-Monitoring T-Score"
-    brief_score_dat_labels[["brief2_selfmon_p"]] <- "BRIEF2 Self-Monitoring Percentile"
 
     # Emotional Control
     brief2_emcont_vars <- c("brief6", "brief14", "brief22", "brief27", "brief34", "brief43", "brief51", "brief56")
