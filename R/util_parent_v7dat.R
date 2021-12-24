@@ -177,16 +177,16 @@ util_parent_v7dat <- function(date_str, data_path) {
     }
 
     ## 5a) fix CSHQ labels ####
-    qv7_parent_clean_labels[["cshq1"]] <- "1. Child goes to bed at the same time at night."
-    qv7_parent_clean_labels[["cshq10"]] <- "10. Child sleeps about the same amount each day."
-    qv7_parent_clean_labels[["cshq11"]] <- "11. Child is restless and moves a lot during sleep."
-    qv7_parent_clean_labels[["cshq12"]] <- "12. Child moves to someone else’s bed during the night (parent, sibling, etc.)."
-    qv7_parent_clean_labels[["cshq13"]] <- "13. Child grinds teeth during sleep (your dentist may have told you this)."
-    qv7_parent_clean_labels[["cshq14"]] <- "14. Child snores loudly."
-    qv7_parent_clean_labels[["cshq15"]] <- "15. Child awakens during the night and is sweating, screaming, and inconsolable."
-    qv7_parent_clean_labels[["cshq16"]] <- "16. Child naps during the day."
-    qv7_parent_clean_labels[["cshq17"]] <- "17. Child wakes up once during the night."
-    qv7_parent_clean_labels[["cshq18"]] <- "18. Child wakes up more than once during the night."
+    qv7_parent_clean_labels[["cshq_a1"]] <- "1. Child goes to bed at the same time at night."
+    qv7_parent_clean_labels[["cshq_a10"]] <- "10. Child sleeps about the same amount each day."
+    qv7_parent_clean_labels[["cshq_a11"]] <- "11. Child is restless and moves a lot during sleep."
+    qv7_parent_clean_labels[["cshq_a12"]] <- "12. Child moves to someone else’s bed during the night (parent, sibling, etc.)."
+    qv7_parent_clean_labels[["cshq_a13"]] <- "13. Child grinds teeth during sleep (your dentist may have told you this)."
+    qv7_parent_clean_labels[["cshq_a14"]] <- "14. Child snores loudly."
+    qv7_parent_clean_labels[["cshq_a15"]] <- "15. Child awakens during the night and is sweating, screaming, and inconsolable."
+    qv7_parent_clean_labels[["cshq_a16"]] <- "16. Child naps during the day."
+    qv7_parent_clean_labels[["cshq_a17"]] <- "17. Child wakes up once during the night."
+    qv7_parent_clean_labels[["cshq_a18"]] <- "18. Child wakes up more than once during the night."
 
     ## 5b) fix weight/height labels ####
     qv7_parent_clean_labels[["sr_mom_height_ft"]] <- "Biological Mother current height, in FEET"
@@ -210,8 +210,7 @@ util_parent_v7dat <- function(date_str, data_path) {
 
     #### 6) fix 99's and other poor categories ####
 
-    ## check for labels/99 option: 1) if 99's exist, make a 'prefere not to answer' (pna) variable to go in pna
-    ## database, 2) replace 99's with NA and make variable numeric
+    ## check for labels/99 option: 1) if 99's exist, make a 'prefere not to answer' (pna) variable to go in pna database, 2) replace 99's with NA and make variable numeric
 
     ## make pna database
     qv7_parent_pna <- data.frame(id = qv7_parent_clean[["id"]])
@@ -420,7 +419,7 @@ util_parent_v7dat <- function(date_str, data_path) {
     }
 
     ## 6d) categorical variables with 99's data ####
-    level99_issue_catvars <- names(qv7_parent_clean)[c(3, 98, 129:130, 132:133, 135, 137:138, 140:141, 143:145, 156, 158, 160, 163, 170:171, 173, 175:176, 219:228, 242, 248, 254, 260, 266, 272, 278, 284, 290, 296, 302, 308, 314, 320, 327, 332, 338, 344, 350, 356, 362, 368, 374, 379:513)]
+    level99_issue_catvars <- names(qv7_parent_clean)[c(3, 98, 129:130, 132:133, 135, 137:138, 140:141, 143:145, 156, 158, 160, 163, 170:171, 173, 175:176, 219:228, 242, 248, 254, 260, 266, 272, 278, 284, 290, 296, 302, 308, 314, 320, 326, 332, 338, 344, 350, 356, 362, 368, 374, 379:513)]
 
     for (v in 1:length(level99_issue_catvars)) {
         # get variable name
@@ -458,7 +457,7 @@ util_parent_v7dat <- function(date_str, data_path) {
     }
 
     ## 6e) hrs work per week ####
-    wkhr_vars <- names(qv7_parent_clean)[c(139, 141)]
+    wkhr_vars <- names(qv7_parent_clean)[c(139, 142)]
 
     for (v in 1:length(wkhr_vars)) {
         # get variable name
@@ -597,14 +596,13 @@ util_parent_v7dat <- function(date_str, data_path) {
     #### 11) Format for export ####
 
     ## 11a ) final re-order/clean of data
-    qv7_parent_clean <- qv7_parent_clean[c(1:19, 522, 20:22, 523, 23, 524, 24:30, 525, 31, 526, 31:34, 527, 35, 528, 36:42, 529, 43, 530, 44:46, 531, 47, 532, 48:54, 533, 55, 534, 56:58, 535, 59, 536, 60:66, 537, 67, 538, 68:70, 539, 71, 540, 72:78, 541, 79:109, 520, 110:112, 521, 544:549, 113:139, 542, 140:142, 543, 143:519)]
+    qv7_parent_clean <- qv7_parent_clean[c(1:19, 522, 20:22, 523, 23, 524, 24:30, 525, 31, 526, 32:34, 527, 35, 528, 36:42, 529, 43, 530, 44:46, 531, 47, 532, 48:54, 533, 55, 534, 56:58, 535, 59, 536, 60:66, 537, 67, 538, 68:70, 539, 71, 540, 72:78, 541, 79:109, 520, 110:112, 521, 544:549, 113:139, 542, 140:142, 543, 143:519)]
 
-    qv7_parent_clean_labels <- qv7_parent_clean_labels[c(1:19, 522, 20:22, 523, 23, 524, 24:30, 525, 31, 526, 31:34, 527, 35, 528, 36:42, 529, 43, 530, 44:46, 531, 47, 532, 48:54, 533, 55, 534, 56:58, 535, 59, 536, 60:66, 537, 67, 538, 68:70, 539, 71, 540, 72:78, 541, 79:109, 520, 110:112, 521, 544:549, 113:139, 542, 140:142, 543, 143:519)]
+    qv7_parent_clean_labels <- qv7_parent_clean_labels[c(1:19, 522, 20:22, 523, 23, 524, 24:30, 525, 31, 526, 32:34, 527, 35, 528, 36:42, 529, 43, 530, 44:46, 531, 47, 532, 48:54, 533, 55, 534, 56:58, 535, 59, 536, 60:66, 537, 67, 538, 68:70, 539, 71, 540, 72:78, 541, 79:109, 520, 110:112, 521, 544:549, 113:139, 542, 140:142, 543, 143:519)]
 
     ## 11b) add attributes to pna data
     n_pna_cols <- length(names(qv7_parent_pna))
-    qv7_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv7_parent_pna[2:n_pna_cols], function(x) sjlabelled::add_labels(x,
-        labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+    qv7_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv7_parent_pna[2:n_pna_cols], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
 
     ## 11c) put data in order of participant ID for ease
     qv7_parent_clean <- qv7_parent_clean[order(qv7_parent_clean[["id"]]), ]

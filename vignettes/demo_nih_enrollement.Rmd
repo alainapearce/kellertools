@@ -1,0 +1,71 @@
+---
+title: "demo_nih_enrollment"
+output: rmarkdown::html_vignette
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup}
+library(codified)
+
+# https://cran.r-project.org/web/packages/codified/vignettes/nih-enrollment-html.html#1_install_codified_package 
+```
+
+```{r load data}
+
+```
+
+
+```{r generate maping}
+
+#### Gender mapping ####
+ds_lu_gender <- tibble::tribble(
+  ~input,   ~displayed            ,
+  "0"   ,  "Female"               , 
+  "1"   ,  "Male"                 ,
+  "U"   ,  "Unknown/Not Reported"
+)
+
+knitr::kable(ds_lu_gender, caption = "Gender Mapping")
+
+#### Race mapping ####
+ds_lu_race <- tibble::tribble(
+  ~input , ~displayed                                   ,
+  "1"    , "American Indian/Alaska Native"              ,
+  "2"    , "Asian"                                      ,
+  "3"    , "Native Hawaiian or Other Pacific Islander"  ,
+  "4"    , "Black or African American"                  ,
+  "5"    , "White"                                      ,
+  "M"    , "More than One Race"                         ,
+  "6"    , "Unknown or Not Reported"
+)
+knitr::kable(ds_lu_race, caption = "Race Mapping")
+
+#### Ethnicity mapping ####
+ds_lu_ethnicity <- tibble::tribble(
+  ~input,   ~displayed                      ,
+  "2"   ,  "Not Hispanic or Latino"         ,
+  "1"   ,  "Hispanic or Latino"             ,
+  "0"   ,  "Unknown/Not Reported Ethnicity"
+)
+knitr::kable(ds_lu_ethnicity, caption = "Ethnicity Mapping")
+```
+
+```{r apply maps to dataset}
+#### counts for each subgroup ####
+ds_summary_long <- codified::table_nih_enrollment(
+  d              = ds,
+  d_lu_gender    = ds_lu_gender,
+  d_lu_race      = ds_lu_race,
+  d_lu_ethnicity = ds_lu_ethnicity
+)
+
+knitr::kable(ds_summary_long, caption = "Counts of Each Subgroup")
+
+#### conform to NIH cosmetics ####
+codified::table_nih_enrollment_pretty(
+  d              = ds,
+  d_lu_gender    = ds_lu_gender,
+  d_lu_race      = ds_lu_race,
+  d_lu_ethnicity = ds_lu_ethnicity
+)

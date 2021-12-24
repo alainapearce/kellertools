@@ -159,31 +159,21 @@ score_paq <- function(paq_data, study = "fbs", sleep = FALSE, parID) {
 
             if (grepl("intensity", var_name, fixed = TRUE)) {
                 # get center of intervals provided
-                paq_calc_dat[[calc_name]] <- ifelse(paq_data[[var_name]] == 0,
-                                                    0, ifelse(paq_data[[var_name]] == 1, 2.5, ifelse(paq_data[[var_name]] ==
-                                                                                                         2, 8, ifelse(paq_data[[var_name]] == 3, 13, ifelse(paq_data[[var_name]] ==
-                                                                                                                                                                4, 18, ifelse(paq_data[[var_name]] == 5, 23, ifelse(paq_data[[var_name]] ==
-                                                                                                                                                                                                                        6, 28, ifelse(paq_data[[var_name]] == 7, 33, ifelse(paq_data[[var_name]] ==
-                                                                                                                                                                                                                                                                                8, 38, ifelse(paq_data[[var_name]] == 9, 43, ifelse(paq_data[[var_name]] ==
-                                                                                                                                                                                                                                                                                                                                        10, 48, ifelse(paq_data[[var_name]] == 11, 53, ifelse(paq_data[[var_name]] ==
-                                                                                                                                                                                                                                                                                                                                                                                                  12, 58, NA)))))))))))))
+                paq_calc_dat[[calc_name]] <- ifelse(paq_data[[var_name]] == 0, 0, ifelse(paq_data[[var_name]] == 1, 2.5, ifelse(paq_data[[var_name]] ==  2, 8, ifelse(paq_data[[var_name]] == 3, 13, ifelse(paq_data[[var_name]] == 4, 18, ifelse(paq_data[[var_name]] == 5, 23, ifelse(paq_data[[var_name]] == 6, 28, ifelse(paq_data[[var_name]] == 7, 33, ifelse(paq_data[[var_name]] == 8, 38, ifelse(paq_data[[var_name]] == 9, 43, ifelse(paq_data[[var_name]] == 10, 48, ifelse(paq_data[[var_name]] == 11, 53, ifelse(paq_data[[var_name]] == 12, 58, NA)))))))))))))
                 # add labels to data
-                paq_calc_dat_labels[[calc_name]] <- paste0(paq_dat_labels[[var_name]],
-                                                           ": middle of range chosen to get continuous data when scored")
+                paq_calc_dat_labels[[calc_name]] <- paste0(paq_dat_labels[[var_name]], ": middle of range chosen to get continuous data when scored")
 
             }
 
             # add nonsense dates to time so can calculate the difference
-            if (grepl("wakeup", var_name, fixed = TRUE) & !grepl("_cat", var_name,
-                                                                 fixed = TRUE)) {
+            if (grepl("wakeup", var_name, fixed = TRUE) & !grepl("_cat", var_name, fixed = TRUE)) {
 
                 paq_calc_dat[[calc_name]] <- paq_data[[var_name]]
 
                 # add labels to data
                 paq_calc_dat_labels[[calc_name]] <- paq_dat_labels[[var_name]]
 
-            } else if (grepl("bedtime", var_name, fixed = TRUE) & !grepl("_cat",
-                                                                         var_name, fixed = TRUE)) {
+            } else if (grepl("bedtime", var_name, fixed = TRUE) & !grepl("_cat", var_name, fixed = TRUE)) {
 
                 paq_calc_dat[[calc_name]] <- paq_data[[var_name]]
 
@@ -196,13 +186,10 @@ score_paq <- function(paq_data, study = "fbs", sleep = FALSE, parID) {
     # calculate PAQ scores - loop through days
     for (d in 1:5) {
         day_str <- paste0("_", day_abreviations[d], "_")
-        day_name <- ifelse(day_abreviations[d] == "m", "Monday", ifelse(day_abreviations[d] ==
-                                                                            "t", "Tuesday", ifelse(day_abreviations[d] == "w", "Wednesday", ifelse(day_abreviations[d] ==
-                                                                                                                                                       "th", "Thursday", "Friday"))))
+        day_name <- ifelse(day_abreviations[d] == "m", "Monday", ifelse(day_abreviations[d] == "t", "Tuesday", ifelse(day_abreviations[d] == "w", "Wednesday", ifelse(day_abreviations[d] == "th", "Thursday", "Friday"))))
 
         # get varnames with matching day_str
-        var_day_names <- names(paq_calc_dat)[grepl(day_str, names(paq_calc_dat),
-                                                   fixed = TRUE)]
+        var_day_names <- names(paq_calc_dat)[grepl(day_str, names(paq_calc_dat),  fixed = TRUE)]
 
         # sedentary to low physical activity
         low_day_name <- paste0("paq", day_str, "slpa")
@@ -211,8 +198,7 @@ score_paq <- function(paq_data, study = "fbs", sleep = FALSE, parID) {
         paq_calc_dat[[low_day_name]] <- rowSums(paq_calc_dat[var_day_names[low_vars]])
 
         # add labels to data
-        paq_calc_dat_labels[[low_day_name]] <- paste0("Parent-Reported sedentary to low physical activity on ",
-                                                      day_name)
+        paq_calc_dat_labels[[low_day_name]] <- paste0("Parent-Reported sedentary to low physical activity on ", day_name)
 
         # moderate to vigorous physical activity
         high_day_name <- paste0("paq", day_str, "mvpa")
@@ -221,8 +207,7 @@ score_paq <- function(paq_data, study = "fbs", sleep = FALSE, parID) {
         paq_calc_dat[[high_day_name]] <- rowSums(paq_calc_dat[var_day_names[high_vars]])
 
         # add labels to data
-        paq_calc_dat_labels[[high_day_name]] <- paste0("Parent-Reported moderate to vigorous physical activity on ",
-                                                       day_name)
+        paq_calc_dat_labels[[high_day_name]] <- paste0("Parent-Reported moderate to vigorous physical activity on ", day_name)
 
 
         # if sleep
@@ -234,71 +219,51 @@ score_paq <- function(paq_data, study = "fbs", sleep = FALSE, parID) {
             # get time difference, arbitrarily assigning bedtime to 2021-1-1 and waketime
             # to 2021-1-2 could use Sys.Date(), but may be wrong if happens to run on a
             # daylight savings period
-            sleep_dur_h <- as.POSIXct(paste("2021-01-02", paq_calc_dat[[wake_var]]),
-                                      format = "%Y-%m-%d %H:%M:%S") - as.POSIXct(paste("2021-01-01",
-                                                                                       paq_calc_dat[[bed_var]]), format = "%Y-%m-%d %H:%M:%S")
+            sleep_dur_h <- as.POSIXct(paste("2021-01-02", paq_calc_dat[[wake_var]]), format = "%Y-%m-%d %H:%M:%S") - as.POSIXct(paste("2021-01-01", paq_calc_dat[[bed_var]]), format = "%Y-%m-%d %H:%M:%S")
 
             paq_calc_dat[[sleep_day_name]] <- as.numeric(sleep_dur_h)
 
             # add labels to data
-            paq_calc_dat_labels[[sleep_day_name]] <- paste0("Parent-Reported sleep duration in hours on ",
-                                                            day_name)
+            paq_calc_dat_labels[[sleep_day_name]] <- paste0("Parent-Reported sleep duration in hours on ", day_name)
         }
     }
 
     # total and average physical activity
 
     ## low intensity
-    paq_calc_dat[["slpa_total"]] <- rowSums(paq_calc_dat[c("paq_m_slpa", "paq_t_slpa",
-                                                           "paq_w_slpa", "paq_th_slpa", "paq_f_slpa")])
-    paq_calc_dat_labels[["slpa_total"]] <- "Total sedentary to low physical activity for the week in minutes"
+    paq_calc_dat[["paq_slpa_total"]] <- rowSums(paq_calc_dat[c("paq_m_slpa", "paq_t_slpa",  "paq_w_slpa", "paq_th_slpa", "paq_f_slpa")])
+    paq_calc_dat_labels[["paq_slpa_total"]] <- "Total sedentary to low physical activity for the week in minutes"
 
-    paq_calc_dat[["slpa_ndays_data"]] <- rowSums(!is.na(paq_calc_dat[c("paq_m_slpa",
-                                                                       "paq_t_slpa", "paq_w_slpa", "paq_th_slpa", "paq_f_slpa")]))
-    paq_calc_dat_labels[["slpa_ndays_data"]] <- "Number of days with usable continuous data for sedentary to low physical activity - if \">60 min\" chosen, cannot use as continuous so set
+    paq_calc_dat[["paq_slpa_ndays_data"]] <- rowSums(!is.na(paq_calc_dat[c("paq_m_slpa", "paq_t_slpa", "paq_w_slpa", "paq_th_slpa", "paq_f_slpa")]))
+    paq_calc_dat_labels[["paq_slpa_ndays_data"]] <- "Number of days with usable continuous data for sedentary to low physical activity - if \">60 min\" chosen, cannot use as continuous so set
     to NA. Will have to pursue categorical analyses for those data"
 
-    paq_calc_dat[["slpa_avg"]] <- rowMeans(paq_calc_dat[c("paq_m_slpa", "paq_t_slpa",
-                                                          "paq_w_slpa", "paq_th_slpa", "paq_f_slpa")], na.rm = TRUE)
-    paq_calc_dat_labels[["slpa_avg"]] <- "Average sedentary to low physical activity in minutes per day, ignoring days with missing data (see slpa_ndays_data)"
+    paq_calc_dat[["paq_slpa_avg"]] <- rowMeans(paq_calc_dat[c("paq_m_slpa", "paq_t_slpa", "paq_w_slpa", "paq_th_slpa", "paq_f_slpa")], na.rm = TRUE)
+    paq_calc_dat_labels[["paq_slpa_avg"]] <- "Average sedentary to low physical activity in minutes per day, ignoring days with missing data (see slpa_ndays_data)"
 
     ## high intensity
-    paq_calc_dat[["mvpa_total"]] <- rowSums(paq_calc_dat[c("paq_m_mvpa", "paq_t_mvpa",
-                                                           "paq_w_mvpa", "paq_th_mvpa", "paq_f_mvpa")])
-    paq_calc_dat_labels[["mvpa_total"]] <- "Total moderate to vigorous physical activity for the week in minutes"
+    paq_calc_dat[["paq_mvpa_total"]] <- rowSums(paq_calc_dat[c("paq_m_mvpa", "paq_t_mvpa", "paq_w_mvpa", "paq_th_mvpa", "paq_f_mvpa")])
+    paq_calc_dat_labels[["paq_mvpa_total"]] <- "Total moderate to vigorous physical activity for the week in minutes"
 
-    paq_calc_dat[["mvpa_ndays_data"]] <- rowSums(!is.na(paq_calc_dat[c("paq_m_mvpa",
-                                                                       "paq_t_mvpa", "paq_w_mvpa", "paq_th_mvpa", "paq_f_mvpa")]))
-    paq_calc_dat_labels[["mvpa_ndays_data"]] <- "Number of days with usable continuous data for moderate to vigorous physical activity - if \">60 min\" chosen, cannot use as continuous so set
-    to NA. Will have to pursue categorical analyses for those data"
+    paq_calc_dat[["paq_mvpa_ndays_data"]] <- rowSums(!is.na(paq_calc_dat[c("paq_m_mvpa", "paq_t_mvpa", "paq_w_mvpa", "paq_th_mvpa", "paq_f_mvpa")]))
+    paq_calc_dat_labels[["paq_mvpa_ndays_data"]] <- "Number of days with usable continuous data for moderate to vigorous physical activity - if \">60 min\" chosen, cannot use as continuous so set to NA. Will have to pursue categorical analyses for those data"
 
-    paq_calc_dat[["mvpa_avg"]] <- rowMeans(paq_calc_dat[c("paq_m_mvpa", "paq_t_mvpa",
-                                                          "paq_w_mvpa", "paq_th_mvpa", "paq_f_mvpa")], na.rm = TRUE)
-    paq_calc_dat_labels[["mvpa_avg"]] <- "Average moderate to vigorous physical activity in minutes per day, ignoring days with missing data (see mvpa_ndays_data)"
+    paq_calc_dat[["paq_mvpa_avg"]] <- rowMeans(paq_calc_dat[c("paq_m_mvpa", "paq_t_mvpa", "paq_w_mvpa", "paq_th_mvpa", "paq_f_mvpa")], na.rm = TRUE)
+    paq_calc_dat_labels[["paq_mvpa_avg"]] <- "Average moderate to vigorous physical activity in minutes per day, ignoring days with missing data (see mvpa_ndays_data)"
 
     ## sleep
     if (isTRUE(sleep)) {
-        paq_calc_dat[["sleep_ndays_data"]] <- rowSums(!is.na(paq_calc_dat[c("paq_m_sleep",
-                                                                            "paq_t_sleep", "paq_w_sleep", "paq_th_sleep", "paq_f_sleep")]))
-        paq_calc_dat_labels[["sleep_ndays_data"]] <- "Number of days with usable continuous data for wakeup and bed times - if \"Before 5 am\", \"After 8 am\", or \"After 10 pm\" were
-        chosen, cannot use as continuous so set to NA. Will have to pursue categorical analyses for those data"
+        paq_calc_dat[["paq_sleep_ndays_data"]] <- rowSums(!is.na(paq_calc_dat[c("paq_m_sleep", "paq_t_sleep", "paq_w_sleep", "paq_th_sleep", "paq_f_sleep")]))
+        paq_calc_dat_labels[["paq_sleep_ndays_data"]] <- "Number of days with usable continuous data for wakeup and bed times - if \"Before 5 am\", \"After 8 am\", or \"After 10 pm\" were chosen, cannot use as continuous so set to NA. Will have to pursue categorical analyses for those data"
 
-        paq_calc_dat[["sleep_avg"]] <- rowMeans(paq_calc_dat[c("paq_m_sleep",
-                                                               "paq_t_sleep", "paq_w_sleep", "paq_th_sleep", "paq_f_sleep")], na.rm = TRUE)
-        paq_calc_dat_labels[["sleep_avg"]] <- "Average moderate to vigorous physical activity in minutes per day, ignoring days with missing data (see sleep_ndays_data)"
+        paq_calc_dat[["paq_sleep_avg"]] <- rowMeans(paq_calc_dat[c("paq_m_sleep", "paq_t_sleep", "paq_w_sleep", "paq_th_sleep", "paq_f_sleep")], na.rm = TRUE)
+        paq_calc_dat_labels[["paq_sleep_avg"]] <- "Average moderate to vigorous physical activity in minutes per day, ignoring days with missing data (see sleep_ndays_data)"
     }
 
-    #### 3. Clean Export/Scored Data #####
-    ## round data
-    if (isTRUE(ID_arg)){
-        paq_calc_dat[2:ncol(paq_calc_dat)] <- round(paq_calc_dat[2:ncol(paq_calc_dat)], digits = 3)
-    } else {
-        paq_calc_dat <- round(paq_calc_dat, digits = 3)
-    }
+    #### 3. Clean Export/Scored Data ####
 
     ## make sure the variable labels match in the dataset
-    paq_calc_dat = sjlabelled::set_label(paq_calc_dat, label = matrix(unlist(paq_calc_dat_labels,
-                                                                             use.names = FALSE)))
+    paq_calc_dat = sjlabelled::set_label(paq_calc_dat, label = matrix(unlist(paq_calc_dat_labels,  use.names = FALSE)))
 
     return(paq_calc_dat)
 }

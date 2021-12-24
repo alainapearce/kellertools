@@ -14,7 +14,7 @@
 #'
 #'
 #' @param intake_data a data.frame including grams consumed for each food item following the naming conventions described above
-#' @param meal string indicating which meals are included in intake_data: std_meal' - standard meal before EAH (visits 1 and 7); 'EAH' - eating in the absence of hunger paradigm (visits 1 and 7); and 'ps_meal' - portion size meal (visits 2-5)
+#' @param meal string indicating which meals are included in intake_data: 'std_meal' - standard meal before EAH (visits 1 and 7); 'EAH' - eating in the absence of hunger paradigm (visits 1 and 7); and 'ps_meal' - portion size meal (visits 2-5)
 #' @param parID (optional) name of participant ID column in intake_data. If included the output dataset will be matched by parID, if not included the output dataset will be in the order of intake_data but will have no participant identifier.
 #'
 #' @return The intake_data data.frame with kcal consumed added for each food item and total comused in grams and kcal.
@@ -33,8 +33,7 @@
 #'
 #' @seealso For the Food and Brain Study, the energy density of each food is in \link{fbs_ED.rda}.
 #' Raw data from Qualtrics was processed using the following scripts (or there 'lab' equivalent):
-#'  \code{\link{qualtrics_child_v1dat}}, \code{\link{qualtrics_child_v2dat}}, \code{\link{qualtrics_child_v3dat}},
-#'  \code{\link{qualtrics_child_v4dat}}, \code{\link{qualtrics_child_v5dat}}, \code{\link{qualtrics_child_v7dat}}
+#'  \code{\link{qualtrics_child_v1dat}}, \code{\link{qualtrics_child_v2dat}}, \code{\link{qualtrics_child_v3dat}}, \code{\link{qualtrics_child_v4dat}}, \code{\link{qualtrics_child_v5dat}}, \code{\link{qualtrics_child_v7dat}}
 #'
 #'
 #'

@@ -190,8 +190,8 @@ util_child_v5dat <- function(date_str, data_path) {
 
     pna_label <- "Note: prefer not to answer (pna) marked NA - see pna database for which were pna rather than missing NA"
 
-    ## Fix 99/skip in LOC and ctc survey. Note, only ctc items 1-8 have skip levels
-    level99_issue_catvars <- names(qv5_child_clean)[c(42:63, 65:70)]
+    ## Fix 99/skip in LOC survey. Note: CTC has allowable skips in scoring so keep.
+    level99_issue_catvars <- names(qv5_child_clean)[c(42:64)]
 
     for (v in 1:length(level99_issue_catvars)) {
         # get variable name
@@ -262,18 +262,18 @@ util_child_v5dat <- function(date_str, data_path) {
     }
 
     ###7b) re-level ctc
-    # re-level ctc questions 13-16 so that higher = riskier
-    ctc_names <- names(qv5_child_clean)[77:80]
+    # re-level ctc questions so that 99 - skip is changed to -99
+    ctc_names <- names(qv5_child_clean)[65:80]
     for (var in 1:length(ctc_names)) {
         var_name <- as.character(ctc_names[var])
 
-        qv5_child_clean[[var_name]] <- sjlabelled::set_labels(qv5_child_clean[[var_name]], labels = c(`Not at all` = 5, `A little` = 4, `Not sure/in the middle` = 3, Somewhat = 2, `A lot` = 1))
+        qv5_child_clean[[var_name]] <- sjlabelled::set_labels(qv5_child_clean[[var_name]], labels = c(`Not at all` = 1, `A little` = 2, `Not sure/in the middle` = 3, `Somewhat` = 4, `A lot` = 5, `Skip` = -99))
         set_attr <- attributes(qv5_child_clean[[var_name]])
 
-        qv5_child_clean[[var_name]] <- ifelse(is.na(qv5_child_clean[[var_name]]),  NA, ifelse(qv5_child_clean[[var_name]] == 1, 5, ifelse(qv5_child_clean[[var_name]] == 2, 4, ifelse(qv5_child_clean[[var_name]] == 3, 3, ifelse(qv5_child_clean[[var_name]] == 4, 2, 1)))))
+        qv5_child_clean[[var_name]] <- ifelse(is.na(qv5_child_clean[[var_name]]),  NA, ifelse(qv5_child_clean[[var_name]] == 99, -99, qv5_child_clean[[var_name]]))
 
         attributes(qv5_child_clean[[var_name]]) <- set_attr
-        qv5_child_clean_labels[[var_name]] <- paste0(qv5_child_clean_labels[[var_name]], " - re-leveled in R so higher = riskier")
+        qv5_child_clean_labels[[var_name]] <- paste0(qv5_child_clean_labels[[var_name]], " - re-leveled in R so skip = -99")
     }
 
     # 8) random fixes to factor level names and variable descriptions ####

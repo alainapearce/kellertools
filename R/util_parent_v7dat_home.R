@@ -116,6 +116,7 @@ util_parent_v7dat_home <- function(date_str, data_path) {
 
     qv7_parent_clean <- qv7_parent_clean[c(2, 1, 437:439, 124:197, 419:436, 30:31, 209:214, 16:29, 32:33,  34:48, 122:123, 503:512, 49:121, 202:208, 198:201, 215:418, 440:502, 3:15)]
 
+
     qv7_parent_clean_labels <- qv7_parent_clean_labels[c(2, 1, 437:439, 124:197, 419:436, 30:31, 209:214, 16:29, 32:33,  34:48, 122:123, 503:512, 49:121, 202:208, 198:201, 215:418, 440:502, 3:15)]
 
     ## re-name variables make lower case
@@ -167,6 +168,7 @@ util_parent_v7dat_home <- function(date_str, data_path) {
     names(qv7_parent_clean)[149:228] <- c("feedschild", "feedschild_other", "buysfood", "buysfood_other", "feq_eatout", "freq_familydinner", "freq_homelunch", "family_foodcond", "snap", "wic", "tanf", "medicaid", "liheap", "partial_lunch_assistance", "full_lunch_assistance", "other_program", "other_program_freetxt", "foodpantry_use", "freq_foodpantry", "foodbudget_mo", "prefered_grocerystore", "rank_packagedbread", "rank_bakerybread", "rank_saltysnack", "rank_sweetsnack", "rank_cheese", "rank_milk", "rank_yogurt", "rank_butter", "rank_eggs", "rank_otherdairy", "rank_coffeetea", "rank_carbonated_drink", "rank_fruitjuice_drink", "rank_sports_drink", "rank_alcohol_drink", "rank_redmeat", "rank_poultry", "rank_seafood", "rank_pasta_rice", "rank_soup", "rank_nuts_seeds", "rank_nutjelly_spread", "rank_breakfast_cereal", "rank_breakfast_replacement", "rank_meal_replacement", "rank_freshprep_foods", "rank_fresh_veg", "rank_fresh_fruit", "rank_can_veg", "rank_can_fruit",  "rank_frozen_veg", "rank_frozen_fruit", "rank_frozen_dinner", "rank_frozen_breakfast", "rank_frozen_desert", "rank_candygum", "rank_bakingsupplies", "rank_condiments", "rank_dips_spreads", "rank_salad_dressings", "rank_spice_seasoning",  "rank_cooking_oil", "grow_fruits", "grow_veg", "grow_jellyspreads", "grow_nuts_seeds", "grow_milk", "grow_cheese", "grow_butter", "grow_eggs", "grow_redmeat", "grow_poultry", "encourage_plateclean_vas", "child_plateclean_vas",  "percieved_child_kcal", "pcent_parent_portionchoice", "pcent_partner_portionchoice", "pcent_child_portionchoice",  "pcent_other_portionchoice")
 
     names(qv7_parent_clean)[229:371] <- c("pss_practice1", "pss_vas_hunger", "pss_vas_couldeat", "pss_vas_fullness", "pss_practice2",  "pss_apple_eat", "pss_apple_freq", "pss_apple_much", "pss_apple_like", "pss_apple_portion", "pss_apple_nutrition",  "pss_broccoli_eat", "pss_broccoli_freq", "pss_broccoli_much", "pss_broccoli_like", "pss_broccoli_portion", "pss_broccoli_nutrition",  "pss_cake_eat", "pss_cake_freq", "pss_cake_much", "pss_cake_like", "pss_cake_portion", "pss_cake_nutrition",  "pss_candy_eat", "pss_candy_freq", "pss_candy_much", "pss_candy_like", "pss_candy_potion", "pss_candy_nutrition",  "pss_carrot_eat", "pss_carrot_freq", "pss_carrot_much", "pss_carrot_like", "pss_carrot_portion", "pss_carrot_nutrition", "pss_cornflakes_eat", "pss_cornflakes_freq", "pss_ccornflakes_much", "pss_cornflakes_like", "pss_cornflakes_portion", "pss_cornflakes_nutrition", "pss_cheese_brgr_eat", "pss_cheese_brgr_freq", "pss_cheese_brgr_much", "pss_cheese_brgr_like", "pss_cheese_brgr_portion", "pss_cheese_brgr_nutrition", "pss_chkn_nug_eat", "pss_chkn_nug_freq", "pss_chkn_nug_much", "pss_chkn_nug_like", "pss_chkn_nug_portion", "pss_chkn_nug_nutrition", "pss_fries_eat", "pss_fries_freq", "pss_fries_much", "pss_fries_like", "pss_fries_portion", "pss_fries_nutrition", "pss_garlic_bread_eat", "pss_garlic_bread_freq", "pss_garlic_bread_much", "pss_garlic_bread_like", "pss_garlic_bread_portion", "pss_garlic_bread_nutrition", "pss_goldfish_eat", "pss_goldfish_freq", "pss_goldfish_much", "pss_goldfish_like", "pss_goldfish_portion", "pss_goldfish_nutrition", "pss_grapes_eat", "pss_grapes_freq", "pss_grapes_much", "pss_grapes_like", "pss_grapes_portion", "pss_grapes_nutrition",  "pss_choc_icecream_eat", "pss_choc_icecream_freq", "pss_choc_icecream_much", "pss_choc_icecream_like", "pss_choc_icecream_portion", "pss_choc_icecream_nutrition", "pss_mac_cheese_eat", "pss_mac_cheese_freq", "pss_mac_cheese_much", "pss_mac_cheese_like",  "pss_mac_cheese_portion", "pss_mac_cheese_nutrition", "pss_milk_eat", "pss_milk_freq", "pss_milk_much", "pss_milk_like",  "pss_milk_portion", "pss_milk_nutrition", "pss_orangejuice_eat", "pss_orangejuice_freq", "pss_orangejuice_much",  "pss_orangejuice_like", "pss_orangejuice_portion", "pss_orangejuice_nutrition", "pss_pbj_sndwch_eat", "pss_pbj_sndwch_freq", "pss_pbj_sndwch_much", "pss_pbj_sndwch_like", "pss_pbj_sndwch_portion", "pss_pbj_sndwch_nutrition", "pss_peas_eat", "pss_peas_freq", "pss_peas_much", "pss_peas_like", "pss_peas_portion", "pss_peas_nutrition", "pss_pizza_eat",  "pss_pizza_freq", "pss_pizza_much", "pss_pizza_like", "pss_pizza_portion", "pss_pizza_nutrition", "pss_soda_eat", "pss_soda_freq", "pss_soda_much", "pss_soda_like", "pss_soda_portion", "pss_soda_nutrition", "pss_soup_eat",  "pss_soup_freq", "pss_soup_much", "pss_soup_like", "pss_soup_portion", "pss_soup_nutrition", "pss_tomatoes_eat",  "pss_tomatoes_freq", "pss_tomatoes_much", "pss_tomatoes_like", "pss_tomatoes_portion", "pss_tomatoes_nutrition",  "pss_yogurt_eat", "pss_yogurt_freq", "pss_yogurt_much", "pss_yogurt_like", "pss_yogurt_portion", "pss_yogurt_nutrition")
+
 
     ## update data labels
     names(qv7_parent_clean_labels) <- names(qv7_parent_clean)
@@ -443,7 +445,7 @@ util_parent_v7dat_home <- function(date_str, data_path) {
     }
 
     ## 6d) categorical variables with 99's data ####
-    level99_issue_catvars <- names(qv7_parent_clean)[c(3, 98, 122:123, 125:126, 128, 130:131, 133:134, 136:138, 149, 151, 153, 156:164, 166, 168:169, 212:221, 235, 241, 247, 253, 259, 265, 271, 277, 283, 289, 295, 301, 307, 313, 319, 325, 331, 337, 343, 349, 355, 361, 367, 372:506)]
+    level99_issue_catvars <- names(qv7_parent_clean)[c(3, 98, 122:123, 125:126, 128, 130:131, 133:134, 136:138, 149, 151, 156:164, 166, 168:169, 212:221, 235, 241, 247, 253, 259, 265, 271, 277, 283, 289, 295, 301, 307, 313, 319, 325, 331, 337, 343, 349, 355, 361, 367, 372:506)]
 
     for (v in 1:length(level99_issue_catvars)) {
         # get variable name
@@ -459,8 +461,7 @@ util_parent_v7dat_home <- function(date_str, data_path) {
             names(qv7_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,
-                ": ", qv7_parent_clean_labels[[pvar]])
+            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,  ": ", qv7_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
             qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], " -- ", pna_label)
@@ -541,27 +542,6 @@ util_parent_v7dat_home <- function(date_str, data_path) {
     # 8) re-calculate manual variables ####
 
     ## 8a) parent anthropometrics ####
-    qv7_parent_clean[["parent_height_avg"]] <- ifelse(is.na(qv7_parent_clean[["parent_height1"]]) | is.na(qv7_parent_clean[["parent_height2"]]),
-        NA, rowSums(qv7_parent_clean[c("parent_height1", "parent_height2")], na.rm = TRUE)/2)
-    qv7_parent_clean_labels[["parent_height1"]] <- "measured parent height 1 in lab"
-    qv7_parent_clean_labels[["parent_height2"]] <- "measured parent height 2 in lab"
-    qv7_parent_clean_labels[["parent_height_avg"]] <- "measured parent average height calculated in R"
-
-    # avg parent weight, update label
-    qv7_parent_clean[["parent_weight_avg"]] <- ifelse(is.na(qv7_parent_clean[["parent_weight1"]]) | is.na(qv7_parent_clean[["parent_weight2"]]),
-        NA, rowSums(qv7_parent_clean[c("parent_weight1", "parent_weight2")], na.rm = TRUE)/2)
-    qv7_parent_clean_labels[["parent_weight1"]] <- "measured parent weight 1 in lab"
-    qv7_parent_clean_labels[["parent_weight2"]] <- "measured parent weight 2 in lab"
-    qv7_parent_clean_labels[["parent_weight_avg"]] <- "measured parent average weight calculated in R"
-
-    # parent bmi, update label
-    if (class(qv7_parent_clean[["parent_bmi"]]) == "character") {
-        qv7_parent_clean[["parent_bmi"]] <- as.numeric(qv7_parent_clean[["parent_bmi"]])
-    }
-
-    qv7_parent_clean[["parent_bmi"]] <- ifelse(is.na(qv7_parent_clean[["parent_height_avg"]]) | is.na(qv7_parent_clean[["parent_weight_avg"]]),
-        NA, round(qv7_parent_clean[["parent_weight_avg"]]/((qv7_parent_clean[["parent_height_avg"]]/100)^2), digits = 2))
-    qv7_parent_clean_labels[["parent_bmi"]] <- "measured parent bmi calculated in R package using scripted average height and weight"
 
     # convert to cm and kg
     qv7_parent_clean[["sr_dad_height_cm"]] <- (qv7_parent_clean[["sr_dad_height_ft"]] * 12 + qv7_parent_clean[["sr_dad_height_in"]]) *
@@ -590,7 +570,7 @@ util_parent_v7dat_home <- function(date_str, data_path) {
     # 9) re-ordering factor levels to start with value 0 ####
 
     ## 9a) variables that just need to shift values by 1 ####
-    relevel_vars <- names(qv7_parent_clean)[c(21:22, 25:26, 33:34, 37:38, 45:46, 49:50, 57:58, 61:62, 69:70, 73:74, 123, 125:126, 128, 138, 149, 151, 153, 168, 169, 235, 241, 247, 253, 259, 265, 271, 277, 283, 289, 295, 301, 307, 313, 319, 325, 331, 337, 343, 349, 355, 361, 367)]
+    relevel_vars <- names(qv7_parent_clean)[c(21:22, 25:26, 33:34, 37:38, 45:46, 49:50, 57:58, 61:62, 69:70, 73:74, 123, 125:126, 128, 138, 149, 168, 169, 235, 241, 247, 253, 259, 265, 271, 277, 283, 289, 295, 301, 307, 313, 319, 325, 331, 337, 343, 349, 355, 361, 367)]
 
     for (v in 1:length(relevel_vars)) {
         pvar <- relevel_vars[v]
@@ -611,7 +591,6 @@ util_parent_v7dat_home <- function(date_str, data_path) {
         qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], " re-leveled in R to start with 0")
     }
 
-
     # 10) specific fixes to factor level names and variable descriptions ####
 
     # 10a) make rankings numeric
@@ -620,14 +599,13 @@ util_parent_v7dat_home <- function(date_str, data_path) {
     #### 11) Format for export ####
 
     ## 11a ) final re-order/clean of data
-    qv7_parent_clean <- qv7_parent_clean[c(1:19, 515, 20:22, 516, 23, 517, 24:30, 518, 31, 519, 31:34, 520, 35, 521, 36:42, 522, 43, 523, 44:46, 524, 47, 525, 48:54, 526, 55, 527, 56:58, 528, 59, 529, 60:66, 530, 67, 531, 68:70, 532, 71, 533, 72:78, 534, 76:102, 513, 103:105, 514, 537:542, 106:132, 535, 133:135, 536, 136:512)]
+    qv7_parent_clean <- qv7_parent_clean[c(1:19, 515, 20:22, 516, 23, 517, 24:30, 518, 31, 519, 32:34, 520, 35, 521, 36:42, 522, 43, 523, 44:46, 524, 47, 525, 48:54, 526, 55, 527, 56:58, 528, 59, 529, 60:66, 530, 67, 531, 68:70, 532, 71, 533, 72:79, 534, 80:102, 513, 103:105, 514, 537:542, 106:132, 535, 133:135, 536, 136:512)]
 
-    qv7_parent_clean_labels <- qv7_parent_clean_labels[c(1:19, 515, 20:22, 516, 23, 517, 24:30, 518, 31, 519, 31:34, 520, 35, 521, 36:42, 522, 43, 523, 44:46, 524, 47, 525, 48:54, 526, 55, 527, 56:58, 528, 59, 529, 60:66, 530, 67, 531, 68:70, 532, 71, 533, 72:78, 534, 76:102, 513, 103:105, 514, 537:542, 106:132, 535, 133:135, 536, 136:512)]
+    qv7_parent_clean_labels <- qv7_parent_clean_labels[c(1:19, 515, 20:22, 516, 23, 517, 24:30, 518, 31, 519, 32:34, 520, 35, 521, 36:42, 522, 43, 523, 44:46, 524, 47, 525, 48:54, 526, 55, 527, 56:58, 528, 59, 529, 60:66, 530, 67, 531, 68:70, 532, 71, 533, 72:79, 534, 80:102, 513, 103:105, 514, 537:542, 106:132, 535, 133:135, 536, 136:512)]
 
     ## 11b) add attributes to pna data
     n_pna_cols <- length(names(qv7_parent_pna))
-    qv7_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv7_parent_pna[2:n_pna_cols], function(x) sjlabelled::add_labels(x,
-        labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+    qv7_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv7_parent_pna[2:n_pna_cols], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
 
     ## 11c) put data in order of participant ID for ease
     qv7_parent_clean <- qv7_parent_clean[order(qv7_parent_clean[["id"]]), ]

@@ -114,11 +114,7 @@ score_cshqa <- function(cshqa_data, study = 'fbs', parID) {
         var_name <- reverse_qs[var]
         reverse_name <- paste0(var_name, '_rev')
 
-        cshqa_data[[reverse_name]] <- ifelse(is.na(cshqa_data[[var_name]]), NA,
-                                             ifelse(cshqa_data[[var_name]] == 1, 5,
-                                                    ifelse(cshqa_data[[var_name]] == 2, 4,
-                                                           ifelse(cshqa_data[[var_name]] == 4, 2,
-                                                                  ifelse(cshqa_data[[var_name]] == 5, 1, 3)))))
+        cshqa_data[[reverse_name]] <- ifelse(is.na(cshqa_data[[var_name]]), NA, ifelse(cshqa_data[[var_name]] == 1, 5, ifelse(cshqa_data[[var_name]] == 2, 4, ifelse(cshqa_data[[var_name]] == 4, 2, ifelse(cshqa_data[[var_name]] == 5, 1, 3)))))
     }
 
     ## need to resolve subscale scoring! ###

@@ -67,7 +67,7 @@ util_merge_v3 <- function(date_str, child_date_str, child_home_date_str, child_l
     datapath_arg <- methods::hasArg(data_path)
 
     if (isTRUE(datapath_arg)) {
-        if (!is.character(date_str)) {
+        if (!is.character(data_path)) {
             stop("data_path must be enter as a string: e.g., '.../Participant_Data/untouchedRaw/util_Raw/'")
         }
     }
@@ -180,11 +180,17 @@ util_merge_v3 <- function(date_str, child_date_str, child_home_date_str, child_l
     # merge child home and lab into single database
     child_covidmerge_v3dat <- merge(child_lab_v3dat$data, child_home_v3dat$data[c(1, 3:71)], by = 'id', all = TRUE)
 
+    #remove 120 - need to manually incorporate 'home' DD answers only
+    child_covidmerge_v3dat_no120 <- child_covidmerge_v3dat[child_covidmerge_v3dat[['id']] != 120, ]
+
     # re-order so matches child_v3dat
-    child_covidmerge_v3dat <- child_covidmerge_v3dat[c(1:41, 44:112, 42:43)]
+    child_covidmerge_v3dat_no120 <- child_covidmerge_v3dat_no120[c(1:41, 44:112, 42:43)]
 
     # merge all child into single database
-    all_child_v3dat <- rbind.data.frame(child_v3dat$data, child_covidmerge_v3dat)
+    all_child_v3dat <- rbind.data.frame(child_v3dat$data, child_covidmerge_v3dat_no120)
+
+    #add DD back for 120
+    all_child_v3dat[all_child_v3dat[['id']] == 120, c(42:110)] <- child_home_v3dat$data[child_home_v3dat$data[['id']] == 120, 3:71]
 
     #### 5. Merge Parent Raw Data #####
 

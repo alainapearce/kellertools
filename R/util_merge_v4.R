@@ -66,7 +66,7 @@ util_merge_v4 <- function(date_str, child_date_str, child_home_date_str, child_l
     datapath_arg <- methods::hasArg(data_path)
 
     if (isTRUE(datapath_arg)) {
-        if (!is.character(date_str)) {
+        if (!is.character(data_path)) {
             stop("data_path must be enter as a string: e.g., '.../Participant_Data/untouchedRaw/util_Raw/'")
         }
     }

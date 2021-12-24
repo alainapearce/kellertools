@@ -1,0 +1,88 @@
+---
+title: "demo_status_by_visit"
+output: rmarkdown::html_vignette
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup}
+library(gtsummary)
+```
+
+```{r load data}
+date_str = '2021-12-19'
+data_path = '/Users/baf44/OneDrive - The Pennsylvania State University/b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'
+
+data_v1 <- util_merge_v1(date_str = date_str, data_path = data_path)
+data_v2 <- util_merge_v2(date_str = date_str, data_path = data_path)
+data_v3 <- util_merge_v3(date_str = date_str, data_path = data_path, model_DD = FALSE)
+data_v4 <- util_merge_v4(date_str = date_str, data_path = data_path)
+data_v5 <- util_merge_v5(date_str = date_str, data_path = data_path)
+data_v6 <- util_merge_v6(date_str = date_str, data_path = data_path)
+data_v7 <- util_merge_v7(date_str = date_str, data_path = data_path)
+```
+
+```{r V1 table}
+# select variables
+Table1_vars <- data_v1[["data"]] %>% select(sex, risk_cat, age_yr)
+Table2_vars <- data_v1[["data"]] %>% select(bmi_screenout, risk_cat)
+
+dfList <- list(Table1_vars, Table2_vars)
+
+# convert 'haven_labelled' datatypes
+for (df in dfList) {
+  for (v in 1:ncol(df)) {
+      var_name <- names(df)[v]
+      class <- class(df[[var_name]])
+      if (grepl("haven_labelled", class[1])  ) {
+        df[[var_name]] <- labelled::unlabelled(df[[var_name]])
+      }
+  }
+}
+
+# make Table 1
+Table1 <- 
+  tbl_summary(
+    Table1_vars,
+    by = risk_cat, # split table by group
+    statistic = list(all_continuous() ~ "{mean} ({sd})",
+                     all_categorical() ~ "{n} ({p}%)"),
+    #missing = "no", # don't list missing data separately
+    label = list(age_yr ~ "Age (years)",
+                 sex ~ "Sex")
+  ) %>%
+  #add_n() %>% # add column with total number of non-missing observations
+  #add_p() %>% # test for a difference between groups
+  modify_header(label = "**Variable**") %>% # update the column header
+  bold_labels() 
+
+Table1
+
+# make Table 2
+Table2 <- 
+  tbl_summary(
+    Table2_vars,
+    by = bmi_screenout, # split table by group
+    #missing = "no", # don't list missing data separately
+    label = bmi_screenout ~ "Child BMI screenout"
+  ) %>%
+  #add_n() %>% # add column with total number of non-missing observations
+  #add_p() %>% # test for a difference between groups
+  modify_header(label = "**Variable**") %>% # update the column header
+  bold_labels() 
+
+Table2
+```
+
+```{r visit status table}
+library(dplyr)
+
+V1 <- data_v1[["data"]] %>% select(id, start_date)
+V2 <- data_v2[["data"]] %>% select(id, start_date)
+V3 <- data_v3[["data"]] %>% select(id, start_date)
+V4 <- data_v4[["data"]] %>% select(id, start_date)
+V5 <- data_v5[["data"]] %>% select(id, start_date)
+V6 <- data_v6[["data"]] %>% select(id, start_date)
+
+
+```

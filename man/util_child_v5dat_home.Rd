@@ -12,7 +12,7 @@ util_child_v5dat_home(date_str, data_path)
 \item{data_path}{(optional) the full path to the directory where the raw Qualtrics database are saved, EXCLUDING the .sav file name (e.g., '.../b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'). If NOT entered, will assume the database is saved in the working directory.}
 }
 \value{
-A list containing: 1) data: data.frame with raw, cleaned data from child visit 5 Qualtrics collected in the home; 2) dict: all variable descriptions; 3) pna_data: data.frame marking participants who 'prefered not to answer' (pna) specific questions; and 4) pna_dict: all variable descriptions for pna_data
+A list containing: 1) data: data.frame with raw, cleaned data from child visit 5 Qualtrics collected in the home and 2) dict: all variable descriptions
 }
 \description{
 This function loads the .sav raw data file for the child visit 4 data that was via Qualtrics at the child's home when the procedure was split due to covid and cleans the data. Cleaning the data involves:

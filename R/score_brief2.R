@@ -136,7 +136,7 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     #### 2. Set Up Data #####
 
     # set up database for results create empty matrix
-    brief_score_dat <- data.frame(brief2_inhibit = rep(NA, nrow(brief_data)), brief2_inhibit_t = rep(NA, nrow(brief_data)), brief2_inhibit_p = rep(NA, nrow(brief_data)), brief2_selfmon = rep(NA, nrow(brief_data)), brief2_selfmon_t = rep(NA, nrow(brief_data)), brief2_selfmon_p = rep(NA, nrow(brief_data)), brief2_shift = rep(NA, nrow(brief_data)), brief2_shift_t = rep(NA, nrow(brief_data)), brief2_shift_p = rep(NA, nrow(brief_data)), brief2_emcont = rep(NA, nrow(brief_data)), brief2_emcont_t = rep(NA, nrow(brief_data)), brief2_emcont_p = rep(NA, nrow(brief_data)), brief2_initiate = rep(NA, nrow(brief_data)), brief2_initiate_t = rep(NA, nrow(brief_data)), brief2_initiate_p = rep(NA, nrow(brief_data)), brief2_wm = rep(NA, nrow(brief_data)), brief2_wm_t = rep(NA, nrow(brief_data)), brief2_wm_p = rep(NA, nrow(brief_data)), brief2_planorg = rep(NA, nrow(brief_data)), brief2_planorg_t = rep(NA, nrow(brief_data)), brief2_planorg_p = rep(NA, nrow(brief_data)), taskmon = rep(NA, nrow(brief_data)), taskmon_t = rep(NA, nrow(brief_data)), taskmon_p = rep(NA, nrow(brief_data)), brief2_orgmat = rep(NA, nrow(brief_data)), brief2_orgmat_t = rep(NA, nrow(brief_data)), brief2_orgmat_p = rep(NA, nrow(brief_data)), brief2_bri = rep(NA, nrow(brief_data)), brief2_bri_t = rep(NA, nrow(brief_data)), brief2_bri_p = rep(NA, nrow(brief_data)), brief2_eri = rep(NA, nrow(brief_data)), brief2_eri_t = rep(NA, nrow(brief_data)), brief2_eri_p = rep(NA, nrow(brief_data)), brief2_cri = rep(NA, nrow(brief_data)), brief2_cri_t = rep(NA, nrow(brief_data)), brief2_cri_p = rep(NA, nrow(brief_data)), brief2_gec = rep(NA, nrow(brief_data)), brief2_gec_t = rep(NA, nrow(brief_data)), brief2_gec_p = rep(NA, nrow(brief_data)), brief2_negativity = rep(NA, nrow(brief_data)), brief2_negativity_p = rep(NA, nrow(brief_data)), brief2_negativity_cat = rep(NA, nrow(brief_data)), brief2_inconsistency = rep(NA, nrow(brief_data)), brief2_inconsistency_p = rep(NA, nrow(brief_data)), brief2_inconsistency_cat = rep(NA, nrow(brief_data)), brief2_infrequency = rep(NA, nrow(brief_data)), brief2_infrequency_p = rep(NA, nrow(brief_data)), brief2_infrequency_cat = rep(NA, nrow(brief_data)))
+    brief_score_dat <- data.frame(brief2_inhibit = rep(NA, nrow(brief_data)), brief2_inhibit_t = rep(NA, nrow(brief_data)), brief2_inhibit_p = rep(NA, nrow(brief_data)), brief2_selfmon = rep(NA, nrow(brief_data)), brief2_selfmon_t = rep(NA, nrow(brief_data)), brief2_selfmon_p = rep(NA, nrow(brief_data)), brief2_shift = rep(NA, nrow(brief_data)), brief2_shift_t = rep(NA, nrow(brief_data)), brief2_shift_p = rep(NA, nrow(brief_data)), brief2_emcont = rep(NA, nrow(brief_data)), brief2_emcont_t = rep(NA, nrow(brief_data)), brief2_emcont_p = rep(NA, nrow(brief_data)), brief2_initiate = rep(NA, nrow(brief_data)), brief2_initiate_t = rep(NA, nrow(brief_data)), brief2_initiate_p = rep(NA, nrow(brief_data)), brief2_wm = rep(NA, nrow(brief_data)), brief2_wm_t = rep(NA, nrow(brief_data)), brief2_wm_p = rep(NA, nrow(brief_data)), brief2_planorg = rep(NA, nrow(brief_data)), brief2_planorg_t = rep(NA, nrow(brief_data)), brief2_planorg_p = rep(NA, nrow(brief_data)), brief2_taskmon = rep(NA, nrow(brief_data)), brief2_taskmon_t = rep(NA, nrow(brief_data)), brief2_taskmon_p = rep(NA, nrow(brief_data)), brief2_orgmat = rep(NA, nrow(brief_data)), brief2_orgmat_t = rep(NA, nrow(brief_data)), brief2_orgmat_p = rep(NA, nrow(brief_data)), brief2_bri = rep(NA, nrow(brief_data)), brief2_bri_t = rep(NA, nrow(brief_data)), brief2_bri_p = rep(NA, nrow(brief_data)), brief2_eri = rep(NA, nrow(brief_data)), brief2_eri_t = rep(NA, nrow(brief_data)), brief2_eri_p = rep(NA, nrow(brief_data)), brief2_cri = rep(NA, nrow(brief_data)), brief2_cri_t = rep(NA, nrow(brief_data)), brief2_cri_p = rep(NA, nrow(brief_data)), brief2_gec = rep(NA, nrow(brief_data)), brief2_gec_t = rep(NA, nrow(brief_data)), brief2_gec_p = rep(NA, nrow(brief_data)), brief2_negativity = rep(NA, nrow(brief_data)), brief2_negativity_p = rep(NA, nrow(brief_data)), brief2_negativity_cat = rep(NA, nrow(brief_data)), brief2_inconsistency = rep(NA, nrow(brief_data)), brief2_inconsistency_p = rep(NA, nrow(brief_data)), brief2_inconsistency_cat = rep(NA, nrow(brief_data)), brief2_infrequency = rep(NA, nrow(brief_data)), brief2_infrequency_p = rep(NA, nrow(brief_data)), brief2_infrequency_cat = rep(NA, nrow(brief_data)))
 
     if (isTRUE(ID_arg)) {
         brief_score_dat <- data.frame(brief_data[[parID]], brief_score_dat)
@@ -157,7 +157,7 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     brief_score_dat[["brief2_inhibit"]] <- rowSums(brief_data[inhib_vars])
 
     # look up T-score and percentile
-    inhib_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_inhibit"]], sex = brief_data[['sex']], age = brief_data[['age']], MoreArgs = list(item = 'inhibit'))
+    inhib_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_inhibit"]], sex = brief_data[[sex_var]], age = brief_data[[age_var]], MoreArgs = list(item = 'inhibit'))
 
     inhib_scores <- as.data.frame(matrix(unlist(inhib_scores_list), byrow = TRUE, ncol = 3))
     names(inhib_scores) <- c('item', 't', 'p')
@@ -175,7 +175,7 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     brief_score_dat[["brief2_selfmon"]] <- rowSums(brief_data[brief2_selfmon_vars])
 
     # look up T-score and percentile
-    brief2_selfmon_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_selfmon"]], sex = brief_data[['sex']], age = brief_data[['age']], MoreArgs = list(item = 'selfmon'))
+    brief2_selfmon_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_selfmon"]], sex = brief_data[[sex_var]], age = brief_data[[age_var]], MoreArgs = list(item = 'selfmon'))
 
     brief2_selfmon_scores <- as.data.frame(matrix(unlist(brief2_selfmon_scores_list), byrow = TRUE, ncol = 3))
     names(brief2_selfmon_scores) <- c('item', 't', 'p')
@@ -193,7 +193,7 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     brief_score_dat[["brief2_shift"]] <- rowSums(brief_data[brief2_shift_vars])
 
     # look up T-score and percentile
-    brief2_shift_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_shift"]], sex = brief_data[['sex']], age = brief_data[['age']], MoreArgs = list(item = 'shift'))
+    brief2_shift_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_shift"]], sex = brief_data[[sex_var]], age = brief_data[[age_var]], MoreArgs = list(item = 'shift'))
 
     brief2_shift_scores <- as.data.frame(matrix(unlist(brief2_shift_scores_list), byrow = TRUE, ncol = 3))
     names(brief2_shift_scores) <- c('item', 't', 'p')
@@ -211,7 +211,7 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     brief_score_dat[["brief2_emcont"]] <- rowSums(brief_data[brief2_emcont_vars])
 
     # look up T-score and percentile
-    brief2_emcont_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_emcont"]], sex = brief_data[['sex']], age = brief_data[['age']], MoreArgs = list(item = 'emcont'))
+    brief2_emcont_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_emcont"]], sex = brief_data[[sex_var]], age = brief_data[[age_var]], MoreArgs = list(item = 'emcont'))
 
     brief2_emcont_scores <- as.data.frame(matrix(unlist(brief2_emcont_scores_list), byrow = TRUE, ncol = 3))
     names(brief2_emcont_scores) <- c('item', 't', 'p')
@@ -229,7 +229,7 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     brief_score_dat[["brief2_initiate"]] <- rowSums(brief_data[brief2_initiate_vars])
 
     # look up T-score and percentile
-    brief2_initiate_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_initiate"]], sex = brief_data[['sex']], age = brief_data[['age']], MoreArgs = list(item = 'initiate'))
+    brief2_initiate_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_initiate"]], sex = brief_data[[sex_var]], age = brief_data[[age_var]], MoreArgs = list(item = 'initiate'))
 
     brief2_initiate_scores <- as.data.frame(matrix(unlist(brief2_initiate_scores_list), byrow = TRUE, ncol = 3))
     names(brief2_initiate_scores) <- c('item', 't', 'p')
@@ -247,7 +247,7 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     brief_score_dat[["brief2_wm"]] <- rowSums(brief_data[brief2_wm_vars])
 
     # look up T-score and percentile
-    brief2_wm_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_wm"]], sex = brief_data[['sex']], age = brief_data[['age']], MoreArgs = list(item = 'wm'))
+    brief2_wm_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_wm"]], sex = brief_data[[sex_var]], age = brief_data[[age_var]], MoreArgs = list(item = 'wm'))
 
     brief2_wm_scores <- as.data.frame(matrix(unlist(brief2_wm_scores_list), byrow = TRUE, ncol = 3))
     names(brief2_wm_scores) <- c('item', 't', 'p')
@@ -265,7 +265,7 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     brief_score_dat[["brief2_planorg"]] <- rowSums(brief_data[brief2_planorg_vars])
 
     # look up T-score and percentile
-    brief2_planorg_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_planorg"]], sex = brief_data[['sex']], age = brief_data[['age']], MoreArgs = list(item = 'planorg'))
+    brief2_planorg_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_planorg"]], sex = brief_data[[sex_var]], age = brief_data[[age_var]], MoreArgs = list(item = 'planorg'))
 
     brief2_planorg_scores <- as.data.frame(matrix(unlist(brief2_planorg_scores_list), byrow = TRUE, ncol = 3))
     names(brief2_planorg_scores) <- c('item', 't', 'p')
@@ -280,28 +280,28 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
 
     # Task Monitoring
     taskmon_vars <- c("brief5", "brief21", "brief29", "brief33", "brief42")
-    brief_score_dat[["taskmon"]] <- rowSums(brief_data[taskmon_vars])
+    brief_score_dat[["brief2_taskmon"]] <- rowSums(brief_data[taskmon_vars])
 
     # look up T-score and percentile
-    taskmon_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["taskmon"]], sex = brief_data[['sex']], age = brief_data[['age']], MoreArgs = list(item = 'taskmon'))
+    taskmon_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_taskmon"]], sex = brief_data[[sex_var]], age = brief_data[[age_var]], MoreArgs = list(item = 'taskmon'))
 
     taskmon_scores <- as.data.frame(matrix(unlist(taskmon_scores_list), byrow = TRUE, ncol = 3))
     names(taskmon_scores) <- c('item', 't', 'p')
 
-    brief_score_dat[["taskmon_t"]] <- as.numeric(taskmon_scores[['t']])
-    brief_score_dat[["taskmon_p"]] <- taskmon_scores[['p']]
+    brief_score_dat[["brief2_taskmon_t"]] <- as.numeric(taskmon_scores[['t']])
+    brief_score_dat[["brief2_taskmon_p"]] <- taskmon_scores[['p']]
 
     ## add labels to data
-    brief_score_dat_labels[["taskmon"]] <- "BRIEF2 Task Monitoring Raw Score"
-    brief_score_dat_labels[["taskmon_t"]] <- "BRIEF2 Task Monitoring T-Score"
-    brief_score_dat_labels[["taskmon_p"]] <- "BRIEF2 Task Monitoring Percentile"
+    brief_score_dat_labels[["brief2_taskmon"]] <- "BRIEF2 Task Monitoring Raw Score"
+    brief_score_dat_labels[["brief2_taskmon_t"]] <- "BRIEF2 Task Monitoring T-Score"
+    brief_score_dat_labels[["brief2_taskmon_p"]] <- "BRIEF2 Task Monitoring Percentile"
 
     # Organization of Materials
     brief2_orgmat_vars <- c("brief8", "brief37", "brief45", "brief47", "brief53", "brief63")
     brief_score_dat[["brief2_orgmat"]] <- rowSums(brief_data[brief2_orgmat_vars])
 
     # look up T-score and percentile
-    brief2_orgmat_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_orgmat"]], sex = brief_data[['sex']], age = brief_data[['age']], MoreArgs = list(item = 'orgmat'))
+    brief2_orgmat_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_orgmat"]], sex = brief_data[[sex_var]], age = brief_data[[age_var]], MoreArgs = list(item = 'orgmat'))
 
     brief2_orgmat_scores <- as.data.frame(matrix(unlist(brief2_orgmat_scores_list), byrow = TRUE, ncol = 3))
     names(brief2_orgmat_scores) <- c('item', 't', 'p')
@@ -318,7 +318,7 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     brief_score_dat[["brief2_bri"]] <- rowSums(brief_data[c(inhib_vars, brief2_selfmon_vars)])
 
     # look up T-score and percentile
-    brief2_bri_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_bri"]], sex = brief_data[['sex']], age = brief_data[['age']], MoreArgs = list(item = 'bri'))
+    brief2_bri_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_bri"]], sex = brief_data[[sex_var]], age = brief_data[[age_var]], MoreArgs = list(item = 'bri'))
 
     brief2_bri_scores <- as.data.frame(matrix(unlist(brief2_bri_scores_list), byrow = TRUE, ncol = 3))
     names(brief2_bri_scores) <- c('item', 't', 'p')
@@ -335,7 +335,7 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     brief_score_dat[["brief2_eri"]] <- rowSums(brief_data[c(brief2_shift_vars, brief2_emcont_vars)])
 
     # look up T-score and percentile
-    brief2_eri_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_eri"]], sex = brief_data[['sex']], age = brief_data[['age']], MoreArgs = list(item = 'eri'))
+    brief2_eri_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_eri"]], sex = brief_data[[sex_var]], age = brief_data[[age_var]], MoreArgs = list(item = 'eri'))
 
     brief2_eri_scores <- as.data.frame(matrix(unlist(brief2_eri_scores_list), byrow = TRUE, ncol = 3))
     names(brief2_eri_scores) <- c('item', 't', 'p')
@@ -352,7 +352,7 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     brief_score_dat[["brief2_cri"]] <- rowSums(brief_data[c(brief2_initiate_vars, brief2_wm_vars, brief2_planorg_vars, taskmon_vars, brief2_orgmat_vars)])
 
     # look up T-score and percentile
-    brief2_cri_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_cri"]], sex = brief_data[['sex']], age = brief_data[['age']], MoreArgs = list(item = 'cri'))
+    brief2_cri_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_cri"]], sex = brief_data[[sex_var]], age = brief_data[[age_var]], MoreArgs = list(item = 'cri'))
 
     brief2_cri_scores <- as.data.frame(matrix(unlist(brief2_cri_scores_list), byrow = TRUE, ncol = 3))
     names(brief2_cri_scores) <- c('item', 't', 'p')
@@ -369,7 +369,7 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     brief_score_dat[["brief2_gec"]] <- rowSums(brief_data[c(inhib_vars, brief2_selfmon_vars, brief2_shift_vars, brief2_emcont_vars, brief2_initiate_vars, brief2_wm_vars, brief2_planorg_vars, taskmon_vars, brief2_orgmat_vars)])
 
     # look up T-score and percentile
-    brief2_gec_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_gec"]], sex = brief_data[['sex']], age = brief_data[['age']], MoreArgs = list(item = 'gec'))
+    brief2_gec_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_gec"]], sex = brief_data[[sex_var]], age = brief_data[[age_var]], MoreArgs = list(item = 'gec'))
 
     brief2_gec_scores <- as.data.frame(matrix(unlist(brief2_gec_scores_list), byrow = TRUE, ncol = 3))
     names(brief2_gec_scores) <- c('item', 't', 'p')

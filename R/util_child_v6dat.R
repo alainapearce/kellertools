@@ -88,76 +88,102 @@ util_child_v6dat <- function(date_str, data_path) {
     # 1) extract variable labels/descriptions ####
     qv6_child_labels <- lapply(qv6_child_dat, function(x) attributes(x)$label)
 
-    # 2) removing all practice events (e.g., 999)  ####
-    qv6_child_clean <- qv6_child_dat[!is.na(qv6_child_dat$ID) & qv6_child_dat$ID <
+    # 2) selecting relevant data columns ####
+    qv6_child_clean <- qv6_child_dat[c(1, 18, 29, 31:33, 35, 37, 39:45, 50, 56:207, 210:659, 661:687)]
+
+    ## update labels
+    qv6_child_clean_labels <- qv6_child_labels[c(1, 18, 29, 31:33, 35, 37, 39:45, 50, 56:207, 210:659, 661:687)]
+
+    # 3) removing all practice events (e.g., 999) ####
+    qv6_child_clean <- qv6_child_clean[!is.na(qv6_child_clean$ID) & qv6_child_clean$ID <
         999, ]
 
-    # 3) selecting relevant data columns  ####
+    # 4) re-ordering and re-name data columns ####
+    qv6_child_clean <- qv6_child_clean[c(2, 1, 3:5, 619:621, 6:7, 622, 8:9, 623, 10:17, 624, 18:618, 625:645)]
 
-    ## Extract ID and Version A MRI VAS ratings
-    MRIVAS_A <- qv6_child_clean[c(18, 58:207, 210:359)]
+    qv6_child_clean_labels <- qv6_child_clean_labels[c(2, 1, 3:5, 619:621, 6:7, 622, 8:9, 623, 10:17, 624, 18:618, 625:645)]
 
-    ### fix Version A MRI VAS variable names
-    names(MRIVAS_A)[names(MRIVAS_A) == "MRIVAS_C1_06_Like_A_1.0"] <- "MRIVAS_C1_06_Full_A_1"
-    for (var in 1:length(names(MRIVAS_A))) {
-        var_name <- as.character(names(MRIVAS_A)[var])
+    # remove V6
+    for (v in 1:length(names(qv6_child_clean))) {
+        var_name <- names(qv6_child_clean)[v]
 
-        # remove trailing '_A_1' from names
-        if (grepl("_A_1", var_name, fixed = TRUE)) {
-            names(MRIVAS_A)[var] <- gsub("_A_1", "", var_name)
+        # remove 'v6' from names
+        if (grepl("V6", var_name, fixed = TRUE)) {
+            names(qv6_child_clean)[v] <- gsub("V6", "", var_name)
         }
     }
 
+    ## make lower case
+    names(qv6_child_clean) <- tolower(names(qv6_child_clean))
+
+    names(qv6_child_clean_labels) <- names(qv6_child_clean)
+
     ### remove rows that have NAs for every question
-    MRIVAS_A <- MRIVAS_A[rowSums(!is.na(MRIVAS_A[2:301])) == 300, ]
+    mri_vas_a <- qv6_child_clean[c(1, 25:324)]
+    mri_vas_b <- qv6_child_clean[c(1, 325:624)]
 
-    ## Extract ID and Version A MRI VAS ratings
-    MRIVAS_B <- qv6_child_clean[c(18, 360:659)]
+    #make names match for mri vas version
+    for (v in 1:length(names(mri_vas_a))) {
+        var_name <- names(mri_vas_a)[v]
 
-    ### fix Version B MRI VAS variable names
-    names(MRIVAS_B)[names(MRIVAS_B) == "MRIVAS_A1_04_Like_B_1.0"] <- "MRIVAS_A1_04_Full_B_1"
-    for (var in 1:length(names(MRIVAS_B))) {
-        var_name <- as.character(names(MRIVAS_B)[var])
-
-        # remove trailing '_B_1' from names
-        if (grepl("_B_1", var_name, fixed = TRUE)) {
-            names(MRIVAS_B)[var] <- gsub("_B_1", "", var_name)
+        # remove trailing '_a_1.0' from names
+        if (grepl("_a_1.0", var_name, fixed = TRUE)) {
+            names(mri_vas_a)[v] <- gsub("like_a_1.0", "full", var_name, fixed = TRUE)
+        } else if (grepl("_a_1", var_name, fixed = TRUE)) {
+            names(mri_vas_a)[v] <- gsub("_a_1", "", var_name)
         }
+
     }
-    ### remove rows that have NAs for every question
-    MRIVAS_B <- MRIVAS_B[rowSums(!is.na(MRIVAS_B[2:301])) == 300, ]
 
-    ## Combine MRI VAS ratings from version A and B Note: column order of
-    ## MRIVAS_combined will be the same as MRIVAS_A (important for updating labels
-    ## below)
-    MRIVAS_combined <- rbind(MRIVAS_A, MRIVAS_B)
+    for (v in 1:length(names(mri_vas_b))) {
+        var_name <- names(mri_vas_b)[v]
 
-    ## Extract additional variables from qualtrics database
-    qv6_child_clean <- qv6_child_clean[c(1, 18, 33, 37, 40:45, 50, 57, 661:667, 668:686)]
+        # remove trailing '_a_1.0' from names
+        if (grepl("_b_1.0", var_name, fixed = TRUE)) {
+            names(mri_vas_b)[v] <- gsub("like_b_1.0", "full", var_name, fixed = TRUE)
+        } else if (grepl("_b_1", var_name, fixed = TRUE)) {
+            names(mri_vas_b)[v] <- gsub("_b_1", "", var_name)
+        }
 
-    ## merge MRIVAS_combined and qv6_child_clean
-    qv6_child_clean <- merge(qv6_child_clean, MRIVAS_combined, by = "ID")
+    }
 
-    ## update labels and label names Note: MRIVAS labels (version A order) are
-    ## added to the end
-    qv6_child_clean_labels <- qv6_child_labels[c(1, 18, 33, 37, 40:45, 50, 57, 661:667, 668:686, 58:207, 210:359)]
+    #remove NAs
+    mri_vas_a <- mri_vas_a[rowSums(!is.na(mri_vas_a[2:301])) == 300, ]
+    mri_vas_b <- mri_vas_b[rowSums(!is.na(mri_vas_b[2:301])) == 300, ]
+
+    ## Combine MRI VAS ratings from version A and B
+    mri_vas <- rbind(mri_vas_a[ , order(names(mri_vas_a))], mri_vas_b[ , order(names(mri_vas_b))])
+
+    # mri vas labels
+    mri_vas_labels <- qv6_child_clean_labels[c(1, 25:324)]
+    mri_vas_labels <- mri_vas_labels[order(names(mri_vas_a))]
+    names(mri_vas_labels) <- names(mri_vas)
+
+    ## merge
+    qv6_child_clean <- merge(qv6_child_clean[c(1:24, 625:645)], mri_vas, by = 'id', all = TRUE)
+
+    #organize
+    qv6_child_clean <- qv6_child_clean[c(1:24, 46:345, 25:45)]
+
+    qv6_child_clean_labels <- c(qv6_child_clean_labels[1:24], mri_vas_labels[2:301], qv6_child_clean_labels[625:645])
+
     names(qv6_child_clean_labels) <- names(qv6_child_clean)
 
     # 4) re-ordering and re-name data columns ####
 
     # general order: 1) child information (ID. date), 2) freddies, 3) intake (snack), 4) MRIVAS 5) notes
 
-    qv6_child_clean <- qv6_child_clean[c(1:2, 13:30, 3:12, 39:338, 31:38)]
+    qv6_child_clean <- qv6_child_clean[c(1:8, 10:11, 13:14, 22:23, 325:336, 9, 12, 24:324, 15:21, 337:344)]
 
-    qv6_child_clean_labels <- qv6_child_clean_labels[c(1:2, 13:30, 3:12, 39:338, 31:38)]
+    qv6_child_clean_labels <- qv6_child_clean_labels[c(1:8, 10:11, 13:14, 22:23, 325:336, 9, 12, 24:324, 15:21, 337:344)]
 
     ## re-name variables
-    ### make lowercase
-    names(qv6_child_clean) <- tolower(names(qv6_child_clean))
 
-    names(qv6_child_clean)[1:30] <- c("id", "start_date", "freddy_pre_mrisnack", "freddy_post_mrisnack", "freddy_post_mrisnack2",  "freddy_pre_mri", "freddy_pre_dg", "freddy_pre_mrivas", "freddy_pre_sst", "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_ritz_g", "plate_ritz_g", "post_ritz_g", "consumed_ritz_g", "noplate_juice_g", "post_juice_g", "consumed_juice_g", "cams_pre_mri", "cams_post_mri", "dg_foodchoice", "dg_foodchoice2", "dg_foodchoice_amount", "dg_foodchoice_amount2", "dg_foodchoice2_amount", "dg_foodchoice2_amount2", "dg_wait", "mri_taskversion")
+    names(qv6_child_clean)[c(2:29)] <- c("start_date", "ff_premri_snacktime", "ff_postmri_snacktime", "ff_postmris_nacktime2", "ff_premri_snack", "ff_postmri_snack", "ff_postmri_snack2",  "ff_premri_time", "ff_premri", "ff_pre_dgtime", "ff_pre_dg", "ff_pre_mrivas_time", "ff_pre_mrivas", "ff_pre_sst", "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_ritz_g", "plate_ritz_g", "post_ritz_g", "consumed_ritz_g", "noplate_juice_g", "post_juice_g", "consumed_juice_g", "cams_pre_mri", "cams_post_mri", "mri_version")
 
-    names(qv6_child_clean)[331:338] <- c("notes_mri_mprage", "notes_mri_restingstate", "notes_mri_run1", "notes_mri_run2", "notes_mri_run3", "notes_mri_run4", "notes_mri_run5", "notes")
+    names(qv6_child_clean)[c(330:336)] <- c( "dg_foodchoice", "dg_foodchoice2", "dg_foodchoice_amount", "dg_foodchoice_amount2", "dg_foodchoice2_amount", "dg_foodchoice2_amount2", "dg_wait")
+
+    names(qv6_child_clean)[337:344] <- c("notes_mri_mprage", "notes_mri_restingstate", "notes_mri_run1", "notes_mri_run2", "notes_mri_run3", "notes_mri_run4", "notes_mri_run5", "childnotes")
 
     ## update data labels
     names(qv6_child_clean_labels) <- names(qv6_child_clean)
@@ -171,7 +197,7 @@ util_child_v6dat <- function(date_str, data_path) {
     ## re-calculate all intake values
 
     # get all intake variables
-    intake_vars <- names(qv6_child_clean)[c(10:20)]
+    intake_vars <- names(qv6_child_clean)[c(16:26)]
 
     # make all intake variables numeric NOTE - there is a whole row I am not
     # manually fixing as every value has ',' instead of '.'
@@ -236,22 +262,20 @@ util_child_v6dat <- function(date_str, data_path) {
     qv6_child_clean_labels[["notes_mri_run3"]] <- "notes about MRI: food cue task - run3"
     qv6_child_clean_labels[["notes_mri_run4"]] <- "notes about MRI: food cue task - run4"
     qv6_child_clean_labels[["notes_mri_run5"]] <- "notes about MRI: food cue task - run5"
-    qv6_child_clean_labels[["notes"]] <- "V6 notes"
 
 
-    ## fix preMRI cams factor levels to start at 0
-    var_name = "cams_pre_mri"
+    ## fix preMRI cams to be continuous and re-set to start at 0 (subtract 1) to match post cams
+    qv6_child_clean[['cams_pre_mri']] <- as.numeric(qv6_child_clean[['cams_pre_mri']]) - 1
+    qv6_child_clean[['cams_post_mri']] <- as.numeric(qv6_child_clean[['cams_post_mri']])
 
-    #note - if you aren't changing the labels - value pairings you do not need to do the set_labels. This is only if you are changing things...
-    qv6_child_clean[[var_name]] <- sjlabelled::set_labels(qv6_child_clean[[var_name]], labels = c(`0` = 0, `1` = 1, `2` = 2, `3` = 3, `4` = 4,`5` = 5, `6` = 6, `7` = 7,`8` = 8, `9` = 9, `10` = 10))
-    set_attr <- attributes(qv6_child_clean[[var_name]])
+    # make freddies continuous
+    ff_vars <- names(qv6_child_clean)[c(6:8, 10, 12, 14:15)]
 
-    qv6_child_clean[[var_name]] <- ifelse(is.na(qv6_child_clean[[var_name]]), NA, ifelse(qv6_child_clean[[var_name]] == 1, 0, ifelse(qv6_child_clean[[var_name]] == 2, 1, ifelse(qv6_child_clean[[var_name]] == 3, 2, ifelse(qv6_child_clean[[var_name]] == 4, 3,  ifelse(qv6_child_clean[[var_name]] == 5, 4,  ifelse(qv6_child_clean[[var_name]] == 6, 5, ifelse(qv6_child_clean[[var_name]] == 7, 6, ifelse(qv6_child_clean[[var_name]] == 8, 7, ifelse(qv6_child_clean[[var_name]] == 9, 8, ifelse(qv6_child_clean[[var_name]] == 10, 9, 10)))))))))))
+    for (v in 1:length(ff_vars)){
+        var_name <- ff_vars[v]
 
-    attributes(qv6_child_clean[[var_name]]) <- set_attr
-
-    qv6_child_clean_labels[[var_name]] <- paste0(qv6_child_clean_labels[[var_name]], " - re-leveled in R to start with 0")
-
+        qv6_child_clean[[var_name]] <- as.numeric(qv6_child_clean[[var_name]])
+    }
 
     # 8) Format for export ####
 
@@ -259,8 +283,7 @@ util_child_v6dat <- function(date_str, data_path) {
     qv6_child_clean <- qv6_child_clean[order(qv6_child_clean[["id"]]), ]
 
     # make sure the variable labels match in the dataset
-    qv6_child_clean = sjlabelled::set_label(qv6_child_clean, label = matrix(unlist(qv6_child_clean_labels,
-        use.names = FALSE)))
+    qv6_child_clean = sjlabelled::set_label(qv6_child_clean, label = matrix(unlist(qv6_child_clean_labels, use.names = FALSE)))
 
     ## make list of data frame and associated labels
     qv6_child <- list(data = qv6_child_clean, dict = qv6_child_clean_labels)

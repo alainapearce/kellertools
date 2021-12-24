@@ -121,8 +121,27 @@ util_child_v7dat_home <- function(date_str, data_path) {
 
     qv7_child_clean_labels <- qv7_child_clean_labels[c(2, 1, 3:4, 26:39, 5:25)]
 
+    ## make lower case
+    names(qv7_child_clean) <- tolower(names(qv7_child_clean))
+
     ## re-name variables
-    names(qv7_child_clean) <- c("id", "start_date", "sex", "dob", "pds_1", "pds_2", "pds_3", "pds_4m", "pds_5m", "pds_6m", "pds_4f", "pds_5fa", "pds_5fb", "pds_5fc", "pds_5fd", "pds_6f", "tanner_male", "tanner_female", "ctc1", "ctc2", "ctc3", "ctc4", "ctc5", "ctc6", "ctc7", "ctc8", "ctc9", "ctc10", "ctc11", "ctc12", "ctc13", "ctc14", "ctc15", "ctc16", "cwc1", "cwc2", "cwc3", "cwc4", "cwc5")
+    for (var in 1:length(names(qv7_child_clean))) {
+        var_name <- as.character(names(qv7_child_clean)[var])
+
+        # remove v7 prefix from labels
+        if (grepl("v7_", var_name, fixed = TRUE)) {
+            names(qv7_child_clean)[var] <- gsub("v7_", "", names(qv7_child_clean)[var])
+        }
+
+        # remove v7 prefix from labels
+        if (grepl("v7", var_name, fixed = TRUE)) {
+            names(qv7_child_clean)[var] <- gsub("v7", "", names(qv7_child_clean)[var])
+        }
+
+    }
+
+    ## re-name variables
+    names(qv7_child_clean)[2:18] <- c("start_date", "sex", "dob", "pds_1", "pds_2", "pds_3", "pds_4m", "pds_5m", "pds_6m", "pds_4f", "pds_5fa", "pds_5fb", "pds_5fc", "pds_5fd", "pds_6f", "tanner_male", "tanner_female")
 
     ## update data labels
     names(qv7_child_clean_labels) <- names(qv7_child_clean)
@@ -146,7 +165,7 @@ util_child_v7dat_home <- function(date_str, data_path) {
     # make pna database
     qv7_child_pna <- data.frame(id = qv7_child_clean[["id"]])
     qv7_child_pna_labels <- lapply(qv7_child_pna, function(x) attributes(x)$label)
-    qv7_child_pna_labels[["id"]] <- qv7_child_pna_labels[["id"]]
+    qv7_child_pna_labels[["id"]] <- qv7_child_clean_labels[["id"]]
 
     pna_label <- "Note: prefer not to answer (pna) marked NA - see pna database for which were pna rather than missing NA"
 
@@ -187,24 +206,31 @@ util_child_v7dat_home <- function(date_str, data_path) {
         attributes(qv7_child_clean[[pvar]]) <- pvar_attr
     }
 
-    #### FIGURE THIS OUT. ARE SOME QUESTIONS REVERSE ORDERED?  7b) re-level ctc
-    #### survey to start with 0
+
+    # re-level ctc questions so that 99 - skip is changed to -99
     ctc_names <- names(qv7_child_clean)[19:34]
 
-    ## copy from V5 or V7
+    for (var in 1:length(ctc_names)) {
+        var_name <- as.character(ctc_names[var])
+
+        qv7_child_clean[[var_name]] <- sjlabelled::set_labels(qv7_child_clean[[var_name]], labels = c(`Not at all` = 1, `A little` = 2, `Not sure/in the middle` = 3, `Somewhat` = 4, `A lot` = 5, `Skip` = -99))
+
+        set_attr <- attributes(qv7_child_clean[[var_name]])
+
+        qv7_child_clean[[var_name]] <- ifelse(is.na(qv7_child_clean[[var_name]]),  NA, ifelse(qv7_child_clean[[var_name]] == 99, -99, qv7_child_clean[[var_name]]))
+
+        attributes(qv7_child_clean[[var_name]]) <- set_attr
+        qv7_child_clean_labels[[var_name]] <- paste0(qv7_child_clean_labels[[var_name]], " - re-leveled in R so skip = -99")
+    }
 
     # 8) fix labels ####
 
-    ## remove 'V7', 'V6', and 'V1' in labels
+    ## remove 'V7' and 'V1' in labels
     for (var in 1:length(names(qv7_child_clean))) {
         var_name <- as.character(names(qv7_child_clean)[var])
 
-        if (grepl("V7", qv7_child_clean_labels[[var_name]], fixed = TRUE)) {
-            qv7_child_clean_labels[[var_name]] <- gsub("V7 ", "", qv7_child_clean_labels[[var_name]])
-        }
-
-        if (grepl("V6", qv7_child_clean_labels[[var_name]], fixed = TRUE)) {
-            qv7_child_clean_labels[[var_name]] <- gsub("V6 ", "", qv7_child_clean_labels[[var_name]])
+        if (grepl("Visit 7 ", qv7_child_clean_labels[[var_name]], fixed = TRUE)) {
+            qv7_child_clean_labels[[var_name]] <- gsub("Visit 7 ", "", qv7_child_clean_labels[[var_name]])
         }
 
         if (grepl("V1", qv7_child_clean_labels[[var_name]], fixed = TRUE)) {

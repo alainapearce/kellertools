@@ -29,7 +29,7 @@
 #' v5dat_scored <- util_merge_v5('2021_10_11')
 #' }
 #'
-#' @seealso Raw data from Qualtrics is processed using the following scripts: \code{\link{util_child_v5dat}}, \code{\link{util_child_v5dat_home}}, \code{\link{util_child_v5dat_lab}}, \code{\link{util_parent_v5dat}}. Visit 5 data is scored using the following scripts: \code{\link{score_*}}, \code{\link{score_*}}, \code{\link{score_*}}
+#' @seealso Raw data from Qualtrics is processed using the following scripts: \code{\link{util_child_v5dat}}, \code{\link{util_child_v5dat_home}}, \code{\link{util_child_v5dat_lab}}, \code{\link{util_parent_v5dat}}. Visit 5 data is scored using the following scripts: \code{\link{score_ctc}}, \code{\link{score_audit}}
 #'
 #'
 #' @export
@@ -51,7 +51,6 @@ util_merge_v5 <- function(date_str, child_date_str, child_home_date_str, child_l
         child_home_datestr_arg <- methods::hasArg(child_home_date_str)
         child_lab_datestr_arg <- methods::hasArg(child_lab_date_str)
         parent_datestr_arg <- methods::hasArg(parent_date_str)
-        parentV5_datestr_arg <- methods::hasArg(parentV5_date_str)
 
         if (sum(child_datestr_arg, child_home_datestr_arg, child_lab_datestr_arg, parent_datestr_arg) < 4){
             stop("if data_str is not set, then must enter each individual date string for the visit 5 databeses: child, child-home, child-lab, and parent")
@@ -66,7 +65,7 @@ util_merge_v5 <- function(date_str, child_date_str, child_home_date_str, child_l
     datapath_arg <- methods::hasArg(data_path)
 
     if (isTRUE(datapath_arg)) {
-        if (!is.character(date_str)) {
+        if (!is.character(data_path)) {
             stop("data_path must be enter as a string: e.g., '.../Participant_Data/untouchedRaw/util_Raw/'")
         }
     }
@@ -176,6 +175,9 @@ util_merge_v5 <- function(date_str, child_date_str, child_home_date_str, child_l
 
     #### 4. Merge Child Raw Data #####
 
+
+
+
     # merge child home and lab into single database
     child_covidmerge_v5dat <- merge(child_lab_v5dat$data, child_home_v5dat$data[c(1, 3:18)], by = 'id', all = TRUE)
 
@@ -183,7 +185,19 @@ util_merge_v5 <- function(date_str, child_date_str, child_home_date_str, child_l
     child_covidmerge_v5dat <- child_covidmerge_v5dat[c(1:64, 156:171, 65:146, 147:155)]
 
     # merge all child into single database
+    ##manually change par 5 - has 2 v5s, 1 with only interoception
+
+    #get just intero par 5
+    child_v5dat_par5intero <- child_v5dat$data[child_v5dat$data[['id']] == 5 & !is.na(child_v5dat$data[['intero_prac_hbcount']]), ]
+
+    #get all other data and full par 5
+    child_v5dat$data <- child_v5dat$data[!(child_v5dat$data[['id']] == 5 & !is.na(child_v5dat$data[['intero_prac_hbcount']])), ]
+
+    #merge
     all_child_v5dat <- rbind.data.frame(child_v5dat$data, child_covidmerge_v5dat)
+
+    # add par 5 intero back in
+    all_child_v5dat[all_child_v5dat[['id']] == 5, 81:167] <- child_v5dat_par5intero[81:167]
 
     #### 5. Merge Parent Raw Data #####
 
@@ -221,7 +235,7 @@ util_merge_v5 <- function(date_str, child_date_str, child_home_date_str, child_l
 
     ## 7a) score the US Household Food Security Survey Module: Three Stage ####
     ## need to make
-    ctc_scored <- score_ctc(ctc_data = v5dat_org[c(1, 3:18)], parID = 'id')
+    ctc_scored <- score_ctc(ctc_data = v5dat_org[c(1, 3:18)], study = 'fbs', parID = 'id')
 
     # get labels from scored data and simplify
     ctc_scored_labels <- sapply(ctc_scored, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
@@ -231,121 +245,45 @@ util_merge_v5 <- function(date_str, child_date_str, child_home_date_str, child_l
 
     # merge and organize
     v5dat_scored <- merge(v5dat_org, ctc_scored, by = 'id', all = TRUE)
-    v5dat_scored <- v5dat_scored[c(1:25, 215:222, 26:214)]
+    v5dat_scored <- v5dat_scored[c(1:18, 196:199, 19:195)]
 
-    v5dat_scored_labels <- c(v5dat_labels[1:25], ctc_scored_labels[2:9], v5dat_labels[26:214])
+    v5dat_scored_labels <- c(v5dat_labels[1:18], ctc_scored_labels[2:5], v5dat_labels[19:195])
 
-    ## 7b) score the Household Food Insecurity Access Scale ####
-    hfias_scored <- score_hfias(hfias_data = v5dat_org[c(1, 26:43)], parID = 'id')
-
-    # get labels from scored data and simplify
-    hfias_scored_labels <- sapply(hfias_scored, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
-
-    # make names match because simplify duplicates - not sure why get nested lists
-    names(hfias_scored_labels) <- names(hfias_scored)
-
-    # merge and organize
-    v5dat_scored <- merge(v5dat_scored, hfias_scored, by = 'id', all = TRUE)
-    v5dat_scored <- v5dat_scored[c(1:51, 223:224, 52:222)]
-
-    v5dat_scored_labels <- c(v5dat_scored_labels[1:51], hfias_scored_labels[2:3], v5dat_scored_labels[52:222])
-
-    ## 7c) score the Community Childhood Hunger Identification Project ####
-    cchip_scored <- score_cchip(cchip_data = v5dat_org[c(1, 44:75)], parID = 'id')
+    ## 7b) score the Alcohol Use Disorders Identification Test ####
+    audit_scored <- score_audit(audit_data = v5dat_org[c(1, 19:28)], parID = 'id')
 
     # get labels from scored data and simplify
-    cchip_scored_labels <- sapply(cchip_scored, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
+    audit_scored_labels <- sapply(audit_scored, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
 
     # make names match because simplify duplicates - not sure why get nested lists
-    names(cchip_scored_labels) <- names(cchip_scored)
+    names(audit_scored_labels) <- names(audit_scored)
 
     # merge and organize
-    v5dat_scored <- merge(v5dat_scored, cchip_scored, by = 'id', all = TRUE)
-    v5dat_scored <- v5dat_scored[c(1:85, 225:226, 86:224)]
+    v5dat_scored <- merge(v5dat_scored, audit_scored, by = 'id', all = TRUE)
+    v5dat_scored <- v5dat_scored[c(1:32, 200:201, 33:199)]
 
-    v5dat_scored_labels <- c(v5dat_scored_labels[1:85], cchip_scored_labels[2:3], v5dat_scored_labels[86:224])
-
-    ## 7d) score the Child Weight Concerns Scale ####
-    cwc_scored <- score_cwc(cwc_data = v5dat_org[c(1, 76:80)], parID = 'id')
-
-    # get labels from scored data and simplify
-    cwc_scored_labels <- sapply(cwc_scored, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
-
-    # make names match because simplify duplicates - not sure why get nested lists
-    names(cwc_scored_labels) <- names(cwc_scored)
-
-    # merge and organize
-    v5dat_scored <- merge(v5dat_scored, cwc_scored, by = 'id', all = TRUE)
-    v5dat_scored <- v5dat_scored[c(1:92, 227, 93:226)]
-
-    v5dat_scored_labels <- c(v5dat_scored_labels[1:92], cwc_scored_labels[2], v5dat_scored_labels[93:226])
-
-    ## 7e) score the Children's Body Image Scale Questionnaire ####
-    cbis_scored <- score_cbis(cbis_data = v5dat_org[c(1, 81:84)], parID = 'id')
-
-    # get labels from scored data and simplify
-    cbis_scored_labels <- sapply(cbis_scored, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
-
-    # make names match because simplify duplicates - not sure why get nested lists
-    names(cbis_scored_labels) <- names(cbis_scored)
-
-    # merge and organize
-    v5dat_scored <- merge(v5dat_scored, cbis_scored, by = 'id', all = TRUE)
-    v5dat_scored <- v5dat_scored[c(1:98, 228:229, 99:227)]
-
-    v5dat_scored_labels <- c(v5dat_scored_labels[1:98], cbis_scored_labels[2:3], v5dat_scored_labels[99:227])
-
-    ## 7f) score the Behavioral Rating Inventory of Executive Function-2 ####
-    brief_scored <- score_brief2(brief_data = v5dat_org[c(1, 4:5, 125:187)], age_var = 'age', sex_var = 'sex', parID = 'id')
-
-    # get labels from scored data and simplify
-    brief_scored_labels <- sapply(brief_scored, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
-
-    # make names match because simplify duplicates - not sure why get nested lists
-    names(brief_scored_labels) <- names(brief_scored)
-
-    # merge and organize
-    v5dat_scored <- merge(v5dat_scored, brief_scored, by = 'id', all = TRUE)
-    v5dat_scored <- v5dat_scored[c(1:202, 230:277, 203:229)]
-
-    v5dat_scored_labels <- c(v5dat_scored_labels[1:202], brief_scored_labels[2:49], v5dat_scored_labels[203:229])
-
-    ## 7f) score the Parenting Style Inventory-II ####
-    psi_scored <- score_psi(psi_data = v5dat_org[c(1, 188:197)], study = 'fbs', parID = 'id')
-
-    # get labels from scored data and simplify
-    psi_scored_labels <- sapply(psi_scored, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
-
-    # make names match because simplify duplicates - not sure why get nested lists
-    names(psi_scored_labels) <- names(psi_scored)
-
-    # merge and organize
-    v5dat_scored <- merge(v5dat_scored, psi_scored, by = 'id', all = TRUE)
-    v5dat_scored <- v5dat_scored[c(1:260, 278:279, 261:277)]
-
-    v5dat_scored_labels <- c(v5dat_scored_labels[1:260], psi_scored_labels[2:3], v5dat_scored_labels[261:277])
-
+    v5dat_scored_labels <- c(v5dat_scored_labels[1:32], audit_scored_labels[2:3], v5dat_scored_labels[33:199])
 
     #### 8. PNA data #####
 
     # child pna data
 
     #find names in common and unique
-    common_names <- intersect(names(child_v5dat$pna_data), names(child_home_v5dat$pna_data))
+    common_names <- intersect(names(child_v5dat$pna_data), names(child_lab_v5dat$pna_data))
     child_v5dat_uniq_names <- c('id', names(child_v5dat$pna_data)[!(names(child_v5dat$pna_data) %in% common_names)])
-    child_home_v5dat_uniq_names <- c('id', names(child_home_v5dat$pna_data)[!(names(child_home_v5dat$pna_data) %in% common_names)])
+    child_lab_v5dat_uniq_names <- c('id', names(child_lab_v5dat$pna_data)[!(names(child_lab_v5dat$pna_data) %in% common_names)])
 
     # initial merge with common names
-    child_v5dat_pna_m1 <- rbind.data.frame(child_v5dat$pna_data[common_names], child_home_v5dat$pna_data[common_names])
+    child_v5dat_pna_m1 <- rbind.data.frame(child_v5dat$pna_data[common_names], child_lab_v5dat$pna_data[common_names])
 
     # full merge with unique names
-    if (length(child_v5dat_uniq_names) > 1 & length(child_home_v5dat_uniq_names) > 1){
+    if (length(child_v5dat_uniq_names) > 1 & length(child_lab_v5dat_uniq_names) > 1){
         child_v5dat_m2 <- merge(child_v5dat_pna_m1, child_v5dat$pna_data[child_v5dat_uniq_names], by = 'id', all = TRUE)
-        child_v5dat_pna <- merge(child_v5dat_m2, child_home_v5dat$pna_data[child_home_v5dat_uniq_names], by = 'id', all = TRUE)
+        child_v5dat_pna <- merge(child_v5dat_m2, child_lab_v5dat$pna_data[child_lab_v5dat_uniq_names], by = 'id', all = TRUE)
     } else if (length(child_v5dat_uniq_names) > 1) {
         child_v5dat_pna <- merge(child_v5dat_pna_m1, child_v5dat$pna_data[child_v5dat_uniq_names], by = 'id', all = TRUE)
-    } else if (length(child_home_v5dat_uniq_names) > 1){
-        child_v5dat_pna <- merge(child_v5dat_m1, child_home_v5dat$pna_data[child_home_v5dat_uniq_names], by = 'id', all = TRUE)
+    } else if (length(child_lab_v5dat_uniq_names) > 1){
+        child_v5dat_pna <- merge(child_v5dat_m1, child_lab_v5dat$pna_data[child_lab_v5dat_uniq_names], by = 'id', all = TRUE)
     } else {
         child_v5dat_pna <- child_v5dat_m1
     }
@@ -359,8 +297,8 @@ util_merge_v5 <- function(date_str, child_date_str, child_home_date_str, child_l
 
         if (var_name %in% names(child_v5dat$pna_data)){
             child_v5dat_pna_labels[[var_name]] <- child_v5dat$pna_dict[[var_name]]
-        } else if (var_name %in% names(child_home_v5dat$pna_data)){
-            child_v5dat_pna_labels[[var_name]] <- child_home_v5dat$pna_dict[[var_name]]
+        } else if (var_name %in% names(child_lab_v5dat$pna_data)){
+            child_v5dat_pna_labels[[var_name]] <- child_lab_v5dat$pna_dict[[var_name]]
         }
     }
 

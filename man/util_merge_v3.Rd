@@ -56,5 +56,5 @@ v3dat_scored <- util_merge_v3('2021_10_11')
 
 }
 \seealso{
-Raw data from Qualtrics is processed using the following scripts: \code{\link{util_child_v3dat}}, \code{\link{util_child_v3dat_home}}, \code{\link{util_child_v3dat_lab}}, \code{\link{util_parent_v3dat}}. Visit 3 data is scored using the following scripts: \code{\link{score_*}}, \code{\link{score_*}}, \code{\link{score_*}}
+Raw data from Qualtrics is processed using the following scripts: \code{\link{util_child_v3dat}}, \code{\link{util_child_v3dat_home}}, \code{\link{util_child_v3dat_lab}}, \code{\link{util_parent_v3dat}}. Visit 3 data is scored using the following scripts: \code{\link{score_lbc}}, \code{\link{score_pwlb}}, \code{\link{score_tfeq}}, \code{\link{score_bisbas}}, \code{\link{score_spsrq}}, \code{\link{model_dd}}
 }

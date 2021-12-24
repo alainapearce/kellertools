@@ -104,11 +104,42 @@ util_child_v7dat <- function(date_str, data_path) {
 
     qv7_child_clean_labels <- qv7_child_clean_labels[c(2, 1, 3:4, 120:127, 106:119, 128:129, 132, 130:131, 5:24, 29:31, 133:220, 32:59, 25:28, 82:104, 60:75, 77:81, 76, 221:222)]
 
+    ## make lower case
+    names(qv7_child_clean) <- tolower(names(qv7_child_clean))
+
     ## re-name variables
-    names(qv7_child_clean) <- c("id", "start_date", "sex", "dob", "height1", "height2", "weight1", "weight2", "height_avg", "weight_avg", "bmi", "bmi_percentile", "pds_1", "pds_2", "pds_3", "pds_4m", "pds_5m", "pds_6m", "pds_4f", "pds_5fa", "pds_5fb", "pds_5fc", "pds_5fd", "pds_6f", "tanner_male", "tanner_female", "freddy_pre_meal", "freddy_post_meal", "freddy_pre_want", "freddy_pre_eah", "freddy_post_eah", "vas_practice", "vas_popcorn", "vas_pretzle", "vas_cornchip", "vas_cookie", "vas_brownie", "vas_starburst", "vas_skittle", "vas_hershey", "vas_icecream", "vas_pbj_sndwch", "vas_ham_sndwch", "vas_turkey_sndwch", "vas_cheese_sndwch", "vas_applesauce", "vas_potatoechip", "vas_babycarrot", "vas_oreo", "vas_milk", "vas_water", "meal_start", "meal_end", "meal_dur", "noplate_applesauce_g", "plate_applesauce_g", "post_applesauce_g", "consumed_applesauce_g", "noplate_carrot_g", "plate_carrot_g", "post_carrot_g", "consumed_carrot_g", "noplate_cheese_sndwch_g", "plate_cheese_sndwch_g", "post_cheese_sndwch_g", "consumed_cheese_sndwch_g", "noplate_cookies_g", "plate_cookies_g", "post_cookies_g", "consumed_cookies_g", "noplate_ham_sndwch_g", "plate_ham_sndwch_g", "post_ham_sndwch_g", "consumed_ham_sndwch_g", "noplate_milk_g", "plate_milk_g", "post_milk_g", "consumed_milk_g", "noplate_pbj_sndwch_g", "plate_pbj_sndwch_g", "post_pbj_sndwch_g", "consumed_pbj_sndwch_g", "noplate_potatochip_g", "plate_potatochip_g", "post_potatochip_g", "consumed_potatochip_g", "noplate_turkey_sndwch_g", "plate_turkey_sndwch_g", "post_turkey_sndwch_g", "consumed_turkey_sndwch_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_mayo_g", "plate_mayo_g", "post_mayo_g", "consumed_mayo_g", "noplate_mustard_g", "plate_mustard_g", "post_mustard_g", "consumed_mustard_g", "noplate_brownies_g", "plate_brownies_g", "post_brownies_g", "consumed_brownies_g", "noplate_cornchips_g", "plate_cornchips_g", "post_cornchips_g", "consumed_cornchips_g", "noplate_hersheys_g", "plate_hersheys_g", "post_hersheys_g", "consumed_hersheys_g", "noplate_icecream_g", "plate_icecream_g", "post_icecream_g", "consumed_icecream_g", "noplate_oreos_g", "plate_oreos_g", "post_oreos_g", "consumed_oreos_g", "noplate_popcorn_g", "plate_popcorn_g", "post_popcorn_g", "consumed_popcorn_g", "noplate_pretzels_g", "plate_pretzels_g", "post_pretzels_g", "consumed_pretzels_g", "noplate_skittles_g", "plate_skittles_g", "post_skittles_g", "consumed_skittles_g", "noplate_starbursts_g", "plate_starbursts_g", "post_starbursts_g", "consumed_starbursts_g", "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g", "want_water", "want_brownies", "want_applesauce", "want_carrots", "want_cars", "want_cheese", "want_cookies", "want_cornchip", "want_toy", "want_connect4", "want_crayons", "want_ham", "want_dino", "want_hershey", "want_icecream", "want_jenga", "want_legos", "want_elephant", "want_oreos", "want_pbj_sndwch", "want_popcorn", "want_chips", "want_pretzels", "want_skittles", "want_trains", "want_trucks", "want_starbursts", "want_turkey_sndwch", "rank_mac_cheese", "rank_chkn_nug", "rank_broccoli", "rank_grape", "loc1", "loc2a", "loc2b", "loc2c", "loc3", "loc4", "loc5", "loc6", "loc7", "loc8", "loc9",  "loc10", "loc11", "loc12", "loc13", "loc14", "loc15", "loc16a", "loc17", "loc18", "loc19", "loc16b", "loc20", "ctc1", "ctc2", "ctc3", "ctc4", "ctc5", "ctc6", "ctc7", "ctc8", "ctc9", "ctc10", "ctc11", "ctc12", "ctc13", "ctc14", "ctc15", "ctc16", "cwc1", "cwc2", "cwc3", "cwc4", "cwc5", "spacegame_reward", "food_initials", "child_notes")
+    for (var in 1:length(names(qv7_child_clean))) {
+        var_name <- as.character(names(qv7_child_clean)[var])
+
+        # remove v7 prefix from labels
+        if (grepl("v7_", var_name, fixed = TRUE)) {
+            names(qv7_child_clean)[var] <- gsub("v7_", "", names(qv7_child_clean)[var])
+        }
+
+        # remove v7 prefix from labels
+        if (grepl("v7", var_name, fixed = TRUE)) {
+            names(qv7_child_clean)[var] <- gsub("v7", "", names(qv7_child_clean)[var])
+        }
+
+        # remove v6 prefix from labels
+        if (grepl("v6", var_name, fixed = TRUE)) {
+            names(qv7_child_clean)[var] <- gsub("v6", "", names(qv7_child_clean)[var])
+        }
+
+        # remove trailing _1 from labels
+        if (grepl("_1", var_name, fixed = TRUE)) {
+            names(qv7_child_clean)[var] <- gsub("_1", "", names(qv7_child_clean)[var])
+        }
+    }
+
+    ## re-name variables
+    names(qv7_child_clean)[c(2:174)] <- c("start_date", "sex", "dob", "height1", "height2", "weight1", "weight2", "height_avg", "weight_avg", "bmi", "bmi_percentile", "pds_1", "pds_2", "pds_3", "pds_4m", "pds_5m", "pds_6m", "pds_4f", "pds_5fa", "pds_5fb", "pds_5fc", "pds_5fd", "pds_6f", "tanner_male", "tanner_female", "freddy_pre_meal", "freddy_post_meal", "freddy_pre_want", "freddy_pre_eah", "freddy_post_eah", "vas_practice", "vas_popcorn", "vas_pretzle", "vas_cornchip", "vas_cookie", "vas_brownie", "vas_starburst", "vas_skittle", "vas_hershey", "vas_icecream", "vas_pbj_sndwch", "vas_ham_sndwch", "vas_turkey_sndwch", "vas_cheese_sndwch", "vas_applesauce", "vas_potatoechip", "vas_babycarrot", "vas_oreo", "vas_milk", "vas_water", "meal_start", "meal_end", "meal_dur", "noplate_applesauce_g", "plate_applesauce_g", "post_applesauce_g", "consumed_applesauce_g", "noplate_carrot_g", "plate_carrot_g", "post_carrot_g", "consumed_carrot_g", "noplate_cheese_sndwch_g", "plate_cheese_sndwch_g", "post_cheese_sndwch_g", "consumed_cheese_sndwch_g", "noplate_cookies_g", "plate_cookies_g", "post_cookies_g", "consumed_cookies_g", "noplate_ham_sndwch_g", "plate_ham_sndwch_g", "post_ham_sndwch_g", "consumed_ham_sndwch_g", "noplate_milk_g", "plate_milk_g", "post_milk_g", "consumed_milk_g", "noplate_pbj_sndwch_g", "plate_pbj_sndwch_g", "post_pbj_sndwch_g", "consumed_pbj_sndwch_g", "noplate_potatochip_g", "plate_potatochip_g", "post_potatochip_g", "consumed_potatochip_g", "noplate_turkey_sndwch_g", "plate_turkey_sndwch_g", "post_turkey_sndwch_g", "consumed_turkey_sndwch_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_mayo_g", "plate_mayo_g", "post_mayo_g", "consumed_mayo_g", "noplate_mustard_g", "plate_mustard_g", "post_mustard_g", "consumed_mustard_g", "noplate_brownies_g", "plate_brownies_g", "post_brownies_g", "consumed_brownies_g", "noplate_cornchips_g", "plate_cornchips_g", "post_cornchips_g", "consumed_cornchips_g", "noplate_hersheys_g", "plate_hersheys_g", "post_hersheys_g", "consumed_hersheys_g", "noplate_icecream_g", "plate_icecream_g", "post_icecream_g", "consumed_icecream_g", "noplate_oreos_g", "plate_oreos_g", "post_oreos_g", "consumed_oreos_g", "noplate_popcorn_g", "plate_popcorn_g", "post_popcorn_g", "consumed_popcorn_g", "noplate_pretzels_g", "plate_pretzels_g", "post_pretzels_g", "consumed_pretzels_g", "noplate_skittles_g", "plate_skittles_g", "post_skittles_g", "consumed_skittles_g", "noplate_starbursts_g", "plate_starbursts_g", "post_starbursts_g", "consumed_starbursts_g", "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g", "want_water", "want_brownies", "want_applesauce", "want_carrots", "want_cars", "want_cheese", "want_cookies", "want_cornchip", "want_toy", "want_connect4", "want_crayons", "want_ham", "want_dino", "want_hershey", "want_icecream", "want_jenga", "want_legos", "want_elephant", "want_oreos", "want_pbj_sndwch", "want_popcorn", "want_chips", "want_pretzels", "want_skittles", "want_trains", "want_trucks", "want_starbursts", "want_turkey_sndwch", "rank_mac_cheese", "rank_chkn_nug", "rank_broccoli", "rank_grape")
+
+    names(qv7_child_clean)[219] <- 'spacegame_reward'
 
     ## update data labels
     names(qv7_child_clean_labels) <- names(qv7_child_clean)
+
 
     # 5) reformatting dates to be appropriate and computer readable YYYY-MM-DD ####
     qv7_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv7_child_clean[["start_date"]]))
@@ -160,7 +191,7 @@ util_child_v7dat <- function(date_str, data_path) {
     ## re-calculate all intake values
 
     # get all intake variables
-    intake_vars <- names(qv7_child_clean)[c(56:139)]
+    intake_vars <- names(qv7_child_clean)[c(58:145)]
 
     # make all intake variables numeric
     for (var in 1:length(intake_vars)) {
@@ -204,12 +235,12 @@ util_child_v7dat <- function(date_str, data_path) {
     # make pna database
     qv7_child_pna <- data.frame(id = qv7_child_clean[["id"]])
     qv7_child_pna_labels <- lapply(qv7_child_pna, function(x) attributes(x)$label)
-    qv7_child_pna_labels[["id"]] <- qv7_child_pna_labels[["id"]]
+    qv7_child_pna_labels[["id"]] <- qv7_child_clean_labels[["id"]]
 
     pna_label <- "Note: prefer not to answer (pna) marked NA - see pna database for which were pna rather than missing NA"
 
     ## Fix 99/skip in LOC, ctc, cwc. Note, only ctc items 1-8 have skip levels
-    level99_issue_catvars <- names(qv7_child_clean)[c(176:206, 215:219)]
+    level99_issue_catvars <- names(qv7_child_clean)[c(178:208, 217:221)]
 
     for (v in 1:length(level99_issue_catvars)) {
         # get variable name
@@ -245,11 +276,19 @@ util_child_v7dat <- function(date_str, data_path) {
         attributes(qv7_child_clean[[pvar]]) <- pvar_attr
     }
 
-    #### FIGURE THIS OUT. ARE SOME QUESTIONS REVERSE ORDERED?  7b) re-level ctc
-    #### survey to start with 0
-    ctc_names <- names(qv7_child_clean)[199:214]
+    # re-level ctc questions so that 99 - skip is changed to -99
+    ctc_names <- names(qv7_child_clean)[201:216]
+    for (var in 1:length(ctc_names)) {
+        var_name <- as.character(ctc_names[var])
 
-    ## copy from V5
+        qv7_child_clean[[var_name]] <- sjlabelled::set_labels(qv7_child_clean[[var_name]], labels = c(`Not at all` = 1, `A little` = 2, `Not sure/in the middle` = 3, `Somewhat` = 4, `A lot` = 5, `Skip` = -99))
+        set_attr <- attributes(qv7_child_clean[[var_name]])
+
+        qv7_child_clean[[var_name]] <- ifelse(is.na(qv7_child_clean[[var_name]]),  NA, ifelse(qv7_child_clean[[var_name]] == 99, -99, qv7_child_clean[[var_name]]))
+
+        attributes(qv7_child_clean[[var_name]]) <- set_attr
+        qv7_child_clean_labels[[var_name]] <- paste0(qv7_child_clean_labels[[var_name]], " - re-leveled in R so skip = -99")
+    }
 
     # 8) fix labels ####
 
@@ -259,6 +298,10 @@ util_child_v7dat <- function(date_str, data_path) {
 
         if (grepl("V7", qv7_child_clean_labels[[var_name]], fixed = TRUE)) {
             qv7_child_clean_labels[[var_name]] <- gsub("V7 ", "", qv7_child_clean_labels[[var_name]])
+        }
+
+        if (grepl("Visit 7 ", qv7_child_clean_labels[[var_name]], fixed = TRUE)) {
+            qv7_child_clean_labels[[var_name]] <- gsub("Visit 7 ", "", qv7_child_clean_labels[[var_name]])
         }
 
         if (grepl("V6", qv7_child_clean_labels[[var_name]], fixed = TRUE)) {
@@ -271,7 +314,7 @@ util_child_v7dat <- function(date_str, data_path) {
     }
 
     ## add meal/EAH to intake descriptions
-    intake_vars <- names(qv7_child_clean)[56:141]
+    intake_vars <- names(qv7_child_clean)[58:145]
     for (var in 1:length(intake_vars)) {
         var_name <- as.character(intake_vars[var])
         if (var < 49) {
