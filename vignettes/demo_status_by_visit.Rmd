@@ -1,79 +1,121 @@
 ---
-title: "demo_status_by_visit"
+title: "Demographic Tables: Status by Visit"
 output: rmarkdown::html_vignette
 editor_options: 
   chunk_output_type: console
 ---
 
+<!-- I know this is just a sketch/start to getting the tables set. I am just adding notes so we remember in the future when we get to the other edits/making everything 'nice'. 
+
+This will ultimately be a pdf like what you see for how-to's in other R packages so we need to design the .Rmd to have markdown text and explanations also. Needs to be a full walk through. once we are ready to fully dive in, I found this guide on making vignettes for packages: https://r-pkgs.org/vignettes.html#vignette-advice -->
+
+<!-- typically, these package installs/loads are part of the narative of the vignette/help .pdf for the package so we may want to re-order -->
 ```{r setup}
+install.packages('gtsummary')
 library(gtsummary)
+theme_gtsummary_compact()
+
+#need to load the package also or it wont work
+library(kellertools)
 ```
+
+<!-- need a setup chunk to set your preference for the .Rmd - below is one I copied from a previous paper .Rmd, but we can edit -->
+```{r setup2, include=FALSE}
+knitr::opts_chunk$set(tidy = TRUE, tidy.opts = list(comment = FALSE), echo=TRUE, warning=FALSE, message=FALSE, comment = NA)
+
+#also need .Rmd related packages loaded/installed
+library(knitr)
+library(kableExtra)
+```
+
+<!-- need to split chunks. Each chunk should have a single purpose so that you can control what is displayed in the pdf of the vignette.  -->
+<!-- pretty sure you can't have spaces in your cunck labels when you convert to pdf -->
 
 ```{r load data}
 date_str = '2021-12-19'
+
+#this path is specific to your laptop - we should try to create some fake/simulated data that we can rely on for examples
 data_path = '/Users/baf44/OneDrive - The Pennsylvania State University/b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'
 
-data_v1 <- util_merge_v1(date_str = date_str, data_path = data_path)
-data_v2 <- util_merge_v2(date_str = date_str, data_path = data_path)
-data_v3 <- util_merge_v3(date_str = date_str, data_path = data_path, model_DD = FALSE)
-data_v4 <- util_merge_v4(date_str = date_str, data_path = data_path)
-data_v5 <- util_merge_v5(date_str = date_str, data_path = data_path)
-data_v6 <- util_merge_v6(date_str = date_str, data_path = data_path)
-data_v7 <- util_merge_v7(date_str = date_str, data_path = data_path)
+#will probably want to do individually for each table so get the data needed for each part separately - may need to change some of these to the user-interface wrappers once they are done
+data_v1 <- util_fbs_merge_v1(date_str = date_str, data_path = data_path)
+data_v2 <- util_fbs_merge_v2(date_str = date_str, data_path = data_path)
+data_v3 <- util_fbs_merge_v3(date_str = date_str, data_path = data_path, model_DD = FALSE)
+data_v4 <- util_fbs_merge_v4(date_str = date_str, data_path = data_path)
+data_v5 <- util_fbs_merge_v5(date_str = date_str, data_path = data_path)
+data_v6 <- util_fbs_merge_v6(date_str = date_str, data_path = data_path)
+data_v7 <- util_fbs_merge_v7(date_str = date_str, data_path = data_path)
 ```
 
 ```{r V1 table}
-# select variables
-Table1_vars <- data_v1[["data"]] %>% select(sex, risk_cat, age_yr)
-Table2_vars <- data_v1[["data"]] %>% select(bmi_screenout, risk_cat)
+# select variable - do for each table separately with a narative in markdown outside the chunck
 
-dfList <- list(Table1_vars, Table2_vars)
+# also, changed to base R indexing - the tidyverse is updated very frequently so relying on their pipes for long-standing examples will lead to the examples breaking down the line. Base R does not change indexing rules.
+Table1_vars <- data_v1[['data']][c('sex', 'risk_cat', 'age_yr')]
+Table2_vars <- data_v1[['data']][c('bmi_screenout', 'risk_cat')]
 
-# convert 'haven_labelled' datatypes
-for (df in dfList) {
+# convert 'haven_labelled' datatypes - your loop didn't change/update the 'Table1_vars', only the df in the dfList so that tables were not able to be created. This is where it is important that it is run fully independently/with cleared environment to ensure it works. By making your loop a function, you can apply it directly to your tables and return the changes. As we move forward, it may be a good idea to make these types of functions part of the package since they aren't super common in datasets typically needed with R.
+
+convertHaven <- function(df){
   for (v in 1:ncol(df)) {
-      var_name <- names(df)[v]
-      class <- class(df[[var_name]])
-      if (grepl("haven_labelled", class[1])  ) {
-        df[[var_name]] <- labelled::unlabelled(df[[var_name]])
-      }
+    var_name <- names(df)[v]
+    class <- class(df[[var_name]])
+    if (grepl("haven_labelled", class[1])  ) {
+      df[[var_name]] <- labelled::unlabelled(df[[var_name]])
+    }
   }
+  
+  return(df)
 }
+
+Table1_vars <- convertHaven(Table1_vars)
+Table2_vars <- convertHaven(Table2_vars)
 
 # make Table 1
 Table1 <- 
   tbl_summary(
     Table1_vars,
-    by = risk_cat, # split table by group
+    # split table by group
+    by = risk_cat,
     statistic = list(all_continuous() ~ "{mean} ({sd})",
                      all_categorical() ~ "{n} ({p}%)"),
-    #missing = "no", # don't list missing data separately
     label = list(age_yr ~ "Age (years)",
                  sex ~ "Sex")
   ) %>%
-  #add_n() %>% # add column with total number of non-missing observations
-  #add_p() %>% # test for a difference between groups
-  modify_header(label = "**Variable**") %>% # update the column header
+  # update the column header
+  modify_header(label = "**Variable**") %>%
   bold_labels() 
 
-Table1
+```
+ 
+<!-- below is the code needed to display the table nicely in pdf format, though it should work for htlm also. tables cannot just simply be called in a chunk -- need to have instructions for formatting output -->
+``` {r Table1_disp, restults = 'asis'}
+as_kable_extra(Table1, caption = 'Demographic Characteristics by Risk Status', format = "latex", booktabs = TRUE, longtable = FALSE) %>%
+  kableExtra::kable_styling(latex_options = "hold_position",  full_width = FALSE)
+```
 
+```{r Table2}
 # make Table 2
+## 
 Table2 <- 
   tbl_summary(
     Table2_vars,
     by = bmi_screenout, # split table by group
-    #missing = "no", # don't list missing data separately
     label = bmi_screenout ~ "Child BMI screenout"
   ) %>%
-  #add_n() %>% # add column with total number of non-missing observations
-  #add_p() %>% # test for a difference between groups
   modify_header(label = "**Variable**") %>% # update the column header
   bold_labels() 
-
-Table2
 ```
 
+<!-- the display of the table needs to be in it's own chunk and the results will have to be set to 'asis' -->
+
+```{r Table2_disp}
+as_kable_extra(Table2, caption = 'Child BMI Exclusion by Risk Status', format = "latex", booktabs = TRUE, longtable = FALSE) %>%
+  kableExtra::kable_styling(latex_options = "hold_position",  full_width = FALSE)
+```
+
+
+<!-- need to update belwo so not using tidyverse indexing -->
 ```{r visit status table}
 library(dplyr)
 
