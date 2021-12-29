@@ -5,28 +5,21 @@
 #' The databases MUST follow the naming convention: Child_V3_YYYY-MM-DD.sav, Child_V3_Home_YYY-MM-DD.sav, Child_V3_Lab_YYY-MM-DD.sav, and Parent_V3_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered and the directory organization does not follow the structure laid out in the DataManual.
 #' @inheritParams util_fbs_merge_v1
 #' @inheritParams util_fbs_merge_v1
-#' @inheritParams util_fbs_merge_v1
-#' @inheritParams util_fbs_merge_v1
-#' @inheritParams util_fbs_merge_v1
 #' @inheritParams util_fbs_parent_v1dat
 #' @param model_DD Indicate if delay discounting data should be modeled. This will take an addition 3-5 minutes of processing time. Default = FALSE.
 #'
 #' @return A list containing: 1) data: data.frame with raw, cleaned data from parent visit 3 Qualtrics; 2) dict: all variable descriptions; 3) pna_data: data.frame marking participants who 'preferred not to answer' (pna) specific questions; and 4) pna_dict: all variable descriptions for pna_data
 #'
 #' @examples
-#' #if in same working directory as data:
-#' v3dat_scored <- util_fbs_merge_v3(date_str = '2021-10-11')
-#'
-#' #if in same working directory as data and covid collecte data has different dates:
-#' v3dat_scored <- util_fbs_merge_v3(child_date_str = '2021-10-11', child_home_date_str = '2021-9-15', child_lab_date_str = = '2021-9-15', parent_date_str = '2021-10-11')
+#' #if in same working directory as data with all data. Note - there is no need to add the COVID protocol (i.e., 'Home' or 'Lab') to file_pattern - these files will be search for automatically:
+#' v3dat_scored <- util_fbs_merge_v3(child_file_pattern = 'Child_V3', parent_file_pattern = 'Parent_V3')
 #'
 #' \dontrun{
-#' #date must be a string. The following will not run:
-#' v3dat_scored <- util_fbs_merge_v3(2021-10-11)
+#' #child_file_pattern and parent_file_pattern must be a strings. The following will not run:
+#' v3dat_scored <- util_fbs_merge_v3(child_file_pattern = Child_V3, parent_file_pattern = Parent_V3)
 #'
-#' #date must match the file name - for file named 'Child_V3_Home_2021_09_15', the
-#' following will not run:
-#' v3dat_scored <- util_fbs_merge_v3('2021_10_11')
+#' # *_file_pattern must have the respondent ('Child') and visit number ('V3'). If just enter 'Child' or 'Parent', the script will not run because it will return multiple files for different child visits. The following will not run:
+#' v3dat_scored <- util_fbs_merge_v3(child_file_pattern = 'Child', parent_file_pattern = 'Parent')
 #' }
 #'
 #' @seealso Raw data from Qualtrics is processed using the following scripts: \code{\link{util_fbs_child_v3dat}}, \code{\link{util_fbs_child_v3dat_home}}, \code{\link{util_fbs_child_v3dat_lab}}, \code{\link{util_fbs_parent_v3dat}}. Visit 3 data is scored using the following scripts: \code{\link{score_lbc}}, \code{\link{score_pwlb}}, \code{\link{score_tfeq}}, \code{\link{score_bisbas}}, \code{\link{score_spsrq}}, \code{\link{model_dd}}
@@ -34,32 +27,25 @@
 #'
 #' @export
 
-util_fbs_merge_v3 <- function(date_str, child_date_str, child_home_date_str, child_lab_date_str, parent_date_str, data_path, model_DD = FALSE) {
+util_fbs_merge_v3 <- function(child_file_pattern, parent_file_pattern, data_path, model_DD = FALSE) {
 
     #### 1. Set up/initial checks #####
+    # check that file_pattern exist and is a string
 
-    # check if date_str exists and is a string
+    c_filepat_arg <- methods::hasArg(child_file_pattern)
 
-    datestr_arg <- methods::hasArg(date_str)
+    if (isTRUE(c_filepat_arg) & !is.character(child_file_pattern)) {
+        stop("child_file_pattern must be entered as a string: e.g., 'Child_V3'")
+    } else if (isFALSE(c_filepat_arg)) {
+        stop("child_file_pattern must set to the a string matching the name of the raw data file for child visit: e.g., 'Child_V3'")
+    }
 
-    if (isTRUE(datestr_arg) & !is.character(date_str)) {
-        stop("date_str must be entered as a string: e.g., '2021_10_11'")
-    } else if (isFALSE(datestr_arg)) {
+    p_filepat_arg <- methods::hasArg(parent_file_pattern)
 
-        # if no date_str, check all databases specific date strings
-        child_datestr_arg <- methods::hasArg(child_date_str)
-        child_home_datestr_arg <- methods::hasArg(child_home_date_str)
-        child_lab_datestr_arg <- methods::hasArg(child_lab_date_str)
-        parent_datestr_arg <- methods::hasArg(parent_date_str)
-        parentV4_datestr_arg <- methods::hasArg(parentV4_date_str)
-
-        if (sum(child_datestr_arg, child_home_datestr_arg, child_lab_datestr_arg, parent_datestr_arg) < 4){
-            stop("if data_str is not set, then must enter each individual date string for the visit 3 databeses: child, child-home, child-lab, and parent")
-        }
-
-        if (!is.character(child_date_str) | !is.character(child_home_date_str) | !is.character(child_lab_date_str) | !is.character(parent_date_str)) {
-            stop("all dates must be entered as a string: e.g., '2021_10_11'")
-        }
+    if (isTRUE(p_filepat_arg) & !is.character(parent_file_pattern)) {
+        stop("parent_file_pattern must be entered as a string: e.g., 'Parent_V3'")
+    } else if (isFALSE(p_filepat_arg)) {
+        stop("parent_file_pattern must set to the a string matching the name of the raw data file for child visit: e.g., 'Parent_V3'")
     }
 
     # check datapath
@@ -71,110 +57,21 @@ util_fbs_merge_v3 <- function(date_str, child_date_str, child_home_date_str, chi
         }
     }
 
-    #### 2. Check Data Exists #####
+    #### 2. Process Raw Data #####
 
-    ## define function to test if file exists
-    file_exist_fn <- function(data_path, date_str, respondant, covid_type = FALSE, loc){
-
-        datapath_arg_fn <- methods::hasArg(data_path)
-
-        #if not special case
-        if (isFALSE(covid_type)) {
-            if (isTRUE(datapath_arg_fn)) {
-                qv3_path <- paste0(data_path, "/", respondant, "_V3_", date_str, ".sav")
-            } else {
-                qv3_path <- paste0("/", respondant, "_V3_", date_str, ".sav")
-            }
-
-            # check if file exists
-            qv3_exists <- file.exists(qv3_path)
-
-            #warning message if doesn't exist - stop is below outside of function
-            if (isFALSE(qv3_exists)) {
-                warning(paste0("The ", respondant, "_V3_", date_str, ".sav database does not exist at the specified path:", qv3_path))
-            }
-
-            #return check
-            qv3_res <- list(data_path_full = qv3_path, data_exists = qv3_exists)
-
-            return(qv3_res)
-        }
-
-        #if covid split protocol
-        if (isTRUE(covid_type)) {
-
-            if (isTRUE(datapath_arg_fn)) {
-                qv3_path <- paste0(data_path, "/Final_CovidAtHome/", respondant, "_V3_", loc, "_", date_str, ".sav")
-            } else {
-                qv3_path <- paste0("/Final_CovidAtHome/", respondant, "_V3_", loc, "_", date_str, ".sav")
-            }
-
-            # check if file exists
-            qv3_exists <- file.exists(qv3_path)
-
-            if (isTRUE(qv3_exists)) {
-                #return check
-                qv3_res <- list(data_path_full = qv3_path, data_exists = qv3_exists)
-
-                return(qv3_res)
-            } else {
-
-                #check if in the main database rather than 'Final_CovidAtHome' database
-                if (isTRUE(datapath_arg_fn)) {
-                    qv3_path2 <- paste0(data_path, "/", respondant, "_V3_", loc, "_", date_str, ".sav")
-                } else {
-                    qv3_path2 <- paste0("/", respondant, "_V3_", loc, "_", date_str, ".sav")
-                }
-
-                # check if file exists
-                qv3_exists2 <- file.exists(qv3_path2)
-
-                #warning message if doesn't exist - stop is below outside of function
-                if (isFALSE(qv3_exists2)) {
-                    warning(paste0("The ", respondant, "_V3_", loc, "_", date_str, ".sav database does not exist at either of the possible paths:", qv3_path, "or", qv3_path2))
-                }
-
-                #return check
-                qv3_res <- list(data_path_full = qv3_path2, data_exists = qv3_exists2)
-
-                return(qv3_res)
-            }
-        }
-    }
-
-    # check if files exist
-    if (isTRUE(datestr_arg)){
-        child_file <- file_exist_fn(data_path, date_str, respondant = 'Child')
-        child_home_file <- file_exist_fn(data_path, date_str, respondant = 'Child', covid_type = TRUE, loc = 'Home')
-        child_lab_file <- file_exist_fn(data_path, date_str, respondant = 'Child', covid_type = TRUE, loc = 'Lab')
-        parent_file <- file_exist_fn(data_path, date_str, respondant = 'Parent')
+    if (isTRUE(datapath_arg)) {
+        child_v3dat <- util_fbs_child_v3dat(child_file_pattern, data_path)
+        child_home_v3dat <- util_fbs_child_v3dat_home(child_file_pattern, data_path)
+        child_lab_v3dat <- util_fbs_child_v3dat_lab(child_file_pattern, data_path)
+        parent_v3dat <- util_fbs_parent_v3dat(parent_file_pattern, data_path)
     } else {
-        child_file <- file_exist_fn(data_path, child_date_str, respondant = 'Child')
-        child_home_file <- file_exist_fn(data_path, child_home_date_str, respondant = 'Child', covid_type = TRUE, loc = 'Home')
-        child_lab_file <- file_exist_fn(data_path, child_lab_date_str, respondant = 'Child', covid_type = TRUE, loc = 'Lab')
-        parent_file <- file_exist_fn(data_path, parent_date_str, respondant = 'Parent')
+        child_v3dat <- util_fbs_child_v3dat(child_date_str)
+        child_home_v3dat <- util_fbs_child_v3dat_home(child_home_date_str)
+        child_lab_v3dat <- util_fbs_child_v3dat_lab(child_lab_date_str)
+        parent_v3dat <- util_fbs_parent_v3dat(parent_date_str)
     }
 
-    if (sum(child_file$data_exists, child_home_file$data_exists, child_lab_file$data_exists, parent_file$data_exists) < 4){
-        stop('not all files exist - double check all files are in the correct directories and that the entered *date_str and data_path arguments are entered correctly')
-    }
-
-
-    #### 3. Process Raw Data #####
-
-    if (isTRUE(datestr_arg)) {
-        child_v3dat <- util_fbs_child_v3dat(date_str, data_path)
-        child_home_v3dat <- util_fbs_child_v3dat_home(date_str, data_path)
-        child_lab_v3dat <- util_fbs_child_v3dat_lab(date_str, data_path)
-        parent_v3dat <- util_fbs_parent_v3dat(date_str, data_path)
-    } else {
-        child_v3dat <- util_fbs_child_v3dat(child_date_str, data_path)
-        child_home_v3dat <- util_fbs_child_v3dat_home(child_home_date_str, data_path)
-        child_lab_v3dat <- util_fbs_child_v3dat_lab(child_lab_date_str, data_path)
-        parent_v3dat <- util_fbs_parent_v3dat(parent_date_str, data_path)
-    }
-
-    #### 4. Merge Child Raw Data #####
+    #### 3. Merge Child Raw Data #####
 
     # merge child home and lab into single database
     child_covidmerge_v3dat <- merge(child_lab_v3dat$data, child_home_v3dat$data[c(1, 3:71)], by = 'id', all = TRUE)
@@ -191,7 +88,7 @@ util_fbs_merge_v3 <- function(date_str, child_date_str, child_home_date_str, chi
     #add DD back for 120
     all_child_v3dat[all_child_v3dat[['id']] == 120, c(42:110)] <- child_home_v3dat$data[child_home_v3dat$data[['id']] == 120, 3:71]
 
-    #### 5. Merge Parent Raw Data #####
+    #### 4. Merge Parent Raw Data #####
 
     # update labels with 'parent report'
 
@@ -212,7 +109,7 @@ util_fbs_merge_v3 <- function(date_str, child_date_str, child_home_date_str, chi
     # merge labels/dictionary
     v3dat_labels <- c(child_v3dat$dict, parent_v3dat$dict[3:188])
 
-    #### 6. Organize V3 data ####
+    #### 5. Organize V3 data ####
 
     # order of vars: 1) Demographics, 2) Anthro (hw, DXA, sleep, PA), 3) Intake (FF, liking, intake, want), 4) feeding/food Q's, 5) cog/trait Q's, 6) Delay Discounting, 7) MRI related (CAMS, FF, snack info, image ratings), 8) Notes
 
@@ -223,9 +120,9 @@ util_fbs_merge_v3 <- function(date_str, child_date_str, child_home_date_str, chi
     # ensure labels are up to date
     v3dat_org = sjlabelled::set_label(v3dat_org, label = matrix(unlist(v3dat_labels, use.names = FALSE)))
 
-    #### 7. Score V3 data ####
+    #### 6. Score V3 data ####
 
-    ## 7a) score the Lifestyle Behavior Checklist ####
+    ## 6a) score the Lifestyle Behavior Checklist ####
     lbc_scored <- score_lbc(lbc_data = v3dat_org[c(1, 42:61)], study = 'fbs', parID = 'id')
 
     # get labels from scored data and simplify
@@ -240,7 +137,7 @@ util_fbs_merge_v3 <- function(date_str, child_date_str, child_home_date_str, chi
 
     v3dat_scored_labels <- c(v3dat_labels[1:61], lbc_scored_labels[2:6], v3dat_labels[62:298])
 
-    ## 7b) score the Parent Weight-Loss Behavior Questionnaire ####
+    ## 6b) score the Parent Weight-Loss Behavior Questionnaire ####
     pwlb_scored <- score_pwlb(pwlb_data = v3dat_org[c(1, 62:90)], parID = 'id')
 
     # get labels from scored data and simplify
@@ -255,7 +152,7 @@ util_fbs_merge_v3 <- function(date_str, child_date_str, child_home_date_str, chi
 
     v3dat_scored_labels <- c(v3dat_scored_labels[1:95], pwlb_scored_labels[2:4], v3dat_scored_labels[96:303])
 
-    ## 7c) score the Three Factor Eating Questionnaire ####
+    ## 6c) score the Three Factor Eating Questionnaire ####
     tfeq_scored <- score_tfeq(tfeq_data = v3dat_org[c(1, 91:141)], parID = 'id')
 
     # get labels from scored data and simplify
@@ -270,7 +167,7 @@ util_fbs_merge_v3 <- function(date_str, child_date_str, child_home_date_str, chi
 
     v3dat_scored_labels <- c(v3dat_scored_labels[1:149], tfeq_scored_labels[2:4], v3dat_scored_labels[150:306])
 
-    ## 7d) score the Behavioral Inhibition Scale/Behavioral Activation Scale ####
+    ## 6d) score the Behavioral Inhibition Scale/Behavioral Activation Scale ####
     bisbas_scored <- score_bisbas(bisbas_data = v3dat_org[c(1, 142:165)], parID = 'id')
 
     # get labels from scored data and simplify
@@ -285,7 +182,7 @@ util_fbs_merge_v3 <- function(date_str, child_date_str, child_home_date_str, chi
 
     v3dat_scored_labels <- c(v3dat_scored_labels[1:176], bisbas_scored_labels[2:6], v3dat_scored_labels[177:309])
 
-    ## 7e) score the Sensitivity to Punishment and Sensitivity to Reward Questionnaire ####
+    ## 6e) score the Sensitivity to Punishment and Sensitivity to Reward Questionnaire ####
     spsrq_scored <- score_spsrq(spsrq_data = v3dat_org[c(1, 166:213)], parID = 'id')
 
     # get labels from scored data and simplify
@@ -300,7 +197,7 @@ util_fbs_merge_v3 <- function(date_str, child_date_str, child_home_date_str, chi
 
     v3dat_scored_labels <- c(v3dat_scored_labels[1:229], spsrq_scored_labels[2:12], v3dat_scored_labels[230:314])
 
-    ## 7f) model Delay Discounting ####
+    ## 6f) model Delay Discounting ####
 
     if (isTRUE(model_DD)){
 
@@ -323,7 +220,7 @@ util_fbs_merge_v3 <- function(date_str, child_date_str, child_home_date_str, chi
         v3dat_scored_labels <- c(v3dat_scored_labels[1:309], dd_scored_labels[2:9], v3dat_scored_labels[310:325])
     }
 
-    #### 8. Food Intake ####
+    #### 7. Food Intake ####
 
     v3_kcal <- fbs_kcal_intake(v3dat_scored[c(1, 17:41)], meal = 'ps_meal', parID = 'id')
 
@@ -357,12 +254,12 @@ util_fbs_merge_v3 <- function(date_str, child_date_str, child_home_date_str, chi
         v3dat_scored_labels <- v3dat_scored_labels[c(1:16, 333, 17:20, 326, 21:24, 327, 25:28, 328, 29:33, 329, 34:37, 330, 38:41, 331:332, 42:325)]
     }
 
-    #### 9. PNA data #####
+    #### 8. PNA data #####
 
     # only parent has pna data to organize
     v3dat_pna <- parent_v3dat$pna_data
 
-    #### 10. save to list #####
+    #### 9. save to list #####
 
     # put data in order of participant ID for ease
     v3dat_scored <- v3dat_scored[order(v3dat_scored[["id"]]), ]

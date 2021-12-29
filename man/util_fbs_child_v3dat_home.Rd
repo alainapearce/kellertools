@@ -4,10 +4,10 @@
 \alias{util_fbs_child_v3dat_home}
 \title{util_fbs_child_v3dat_home: Process raw qualtrics visit 3 home data for the child}
 \usage{
-util_fbs_child_v3dat_home(date_str, data_path)
+util_fbs_child_v3dat_home(file_pattern, data_path)
 }
 \arguments{
-\item{date_str}{the date used in the name of the .sav file (e.g., for file 'Parent_V1_2021-10-11.sav', the string '2021-10-11' would be entered)}
+\item{file_pattern}{string with the pattern to search for to find the raw data file. The pattern must contain respondent and visit number (e.g., for files from parent visit 1, would enter 'Parent_V1').}
 
 \item{data_path}{(optional) the full path to the directory where the raw Qualtrics database are saved, EXCLUDING the .sav file name (e.g., '.../b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'). If NOT entered, will assume the database is saved in the working directory.}
 }
@@ -29,16 +29,15 @@ This function loads the .sav raw data file for the child visit 3 data that was c
 The databases MUST follow the naming convention: Child_V3_Home_YYYY-MM-DD.sav
 }
 \examples{
-#if in same working directory as data:
-ch_v3_dat_home <- util_fbs_child_v3dat_home('2021-10-11')
+#if in same working directory as data. Note - there is no need to add the COVID protocol (i.e., 'Home' or 'Lab') to file_pattern:
+child_v3_dat_home <- util_fbs_child_v3dat_home('Child_V3')
 
 \dontrun{
-#date must be a string. The following will not run:
-ch_v3_dat_home <- util_fbs_child_v3dat_home(2021-10-11)
+#file_pattern must be a string. The following will not run:
+child_v3_dat_home <- util_fbs_child_v3dat_home(Child_V3)
 
-#date must match the file name - for file named 'Child_V3_Home_2021_09_16', the
-following will not run:
-ch_v3_dat_home <- util_fbs_child_v3dat_home('2021_10_11')
+#file_pattern must have the respondent ('Child') and visit number ('V3'). If just enter 'Child', the script will not run because it will return multiple files for different parent visits. The following will not run:
+child_v3_dat_home <- util_fbs_child_v3dat_home('Child')
 }
 
 

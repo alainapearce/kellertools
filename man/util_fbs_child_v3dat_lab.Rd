@@ -4,7 +4,7 @@
 \alias{util_fbs_child_v3dat_lab}
 \title{util_fbs_child_v3dat_lab: Process raw qualtrics visit 3 data for the child}
 \usage{
-util_fbs_child_v3dat_lab(date_str, data_path)
+util_fbs_child_v3dat_lab(file_pattern, data_path)
 }
 \value{
 A list containing: 1) data: data.frame with raw, cleaned data from child visit 3 Qualtrics and 2) dict: all variable descriptions
@@ -24,16 +24,15 @@ This function loads the .sav raw data file for the child visit 3 data that was c
 The databases MUST follow the naming convention: Child_V3_Lab_YYYY-MM-DD.sav
 }
 \examples{
-#if in same working directory as data:
-ch_v3_dat_lab <- util_fbs_child_v3dat_lab('2021-10-11')
+#if in same working directory as data. Note - there is no need to add the COVID protocol (i.e., 'Home' or 'Lab') to file_pattern:
+child_v3_dat_lab <- util_fbs_child_v3dat_lab('Child_V3')
 
 \dontrun{
-#date must be a string. The following will not run:
-ch_v3_dat_lab <- util_fbs_child_v3dat_lab(2021-10-11)
+#file_pattern must be a string. The following will not run:
+child_v3_dat_lab <- util_fbs_child_v3dat_lab(Child_V3)
 
-#date must match the file name - for file named 'Child_V3_Lab_2021_09_16', the
-following will not run:
-ch_v3_dat_lab <- util_fbs_child_v3dat_lab('2021_10_11')
+#file_pattern must have the respondent ('Child') and visit number ('V3'). If just enter 'Child', the script will not run because it will return multiple files for different parent visits. The following will not run:
+child_v3_dat_lab <- util_fbs_child_v3dat_lab('Child')
 }
 
 

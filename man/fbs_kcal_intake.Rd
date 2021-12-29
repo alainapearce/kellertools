@@ -14,7 +14,7 @@ fbs_kcal_intake(intake_data, meal, parID)
 \item{parID}{(optional) name of participant ID column in intake_data. If included the output dataset will be matched by parID, if not included the output dataset will be in the order of intake_data but will have no participant identifier.}
 }
 \value{
-The intake_data data.frame with kcal consumed added for each food item and total comused in grams and kcal.
+The intake_data data.frame with kcal consumed added for each food item and total consumed in grams and kcal.
 }
 \description{
 This function calculates the amount served and eaten in kcal for the Food and Brain Study using food energy density and measured gram weights. This is done for all meals included in the study: standard meal + eating in the absence of hunger (EAH) (visits 1 and 7) and the portion size meals (visits 2-5). The kcal consumed will be calculated for each food item and total grams and kcal consumed will be calculated IF all food items for a meal were included in the dataset for a participant. If a participant has missing data, total consumed will not be calculated for them.
@@ -32,14 +32,14 @@ Note, as long as variable names match those listed, the dataset can include othe
 }
 \examples{
 # intake for standard meal
-intake_data <- intake_data(intake_data, meal = 'std_meal', parID = 'ID')
+fbs_kcal_data <- fbs_kcal_intake(intake_data, meal = 'std_meal', parID = 'ID')
 
 # intake for eah
-fbs_kcal_intake <- intake_data(intake_data, meal = 'EAH', parID = 'ID')
+fbs_kcal_data <- fbs_kcal_intake(intake_data, meal = 'EAH', parID = 'ID')
 
 \dontrun{
 # no meal specified
-fbs_kcal_intake <- intake_data(intake_data, parID = 'ID')
+fbs_kcal_data <- fbs_kcal_intake(intake_data, parID = 'ID')
 }
 
 }

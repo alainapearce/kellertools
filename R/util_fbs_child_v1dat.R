@@ -13,8 +13,8 @@
 #'
 #' The databases MUST follow the naming convention: Child_V1_YYYY-MM-DD.sav
 #'
-#' @inheritParams util_fbs_parent_v1dat
-#' @inheritParams util_fbs_parent_v1dat
+#' @inheritParams util_fbs_child_v1dat
+#' @inheritParams util_fbs_child_v1dat
 #'
 #'
 #' @return A list containing: 1) data: data.frame with raw, cleaned data from child visit 1 Qualtrics
@@ -22,50 +22,60 @@
 #'
 #' @examples
 #' #if in same working directory as data:
-#' ch_v1_dat <- util_fbs_child_v1dat('2021-10-11')
+#' child_v1_dat <- util_fbs_child_v1dat('Child_V1')
 #'
 #' \dontrun{
-#' #date must be a string. The following will not run:
-#' ch_v1_dat <- util_fbs_child_v1dat(2021-10-11)
+#' #file_pattern must be a string. The following will not run:
+#' child_v1_dat <- util_fbs_child_v1dat(Child_V1)
 #'
-#' #date must match the file name - for file named 'Child_V1_2021_09_16', the
-#' following will not run:
-#' ch_v1_dat <- util_fbs_child_v1dat('2021_10_11')
+#' #file_pattern must have the respondent ('Child') and visit number ('V1'). If just enter 'Child', the script will not run because it will return multiple files for different child visits. The following will not run:
+#' child_v1_dat <- util_fbs_child_v1dat('Child')
 #' }
 #'
 #'
 #' @export
 #'
-util_fbs_child_v1dat <- function(date_str, data_path) {
+util_fbs_child_v1dat <- function(file_pattern, data_path) {
 
     #### 1. Set up/initial checks #####
 
-    # check that date_str exist and is a string
+    # check that file_pattern exist and is a string
 
-    datestr_arg <- methods::hasArg(date_str)
+    filepat_arg <- methods::hasArg(file_pattern)
 
-    if (isTRUE(datestr_arg) & !is.character(date_str)) {
-        stop("date_str must be entered as a string: e.g., '2021_10_11'")
-    } else if (isFALSE(datestr_arg)) {
-        stop("date_str must set to the data string from the child visit 1 file name: e.g., '2021_09_16'")
+    if (isTRUE(filepat_arg) & !is.character(file_pattern)) {
+        stop("file_pattern must be entered as a string: e.g., 'Child_V1'")
+    } else if (isFALSE(filepat_arg)) {
+        stop("file_pattern must set to the a string matching the name of the raw data file for child visit: e.g., 'Child_V1'")
     }
 
     # check datapath
     datapath_arg <- methods::hasArg(data_path)
 
     if (isTRUE(datapath_arg)) {
-        if (!is.character(date_str)) {
+        if (!is.character(data_path)) {
             stop("data_path must be entered as a string: e.g., '.../Participant_Data/untouchedRaw/'")
         }
     }
 
-
     #### 2. Load Data #####
 
     if (isTRUE(datapath_arg)) {
-        qv1_child_path <- paste0(data_path, "/", "Child_V1_", date_str, ".sav")
+        qv1_child_path <- list.files(path = data_path, pattern = file_pattern, full.names = TRUE)
     } else {
-        qv1_child_path <- paste0("Child_V1_", date_str, ".sav")
+        qv1_child_path <- paste0(pattern = file_pattern, full.names = TRUE)
+    }
+
+    # check number of files found
+    if (length(qv1_child_path) > 1) {
+        stop("More than one file matched the file_pattern. Be sure thefile_pattern specifies both the respondent (Parent/Child) and visit number (V#). If have more than 1 file matching the pattern in the directory, may need to move to enter a more specific file_pattern than is standard.")
+    } else if (length(qv1_child_path) == 0) {
+        stop('No files found. Be sure the data_path and file_pattern are correct and that the file exists')
+    }
+
+    # check that file is of type '.sav'
+    if (!grepl('.sav', qv1_child_path, fixed = TRUE)){
+        stop("The file found is not an SPSS database (.sav)")
     }
 
     # check if file exists
@@ -204,7 +214,7 @@ util_fbs_child_v1dat <- function(date_str, data_path) {
 
     # 7) re-ordering factor levels to start with value 0 ####
 
-    ## sex - make sure always matches across parent/child and visits
+    ## sex - make sure always matches across child/child and visits
     qv1_child_clean[['sex']]<- sjlabelled::set_labels(qv1_child_clean[['sex']], labels = c(Male = 0, Female = 1))
     set_attr <- attributes(qv1_child_clean[['sex']])
     qv1_child_clean[['sex']] <- ifelse(is.na(qv1_child_clean[['sex']]), NA, ifelse(qv1_child_clean[['sex']] == 1, 0, 1))

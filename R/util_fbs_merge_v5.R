@@ -6,27 +6,20 @@
 #'
 #' @inheritParams util_fbs_merge_v1
 #' @inheritParams util_fbs_merge_v1
-#' @inheritParams util_fbs_merge_v1
-#' @inheritParams util_fbs_merge_v1
-#' @inheritParams util_fbs_merge_v1
 #' @inheritParams util_fbs_parent_v1dat
 #'
 #' @return A list containing: 1) data: data.frame with raw, cleaned data from parent visit 5 Qualtrics; 2) dict: all variable descriptions; 3) pna_data: data.frame marking participants who 'preferred not to answer' (pna) specific questions; and 4) pna_dict: all variable descriptions for pna_data
 #'
 #' @examples
-#' #if in same working directory as data:
-#' v5dat_scored <- util_fbs_merge_v5(date_str = '2021-10-11')
-#'
-#' #if in same working directory as data and covid collecte data has different dates:
-#' v5dat_scored <- util_fbs_merge_v5(child_date_str = '2021-10-11', child_home_date_str = '2021-9-15', child_lab_date_str = = '2021-9-15', parent_date_str = '2021-10-11')
+#' #if in same working directory as data with all data. Note - there is no need to add the COVID protocol (i.e., 'Home' or 'Lab') to file_pattern - these files will be search for automatically:
+#' v5dat_scored <- util_fbs_merge_v5(child_file_pattern = 'Child_V5', parent_file_pattern = 'Parent_V5')
 #'
 #' \dontrun{
-#' #date must be a string. The following will not run:
-#' v5dat_scored <- util_fbs_merge_v5(2021-10-11)
+#' #child_file_pattern and parent_file_pattern must be a strings. The following will not run:
+#' v5dat_scored <- util_fbs_merge_v5(child_file_pattern = Child_V5, parent_file_pattern = Parent_V5)
 #'
-#' #date must match the file name - for file named 'Child_V5_Home_2021_09_15', the
-#' following will not run:
-#' v5dat_scored <- util_fbs_merge_v5('2021_10_11')
+#' # *_file_pattern must have the respondent ('Child') and visit number ('V5'). If just enter 'Child' or 'Parent', the script will not run because it will return multiple files for different child visits. The following will not run:
+#' v5dat_scored <- util_fbs_merge_v5(child_file_pattern = 'Child', parent_file_pattern = 'Parent')
 #' }
 #'
 #' @seealso Raw data from Qualtrics is processed using the following scripts: \code{\link{util_fbs_child_v5dat}}, \code{\link{util_fbs_child_v5dat_home}}, \code{\link{util_fbs_child_v5dat_lab}}, \code{\link{util_fbs_parent_v5dat}}. Visit 5 data is scored using the following scripts: \code{\link{score_ctc}}, \code{\link{score_audit}}
@@ -34,31 +27,25 @@
 #'
 #' @export
 
-util_fbs_merge_v5 <- function(date_str, child_date_str, child_home_date_str, child_lab_date_str, parent_date_str, data_path) {
+util_fbs_merge_v5 <- function(child_file_pattern, parent_file_pattern, data_path) {
 
     #### 1. Set up/initial checks #####
+    # check that file_pattern exist and is a string
 
-    # check if date_str exists and is a string
+    c_filepat_arg <- methods::hasArg(child_file_pattern)
 
-    datestr_arg <- methods::hasArg(date_str)
+    if (isTRUE(c_filepat_arg) & !is.character(child_file_pattern)) {
+        stop("child_file_pattern must be entered as a string: e.g., 'Child_V5'")
+    } else if (isFALSE(c_filepat_arg)) {
+        stop("child_file_pattern must set to the a string matching the name of the raw data file for child visit: e.g., 'Child_V5'")
+    }
 
-    if (isTRUE(datestr_arg) & !is.character(date_str)) {
-        stop("date_str must be entered as a string: e.g., '2021_10_11'")
-    } else if (isFALSE(datestr_arg)) {
+    p_filepat_arg <- methods::hasArg(parent_file_pattern)
 
-        # if no date_str, check all databases specific date strings
-        child_datestr_arg <- methods::hasArg(child_date_str)
-        child_home_datestr_arg <- methods::hasArg(child_home_date_str)
-        child_lab_datestr_arg <- methods::hasArg(child_lab_date_str)
-        parent_datestr_arg <- methods::hasArg(parent_date_str)
-
-        if (sum(child_datestr_arg, child_home_datestr_arg, child_lab_datestr_arg, parent_datestr_arg) < 4){
-            stop("if data_str is not set, then must enter each individual date string for the visit 5 databeses: child, child-home, child-lab, and parent")
-        }
-
-        if (!is.character(child_date_str) | !is.character(child_home_date_str) | !is.character(child_lab_date_str) | !is.character(parent_date_str)) {
-            stop("all dates must be entered as a string: e.g., '2021_10_11'")
-        }
+    if (isTRUE(p_filepat_arg) & !is.character(parent_file_pattern)) {
+        stop("parent_file_pattern must be entered as a string: e.g., 'Parent_V5'")
+    } else if (isFALSE(p_filepat_arg)) {
+        stop("parent_file_pattern must set to the a string matching the name of the raw data file for child visit: e.g., 'Parent_V5'")
     }
 
     # check datapath
@@ -70,110 +57,22 @@ util_fbs_merge_v5 <- function(date_str, child_date_str, child_home_date_str, chi
         }
     }
 
-    #### 2. Check Data Exists #####
 
-    ## define function to test if file exists
-    file_exist_fn <- function(data_path, date_str, respondant, covid_type = FALSE, loc){
+    #### 2. Process Raw Data #####
 
-        datapath_arg_fn <- methods::hasArg(data_path)
-
-        #if not special case
-        if (isFALSE(covid_type)) {
-            if (isTRUE(datapath_arg_fn)) {
-                qv5_path <- paste0(data_path, "/", respondant, "_V5_", date_str, ".sav")
-            } else {
-                qv5_path <- paste0("/", respondant, "_V5_", date_str, ".sav")
-            }
-
-            # check if file exists
-            qv5_exists <- file.exists(qv5_path)
-
-            #warning message if doesn't exist - stop is below outside of function
-            if (isFALSE(qv5_exists)) {
-                warning(paste0("The ", respondant, "_V5_", date_str, ".sav database does not exist at the specified path:", qv5_path))
-            }
-
-            #return check
-            qv5_res <- list(data_path_full = qv5_path, data_exists = qv5_exists)
-
-            return(qv5_res)
-        }
-
-        #if covid split protocol
-        if (isTRUE(covid_type)) {
-
-            if (isTRUE(datapath_arg_fn)) {
-                qv5_path <- paste0(data_path, "/Final_CovidAtHome/", respondant, "_V5_", loc, "_", date_str, ".sav")
-            } else {
-                qv5_path <- paste0("/Final_CovidAtHome/", respondant, "_V5_", loc, "_", date_str, ".sav")
-            }
-
-            # check if file exists
-            qv5_exists <- file.exists(qv5_path)
-
-            if (isTRUE(qv5_exists)) {
-                #return check
-                qv5_res <- list(data_path_full = qv5_path, data_exists = qv5_exists)
-
-                return(qv5_res)
-            } else {
-
-                #check if in the main database rather than 'Final_CovidAtHome' database
-                if (isTRUE(datapath_arg_fn)) {
-                    qv5_path2 <- paste0(data_path, "/", respondant, "_V5_", loc, "_", date_str, ".sav")
-                } else {
-                    qv5_path2 <- paste0("/", respondant, "_V5_", loc, "_", date_str, ".sav")
-                }
-
-                # check if file exists
-                qv5_exists2 <- file.exists(qv5_path2)
-
-                #warning message if doesn't exist - stop is below outside of function
-                if (isFALSE(qv5_exists2)) {
-                    warning(paste0("The ", respondant, "_V5_", loc, "_", date_str, ".sav database does not exist at either of the possible paths:", qv5_path, "or", qv5_path2))
-                }
-
-                #return check
-                qv5_res <- list(data_path_full = qv5_path2, data_exists = qv5_exists2)
-
-                return(qv5_res)
-            }
-        }
-    }
-
-    # check if files exist
-    if (isTRUE(datestr_arg)){
-        child_file <- file_exist_fn(data_path, date_str, respondant = 'Child')
-        child_home_file <- file_exist_fn(data_path, date_str, respondant = 'Child', covid_type = TRUE, loc = 'Home')
-        child_lab_file <- file_exist_fn(data_path, date_str, respondant = 'Child', covid_type = TRUE, loc = 'Lab')
-        parent_file <- file_exist_fn(data_path, date_str, respondant = 'Parent')
+    if (isTRUE(datapath_arg)) {
+        child_v5dat <- util_fbs_child_v5dat(child_file_pattern, data_path)
+        child_home_v5dat <- util_fbs_child_v5dat_home(child_file_pattern, data_path)
+        child_lab_v5dat <- util_fbs_child_v5dat_lab(child_file_pattern, data_path)
+        parent_v5dat <- util_fbs_parent_v5dat(parent_file_pattern, data_path)
     } else {
-        child_file <- file_exist_fn(data_path, child_date_str, respondant = 'Child')
-        child_home_file <- file_exist_fn(data_path, child_home_date_str, respondant = 'Child', covid_type = TRUE, loc = 'Home')
-        child_lab_file <- file_exist_fn(data_path, child_lab_date_str, respondant = 'Child', covid_type = TRUE, loc = 'Lab')
-        parent_file <- file_exist_fn(data_path, parent_date_str, respondant = 'Parent')
+        child_v5dat <- util_fbs_child_v5dat(child_date_str)
+        child_home_v5dat <- util_fbs_child_v5dat_home(child_home_date_str)
+        child_lab_v5dat <- util_fbs_child_v5dat_lab(child_lab_date_str)
+        parent_v5dat <- util_fbs_parent_v5dat(parent_date_str)
     }
 
-    if (sum(child_file$data_exists, child_home_file$data_exists, child_lab_file$data_exists, parent_file$data_exists) < 4){
-        stop('not all files exist - double check all files are in the correct directories and that the entered *date_str and data_path arguments are entered correctly')
-    }
-
-
-    #### 3. Process Raw Data #####
-
-    if (isTRUE(datestr_arg)) {
-        child_v5dat <- util_fbs_child_v5dat(date_str, data_path)
-        child_home_v5dat <- util_fbs_child_v5dat_home(date_str, data_path)
-        child_lab_v5dat <- util_fbs_child_v5dat_lab(date_str, data_path)
-        parent_v5dat <- util_fbs_parent_v5dat(date_str, data_path)
-    } else {
-        child_v5dat <- util_fbs_child_v5dat(child_date_str, data_path)
-        child_home_v5dat <- util_fbs_child_v5dat_home(child_home_date_str, data_path)
-        child_lab_v5dat <- util_fbs_child_v5dat_lab(child_lab_date_str, data_path)
-        parent_v5dat <- util_fbs_parent_v5dat(parent_date_str, data_path)
-    }
-
-    #### 4. Merge Child Raw Data #####
+    #### 3. Merge Child Raw Data #####
 
     # merge child home and lab into single database
     child_covidmerge_v5dat <- merge(child_lab_v5dat$data, child_home_v5dat$data[c(1, 3:18)], by = 'id', all = TRUE)
@@ -196,7 +95,7 @@ util_fbs_merge_v5 <- function(date_str, child_date_str, child_home_date_str, chi
     # add par 5 intero back in
     all_child_v5dat[all_child_v5dat[['id']] == 5, 81:167] <- child_v5dat_par5intero[81:167]
 
-    #### 5. Merge Parent Raw Data #####
+    #### 4. Merge Parent Raw Data #####
 
     # update labels with 'parent report'
 
@@ -217,7 +116,7 @@ util_fbs_merge_v5 <- function(date_str, child_date_str, child_home_date_str, chi
     # merge labels/dictionary
     v5dat_labels <- c(child_v5dat$dict, parent_v5dat$dict[3:26])
 
-    #### 6. Organize V5 data ####
+    #### 5. Organize V5 data ####
 
     # order of vars: 1) Demographics, 2) Anthro (hw, DXA, sleep, PA), 3) Intake (FF, liking, intake, want), 4) feeding/food Q's, 5) cog/trait Q's, 6) Delay Discounting, 7) MRI related (CAMS, FF, snack info, image ratings), 8) Notes
 
@@ -228,9 +127,9 @@ util_fbs_merge_v5 <- function(date_str, child_date_str, child_home_date_str, chi
     # ensure labels are up to date
     v5dat_org = sjlabelled::set_label(v5dat_org, label = matrix(unlist(v5dat_labels, use.names = FALSE)))
 
-    #### 7. Organize V5 data ####
+    #### 6. Score V5 data ####
 
-    ## 7a) score the Communities that Care Survey ####
+    ## 6a) score the Communities that Care Survey ####
     ## need to make
     ctc_scored <- score_ctc(ctc_data = v5dat_org[c(1, 3:18)], study = 'fbs', parID = 'id')
 
@@ -246,7 +145,7 @@ util_fbs_merge_v5 <- function(date_str, child_date_str, child_home_date_str, chi
 
     v5dat_scored_labels <- c(v5dat_labels[1:18], ctc_scored_labels[2:5], v5dat_labels[19:195])
 
-    ## 7b) score the Alcohol Use Disorders Identification Test ####
+    ## 6b) score the Alcohol Use Disorders Identification Test ####
     audit_scored <- score_audit(audit_data = v5dat_org[c(1, 19:28)], parID = 'id')
 
     # get labels from scored data and simplify
@@ -262,7 +161,7 @@ util_fbs_merge_v5 <- function(date_str, child_date_str, child_home_date_str, chi
     v5dat_scored_labels <- c(v5dat_scored_labels[1:32], audit_scored_labels[2:3], v5dat_scored_labels[33:199])
 
 
-    #### 8. Food Intake ####
+    #### 7. Food Intake ####
 
     v5_kcal <- fbs_kcal_intake(v5dat_scored[c(1, 49:73)], meal = 'ps_meal', parID = 'id')
 
@@ -288,7 +187,7 @@ util_fbs_merge_v5 <- function(date_str, child_date_str, child_home_date_str, chi
 
     v5dat_scored_labels <- v5dat_scored_labels[c(1:48, 209, 49:52, 202, 53:56, 203, 57:60, 204, 61:65, 205, 66:69, 206, 70:73, 207:208, 74:201)]
 
-    #### 9. PNA data #####
+    #### 8. PNA data #####
 
     # child pna data
 
@@ -343,7 +242,7 @@ util_fbs_merge_v5 <- function(date_str, child_date_str, child_home_date_str, chi
 
     v5dat_pna_labels <- c(child_v5dat_pna_labels, parent_v5dat$pna_dict[2:length(parent_v5dat$pna_dict)])
 
-    #### 10. save to list #####
+    #### 9. save to list #####
 
     # put data in order of participant ID for ease
     v5dat_scored <- v5dat_scored[order(v5dat_scored[["id"]]), ]

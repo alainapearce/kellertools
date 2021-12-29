@@ -19,39 +19,38 @@
 #'
 #' @examples
 #' #if in same working directory as data:
-#' p_v6_dat <- util_fbs_parent_v6dat('2021-10-11')
+#' p_v6_dat <- util_fbs_parent_v6dat('Parent_V6')
 #'
 #' \dontrun{
-#' #date must be a string. The following will not run:
-#' p_v6_dat <- util_fbs_parent_v6dat(2021-10-11)
+#' #file_pattern must be a string. The following will not run:
+#' p_v6_dat <- util_fbs_parent_v6dat(Parent_V6)
 #'
-#' #date must match the file name - for file named 'Parent_V6_2021_09_16', the
-#' following will not run:
-#' p_v6_dat <- util_fbs_parent_v6dat('2021_10_11')
+#' #file_pattern must have the respondent ('Parent') and visit number ('V1'). If just enter 'Parent', the script will not run because it will return multiple files for different parent visits. The following will not run:
+#' p_v6_dat <- util_fbs_parent_v6dat('Parent')
 #' }
 #'
 #'
 #' @export
 #'
-util_fbs_parent_v6dat <- function(date_str, data_path) {
+util_fbs_parent_v6dat <- function(file_pattern, data_path) {
 
     #### 1. Set up/initial checks #####
 
-    # check that date_str exist and is a string
+    # check that file_pattern exist and is a string
 
-    datestr_arg <- methods::hasArg(date_str)
+    filepat_arg <- methods::hasArg(file_pattern)
 
-    if (isTRUE(datestr_arg) & !is.character(date_str)) {
-        stop("date_str must be entered as a string: e.g., '2021_10_11'")
-    } else if (isFALSE(datestr_arg)) {
-        stop("date_str must set to the data string from the parent visit 1 file name: e.g., '2021_09_16'")
+    if (isTRUE(filepat_arg) & !is.character(file_pattern)) {
+        stop("file_pattern must be entered as a string: e.g., 'Parent_V6'")
+    } else if (isFALSE(filepat_arg)) {
+        stop("file_pattern must set to the a string matching the name of the raw data file for parent visit: e.g., 'Parent_V6'")
     }
 
     # check datapath
     datapath_arg <- methods::hasArg(data_path)
 
     if (isTRUE(datapath_arg)) {
-        if (!is.character(date_str)) {
+        if (!is.character(data_path)) {
             stop("data_path must be entered as a string: e.g., '.../Participant_Data/untouchedRaw/'")
         }
     }
@@ -59,9 +58,21 @@ util_fbs_parent_v6dat <- function(date_str, data_path) {
     #### 2. Load Data #####
 
     if (isTRUE(datapath_arg)) {
-        qv6_parent_path <- paste0(data_path, "/Parent_V6_", date_str, ".sav")
+        qv6_parent_path <- list.files(path = data_path, pattern = file_pattern, full.names = TRUE)
     } else {
-        qv6_parent_path <- paste0("Parent_V6_", date_str, ".sav")
+        qv6_parent_path <- paste0(pattern = file_pattern, full.names = TRUE)
+    }
+
+    # check number of files found
+    if (length(qv6_parent_path) > 1) {
+        stop("More than one file matched the file_pattern. Be sure thefile_pattern specifies both the respondent (Parent/Child) and visit number (V#). If have more than 1 file matching the pattern in the directory, may need to move to enter a more specific file_pattern than is standard.")
+    } else if (length(qv6_parent_path) == 0) {
+        stop('No files found. Be sure the data_path and file_pattern are correct and that the file exists')
+    }
+
+    # check that file is of type '.sav'
+    if (!grepl('.sav', qv6_parent_path, fixed = TRUE)){
+        stop("The file found is not an SPSS database (.sav)")
     }
 
     # check if file exists

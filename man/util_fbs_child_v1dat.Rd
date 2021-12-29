@@ -4,12 +4,7 @@
 \alias{util_fbs_child_v1dat}
 \title{util_fbs_child_v1dat: Process raw qualtrics visit 1 data for the child}
 \usage{
-util_fbs_child_v1dat(date_str, data_path)
-}
-\arguments{
-\item{date_str}{the date used in the name of the .sav file (e.g., for file 'Parent_V1_2021-10-11.sav', the string '2021-10-11' would be entered)}
-
-\item{data_path}{(optional) the full path to the directory where the raw Qualtrics database are saved, EXCLUDING the .sav file name (e.g., '.../b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'). If NOT entered, will assume the database is saved in the working directory.}
+util_fbs_child_v1dat(file_pattern, data_path)
 }
 \value{
 A list containing: 1) data: data.frame with raw, cleaned data from child visit 1 Qualtrics
@@ -32,15 +27,14 @@ The databases MUST follow the naming convention: Child_V1_YYYY-MM-DD.sav
 }
 \examples{
 #if in same working directory as data:
-ch_v1_dat <- util_fbs_child_v1dat('2021-10-11')
+child_v1_dat <- util_fbs_child_v1dat('Child_V1')
 
 \dontrun{
-#date must be a string. The following will not run:
-ch_v1_dat <- util_fbs_child_v1dat(2021-10-11)
+#file_pattern must be a string. The following will not run:
+child_v1_dat <- util_fbs_child_v1dat(Child_V1)
 
-#date must match the file name - for file named 'Child_V1_2021_09_16', the
-following will not run:
-ch_v1_dat <- util_fbs_child_v1dat('2021_10_11')
+#file_pattern must have the respondent ('Child') and visit number ('V1'). If just enter 'Child', the script will not run because it will return multiple files for different child visits. The following will not run:
+child_v1_dat <- util_fbs_child_v1dat('Child')
 }
 
 

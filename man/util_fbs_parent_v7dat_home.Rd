@@ -4,10 +4,10 @@
 \alias{util_fbs_parent_v7dat_home}
 \title{util_fbs_parent_v7dat_home: Process raw Qualtrics visit 7 data collected at home for the parent (1-year follow-up)}
 \usage{
-util_fbs_parent_v7dat_home(date_str, data_path)
+util_fbs_parent_v7dat_home(file_pattern, data_path)
 }
 \arguments{
-\item{date_str}{the date used in the name of the .sav file (e.g., for file 'Parent_V1_2021-10-11.sav', the string '2021-10-11' would be entered)}
+\item{file_pattern}{string with the pattern to search for to find the raw data file. The pattern must contain respondent and visit number (e.g., for files from parent visit 1, would enter 'Parent_V1').}
 
 \item{data_path}{(optional) the full path to the directory where the raw Qualtrics database are saved, EXCLUDING the .sav file name (e.g., '.../b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'). If NOT entered, will assume the database is saved in the working directory.}
 }
@@ -31,16 +31,15 @@ This function loads the .sav raw data file for the parent visit 7 data that was 
 The databases MUST follow the naming convention: Child_V7_Home_YYYY-MM-DD.sav
 }
 \examples{
-#if in same working directory as data:
-p_v7_dat_home <- util_fbs_parent_v7dat_home('2021-10-11')
+#if in same working directory as data. Note - there is no need to add the COVID protocol (i.e., 'Home' or 'Lab') to file_pattern:
+p_v7_dat_home <- util_fbs_parent_v7dat_home('Parent_V7')
 
 \dontrun{
-#date must be a string. The following will not run:
-p_v7_dat_home <- util_fbs_parent_v7dat_home(2021-10-11)
+#file_pattern must be a string. The following will not run:
+p_v7_dat_home <- util_fbs_parent_v7dat_home(Parent_V7)
 
-#date must match the file name - for file named 'Parent_V7_Home_2021_09_16', the
-following will not run:
-p_v7_dat_home <- util_fbs_parent_v7dat_home('2021_10_11')
+#file_pattern must have the respondent ('Parent') and visit number ('V1'). If just enter 'Parent', the script will not run because it will return multiple files for different parent visits. The following will not run:
+p_v7_dat_home <- util_fbs_parent_v7dat_home('Parent')
 }
 
 

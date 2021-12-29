@@ -13,47 +13,31 @@
 #'
 #' To process the raw data, the raw databases from Qualtrics MUST follow the naming convention: Child_V1_YYYY-MM-DD.sav, Child_V1_Home_YYY-MM-DD.sav, Child_V1_Lab_YYY-MM-DD.sav, and Parent_V1_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered and the directory organization does not follow the structure laid out in the DataManual.
 #'
-#' @inheritParams util_fbs_merge_v1
-#' @param v1_date_str (optional) If the date string differs by file for visit 1, enter the following date strings in a list: list(child = child data string, child_home = child home data string, child_lab = child lab data string, parent = parent data string)
-#' @param v2_date_str (optional) If the date string differs by file for visit 2, enter the following date strings in a list: list(child = child data string, child_home = child home data string, child_lab = child lab data string, parent = parent data string)
-#' @param v3_date_str (optional) If the date string differs by file for visit 3, enter the following date strings in a list: list(child = child data string, child_home = child home data string, child_lab = child lab data string, parent = parent data string)
-#' @param v4_date_str (optional) If the date string differs by file for visit 4, enter the following date strings in a list: list(child = child data string, child_home = child home data string, child_lab = child lab data string, parent = parent data string)
-#' @param v5_date_str (optional) If the date string differs by file for visit 5, enter the following date strings in a list: list(child = child data string, child_home = child home data string, child_lab = child lab data string, parent = parent data string)
-#' @param v6_date_str (optional) If the date string differs by file for visit 6, enter the following date strings in a list: list(child = child data string, parent = parent data string)
-#' @param v7_date_str (optional) If the date string differs by file for visit 7, enter the following date strings in a list: list(child = child data string, child_home = child home data string, child_lab = child lab data string, parent = parent data string, parent_home = parent home data string)
-#' @inheritParams util_fbs_parent_v1dat
-#' @param model_DD Indicate if delay discounting data should be modeled. This will take an addition 3-5 minutes of processing time. Default = FALSE. The Delay Discounting database will only be generate if set to TRUE.
 #' @param databases (optional) list of strings to indicate which databases to process. If not entered, all databases will be generated. Options include: 1) 'demo' for Demographic, 2) 'anthro' for Anthropometrics, 3) 'intake' for Intake, 4) 'food_qs' for food-related questionnaires, 5) 'psych_qs' for cognitive and psych related data, 6) 'dd' for Delay Discounting, 7) 'intero' for Interoception data, 8) 'notes' for Notes, and 9) 'pna' for Prefer Not to Answer
 #' @param write_dat indicate whether to write databases. Default is TRUE.
 #' @param write_path (optional) a string with the path indicating where to save the generated databases if write_dat is TRUE (default option). If no path is given, databases will be written to working directory.
+#' @inheritParams util_fbs_parent_v1dat
+#' @param model_DD Indicate if delay discounting data should be modeled. This will take an addition 3-5 minutes of processing time. Default = FALSE. The Delay Discounting database will only be generate if set to TRUE.
+#' @param child_file_pattern (optional) This is only needed if file naming deviates from the standard naming: e.g., Child_V#_*sav'. Only enter the string indicating a respondent (e.g., 'Child').
+#' @param parent_file_pattern (optional) This is only needed if file naming deviates from the standard naming: e.g., Parent_V#_*sav'. Only enter the string indicating a respondent (e.g., 'Child').
+#' @param visit_file_pattern (optional) This is only needed if file naming deviates from the standard naming for visits: e.g., V# . Only enter the string indicating a visit (e.g., 'V' for 'V1' or 'Visit_' for 'Visit_1').
 #'
 #' @return A list containing all databases that were generated
 #'
 #' @examples
-#' #if in same working directory as data with all data having the same date in filename:
-#' fbs_data_proc <- fbs_databases(date_str = '2021-10-11')
+#' #if in same working directory as data, want all databases, and the databases to be written to working directory:
+#' fbs_data_proc <- fbs_databases(model_DD = TRUE)
 #'
-#' #if only want the Demographics and Intake databases:
-#' fbs_data_proc <- fbs_databases(date_str = '2021-10-11', databases = c('demo', 'intake'))
+#' #if only want the Demographics and Intake databases written to working directory:
+#' fbs_data_proc <- fbs_databases(databases = c('demo', 'intake'))
 #'
-#' #if in same working directory as data and covid collecte data has different dates for visit 1:
-#' #make visit 1 list of date strings:
-#' v1_datestr = list(child = '2021-9-15', child_home = '2021-10-11', child_lab = '2021-10-11', parent = '2021-9-15')
-#'
-#' #run - note: value for date_str will be use for visits 2-7 dates since only visit 1 has a list of date strings specified
-#' fbs_data_proc <- fbs_databases(date_str = '2021-10-11', v1_date_str = v1_datestr)
+#' #if want to work with the Demographics database but not write it to a file:
+#' fbs_data_proc <- fbs_databases(databases = 'demo', write_dat = FALSE)
 #'
 #' \dontrun{
-#' #date must be a string. The following will not run:
-#' fbs_data_proc <- fbs_databases(2021-10-11)
+#' #databases must be strings. The following will not run:
+#' fbs_data_proc <- fbs_databases(databases = c(demo, intake))
 #'
-#' #date must match the file name - for file named 'Child_V1_Home_2021_09_15', the
-#' following will not run:
-#' fbs_data_proc <- fbs_databases('2021_10_11')
-#'
-#' #visit specific dates must be saved as strings in a list. The following will NOT work in the function:
-#' #make visit 1 list of date strings:
-#' v1_datestr = c(child = '2021-9-15', child_home = '2021-10-11', child_lab = '2021-10-11', parent = '2021-9-15')
 #' }
 #'
 #' @seealso Raw data from Qualtrics is processed using the following scripts: \code{\link{util_fbs_merge_v1dat}}, \code{\link{util_fbs_merge_v2dat}}, \code{\link{util_fbs_merge_v3dat}}, \code{\link{util_fbs_merge_v4dat}}, \code{\link{util_fbs_merge_v5dat}}, \code{\link{util_fbs_merge_v6dat}}, \code{\link{util_fbs_merge_v7dat}}
@@ -61,119 +45,46 @@
 #'
 #' @export
 
-fbs_databases <- function(date_str, v1_date_str, v2_date_str, v3_date_str, v4_date_str, v5_date_str, v6_date_str, v7_date_str, data_path, model_DD = FALSE, databases, write_dat = TRUE, write_path) {
+fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, model_DD = FALSE, child_file_pattern, parent_file_pattern, visit_file_pattern) {
 
     #### 1. Set up/initial checks #####
 
     # check if date_str exists and is a string
 
-    datestr_arg <- methods::hasArg(date_str)
+    c_filepat_arg <- methods::hasArg(child_file_pattern)
 
-    if (isTRUE(datestr_arg) & !is.character(date_str)) {
-        stop("date_str must be entered as a string: e.g., '2021_10_11'")
-    }
-
-    # check for visit specific dates - define universal function
-    check_datestr_list <- function(visit_list, visit) {
-
-        if (visit < 6){
-            list_databases = c('child', 'child_home', 'child_lab', 'parent')
-
-            if (!is.list(visit_list)) {
-                stop(paste0("v", visit, "_date_str must be entered as a list of strings: date_list = list(child = 'date', child_home = 'date', child_lab = 'date', parent = 'date')"))
-            } else if (sum(list_databases %in% names(visit_list)) < 4){
-                stop(paste0("names of elements in v", visit, "_date_str did not match. The list must follow the format: date_list = list(child = 'date', child_home = 'date', child_lab = 'date', parent = 'date')"))
-            } else {
-                #check if entrees are strings
-                visit_unlist <- unlist(visit_list)
-                visit_check_strings <- sapply(visit_unlist, FUN = is.character)
-
-                if (sum(visit_check_strings) < 4) {
-                    stop(paste0("Not all entrees in the v", visit, "_date_str list are strings. Must enter all dates as strings (e.g., '2021-12-10')"))
-                }
-            }
-        } else if (visit == 6){
-            list_databases = c('child', 'parent')
-
-            if (!is.list(visit_list)) {
-                stop("v6_date_str must be entered as a list of strings: date_list = list(child = 'date', parent = 'date')")
-            } else if (sum(list_databases %in% names(visit_list)) < 2){
-                stop("names of elements in v6_date_str did not match. The list must follow the format: date_list = list(child = 'date', parent = 'date')")
-            } else {
-                #check if entrees are strings
-                visit_unlist <- unlist(visit_list)
-                visit_check_strings <- sapply(visit_unlist, FUN = is.character)
-
-                if (sum(visit_check_strings) < 2) {
-                    stop("Not all entrees in the v6_date_str list are strings. Must enter all dates as strings (e.g., '2021-12-10')")
-                }
-            }
-        } else if (visit == 7){
-            list_databases = c('child', 'child_home', 'child_lab', 'parent', 'parent_home')
-
-            if (!is.list(visit_list)) {
-                stop("v7_date_str must be entered as a list of strings: date_list = list(child = 'date', child_home = 'date', child_lab = 'date', parent = 'date', parent_home = 'date')")
-            } else if (sum(list_databases %in% names(visit_list)) < 5){
-                stop("names of elements in v7_date_str did not match. The list must follow the format: date_list = list(child = 'date', child_home = 'date', child_lab = 'date', parent = 'date', parent_home = 'date')")
-            } else {
-                #check if entrees are strings
-                visit_unlist <- unlist(visit_list)
-                visit_check_strings <- sapply(visit_unlist, FUN = is.character)
-
-                if (sum(visit_check_strings) < 5) {
-                    stop("Not all entrees in the v7_date_str list are strings. Must enter all dates as strings (e.g., '2021-12-10')")
-                }
-            }
+    if (isTRUE(c_filepat_arg)) {
+        if (!is.character(child_file_pattern)) {
+            stop("child_file_pattern must be entered as a string: e.g., 'Child'")
+        } else {
+            child_fp <- child_file_pattern
         }
+    } else if (isFALSE(c_filepat_arg)) {
+        child_fp <- 'Child'
     }
 
-    ## visit 1
-    v1_datestr_arg <- methods::hasArg(v1_date_str)
+    p_filepat_arg <- methods::hasArg(parent_file_pattern)
 
-    if (isTRUE(v1_datestr_arg)) {
-        check_datestr_list(v1_date_str, 1)
+    if (isTRUE(p_filepat_arg)) {
+        if (!is.character(parent_file_pattern)) {
+            stop("parent_file_pattern must be entered as a string: e.g., 'Parent'")
+        } else {
+            parent_fp <- parent_file_pattern
+        }
+    } else if (isFALSE(p_filepat_arg)) {
+        parent_fp <- 'Parent'
     }
 
-    ## visit 2
-    v2_datestr_arg <- methods::hasArg(v2_date_str)
+    v_filepat_arg <- methods::hasArg(visit_file_pattern)
 
-    if (isTRUE(v2_datestr_arg)) {
-        check_datestr_list(v2_date_str, 2)
-    }
-
-    ## visit 3
-    v3_datestr_arg <- methods::hasArg(v3_date_str)
-
-    if (isTRUE(v3_datestr_arg)) {
-        check_datestr_list(v3_date_str, 3)
-    }
-
-    ## visit 4
-    v4_datestr_arg <- methods::hasArg(v4_date_str)
-
-    if (isTRUE(v4_datestr_arg)) {
-        check_datestr_list(v4_date_str, 4)
-    }
-
-    ## visit 5
-    v5_datestr_arg <- methods::hasArg(v5_date_str)
-
-    if (isTRUE(v5_datestr_arg)) {
-        check_datestr_list(v5_date_str, 5)
-    }
-
-    ## visit 6
-    v6_datestr_arg <- methods::hasArg(v6_date_str)
-
-    if (isTRUE(v6_datestr_arg)) {
-        check_datestr_list(v6_date_str, 6)
-    }
-
-    ## visit 7
-    v7_datestr_arg <- methods::hasArg(v7_date_str)
-
-    if (isTRUE(v7_datestr_arg)) {
-        check_datestr_list(v7_date_str, 7)
+    if (isTRUE(p_filepat_arg)) {
+        if (!is.character(visit_file_pattern)) {
+            stop("parent_file_pattern must be entered as a string: e.g., 'V' or 'Visit_'")
+        } else {
+            visit_fp <- visit_file_pattern
+        }
+    } else if (isFALSE(p_filepat_arg)) {
+        visit_fp <- 'V'
     }
 
     # check datapath
@@ -193,7 +104,6 @@ fbs_databases <- function(date_str, v1_date_str, v2_date_str, v3_date_str, v4_da
     } else {
         database_list <- c('demo', 'anthro', 'intake', 'food_qs', 'psych_qs', 'intero', 'notes', 'pna')
     }
-
 
     if (isTRUE(databases_arg)) {
 
@@ -221,73 +131,65 @@ fbs_databases <- function(date_str, v1_date_str, v2_date_str, v3_date_str, v4_da
     #### 2. Get Visit Databases #####
 
     ## Visit 1 data - need for all databases
-    if (isTRUE(v1_datestr_arg)){
-        v1_data <- util_fbs_merge_v1(child_date_str = v1_date_str[['child']], child_home_date_str = v1_date_str[['child_home']], child_lab_date_str = v1_date_str[['child_lab']], parent_date_str = v1_date_str[['parent']], data_path = data_path)
+
+    if (isTRUE(datapath_arg)){
+        v1_data <- util_fbs_merge_v1(child_file_pattern = paste0(child_fp, '_', visit_fp, '1'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '1'), data_path = data_path)
     } else {
-        v1_data <- util_fbs_merge_v1(date_str = date_str, data_path = data_path)
+        v1_data <- util_fbs_merge_v1(child_file_pattern = paste0(child_fp, '_', visit_fp, '1'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '1'))
     }
+
 
     ## Visit 2 - need for Anthroprometrics, food/eating behavior, and cog/psych databases
     # requires the V4 parent database so check both v2_datestr_arg and v4_datestr_arg
     if (isFALSE(databases_arg) | 'anthro' %in% database_list | 'food_qs' %in% database_list | 'psych_qs' %in% database_list){
 
-        if (isTRUE(v2_datestr_arg)){
-            if (isTRUE(v4_datestr_arg)){
-                v2_data <- util_fbs_merge_v2(child_date_str = v2_date_str[['child']], child_home_date_str = v2_date_str[['child_home']], child_lab_date_str = v2_date_str[['child_lab']], parent_date_str = v2_date_str[['parent']], parentV4_date_str = v4_date_str[['parent']], data_path = data_path)
-            } else {
-                v2_data <- util_fbs_merge_v2(child_date_str = v2_date_str[['child']], child_home_date_str = v2_date_str[['child_home']], child_lab_date_str = v2_date_str[['child_lab']], parent_date_str = v2_date_str[['parent']], parentV4_date_str = date_str, data_path = data_path)
-            }
-
+        if (isTRUE(datapath_arg)){
+            v2_data <- util_fbs_merge_v2(child_file_pattern = paste0(child_fp, '_', visit_fp, '2'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '2'), parentV4_file_pattern = paste0(parent_fp, '_', visit_fp, '4'), data_path = data_path)
         } else {
-
-            if (isTRUE(v4_datestr_arg)){
-                v2_data <- util_fbs_merge_v2(date_str = date_str, parentV4_date_str = v4_date_str[['parent']], data_path = data_path)
-            } else {
-                v2_data <- util_fbs_merge_v2(date_str = date_str, data_path = data_path)
-            }
+            v2_data <- util_fbs_merge_v2(child_file_pattern = paste0(child_fp, '_', visit_fp, '2'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '2'), parentV4_file_pattern = paste0(parent_fp, '_', visit_fp, '4'))
         }
     }
 
     ## Visit 3 data - need for the food/eating behavior, cog/psych, and delay discounting databases
     if (isFALSE(databases_arg) | 'food_qs' %in% database_list | 'psych_qs' %in% database_list | 'dd' %in% database_list){
-        if (isTRUE(v3_datestr_arg)){
-            v3_data <- util_fbs_merge_v3(child_date_str = v3_date_str[['child']], child_home_date_str = v3_date_str[['child_home']], child_lab_date_str = v3_date_str[['child_lab']], parent_date_str = v3_date_str[['parent']], data_path = data_path, model_DD = model_DD)
+        if (isTRUE(datapath_arg)){
+            v3_data <- util_fbs_merge_v3(child_file_pattern = paste0(child_fp, '_', visit_fp, '3'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '3'), data_path = data_path, model_DD = model_DD)
         } else {
-            v3_data <- util_fbs_merge_v3(date_str = date_str, data_path = data_path, model_DD = model_DD)
+            v3_data <- util_fbs_merge_v3(child_file_pattern = paste0(child_fp, '_', visit_fp, '3'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '3'), model_DD = model_DD)
         }
     }
 
     ## Visit 4 data - need for the demographics, food/eating behavior, and cog/psych databases
     if (isFALSE(databases_arg) | 'demo' %in% database_list | 'food_qs' %in% database_list | 'psych_qs' %in% database_list){
-        if (isTRUE(v4_datestr_arg)){
-            v4_data <- util_fbs_merge_v4(child_date_str = v4_date_str[['child']], child_home_date_str = v4_date_str[['child_home']], child_lab_date_str = v4_date_str[['child_lab']], parent_date_str = v4_date_str[['parent']], data_path = data_path)
+        if (isTRUE(datapath_arg)){
+            v4_data <- util_fbs_merge_v4(child_file_pattern = paste0(child_fp, '_', visit_fp, '4'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '4'), data_path = data_path)
         } else {
-            v4_data <- util_fbs_merge_v4(date_str = date_str, data_path = data_path)
+            v4_data <- util_fbs_merge_v4(child_file_pattern = paste0(child_fp, '_', visit_fp, '4'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '4'))
         }
     }
 
     ## Visit 5 data - need for the demographics database
     if (isFALSE(databases_arg) | 'demo' %in% database_list){
-        if (isTRUE(v5_datestr_arg)){
-            v5_data <- util_fbs_merge_v5(child_date_str = v5_date_str[['child']], child_home_date_str = v5_date_str[['child_home']], child_lab_date_str = v5_date_str[['child_lab']], parent_date_str = v5_date_str[['parent']], data_path = data_path)
+        if (isTRUE(datapath_arg)){
+            v5_data <- util_fbs_merge_v5(child_file_pattern = paste0(child_fp, '_', visit_fp, '5'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '5'), data_path = data_path)
         } else {
-            v5_data <- util_fbs_merge_v5(date_str = date_str, data_path = data_path)
+            v5_data <- util_fbs_merge_v5(child_file_pattern = paste0(child_fp, '_', visit_fp, '5'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '5'))
         }
     }
 
     ## Visit 6 data - need for the fMRI database
-    if (isTRUE(v6_datestr_arg)){
-        v6_data <- util_fbs_merge_v6(child_date_str = v6_date_str[['child']], child_home_date_str = v6_date_str[['child_home']], child_lab_date_str = v6_date_str[['child_lab']], parent_date_str = v6_date_str[['parent']], data_path = data_path)
+    if (isTRUE(datapath_arg)){
+        v6_data <- util_fbs_merge_v6(child_file_pattern = paste0(child_fp, '_', visit_fp, '6'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '6'), data_path = data_path)
     } else {
-        v6_data <- util_fbs_merge_v6(date_str = date_str, data_path = data_path)
+        v6_data <- util_fbs_merge_v6(child_file_pattern = paste0(child_fp, '_', visit_fp, '6'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '6'))
     }
 
     ## Visit 7 data - need for the demographics, anthroprometrics, food/eating behavior, and cog/psych databases
     if (isFALSE(databases_arg) | 'demo' %in% database_list | 'anthro' %in% database_list | 'food_qs' %in% database_list | 'psych_qs' %in% database_list){
-        if (isTRUE(v7_datestr_arg)){
-            v7_data <- util_fbs_merge_v7(child_date_str = v7_date_str[['child']], child_home_date_str = v7_date_str[['child_home']], child_lab_date_str = v7_date_str[['child_lab']], parent_date_str = v7_date_str[['parent']], data_path = data_path)
+        if (isTRUE(datapath_arg)){
+            v7_data <- util_fbs_merge_v7(child_file_pattern = paste0(child_fp, '_', visit_fp, '7'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '7'), data_path = data_path)
         } else {
-            v7_data <- util_fbs_merge_v7(date_str = date_str, data_path = data_path)
+            v7_data <- util_fbs_merge_v7(child_file_pattern = paste0(child_fp, '_', visit_fp, '7'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '7'))
         }
     }
 
@@ -550,6 +452,8 @@ fbs_databases <- function(date_str, v1_date_str, v2_date_str, v3_date_str, v4_da
 
         # ensure labels are up to date
         intake_data = sjlabelled::set_label(intake_demov1v23v4v5v7_data, label = matrix(unlist(intake_labels, use.names = FALSE)))
+
+        ## add sort by portion size to database
 
     }
 

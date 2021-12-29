@@ -19,53 +19,67 @@
 #' @return A list containing: 1) data: data.frame with raw, cleaned data from child visit 5 Qualtrics collected in the home and 2) dict: all variable descriptions
 #'
 #' @examples
-#' #if in same working directory as data:
-#' ch_v5_dat_home <- util_fbs_child_v5dat_home('2021-10-11')
+#' #if in same working directory as data. Note - there is no need to add the COVID protocol (i.e., 'Home' or 'Lab') to file_pattern:
+#' child_v5_dat_home <- util_fbs_child_v5dat_home('Child_V5')
 #'
 #' \dontrun{
-#' #date must be a string. The following will not run:
-#' ch_v5_dat_home <- util_fbs_child_v5dat_home(2021-10-11)
+#' #file_pattern must be a string. The following will not run:
+#' child_v5_dat_home <- util_fbs_child_v5dat_home(Child_V5)
 #'
-#' #date must match the file name - for file named 'Child_V5_Home_2021_09_16', the
-#' following will not run:
-#' ch_v5_dat_home <- util_fbs_child_v5dat_home('2021_10_11')
+#' #file_pattern must have the respondent ('Child') and visit number ('V5'). If just enter 'Child', the script will not run because it will return multiple files for different parent visits. The following will not run:
+#' child_v5_dat_home <- util_fbs_child_v5dat_home('Child')
 #' }
 #'
 #'
 #' @export
 #'
-util_fbs_child_v5dat_home <- function(date_str, data_path) {
+util_fbs_child_v5dat_home <- function(file_pattern, data_path) {
 
     #### 1. Set up/initial checks #####
 
-    # check that date_str exist and is a string
+    # check that file_pattern exist and is a string
 
-    datestr_arg <- methods::hasArg(date_str)
+    filepat_arg <- methods::hasArg(file_pattern)
 
-    if (isTRUE(datestr_arg) & !is.character(date_str)) {
-        stop("date_str must be entered as a string: e.g., '2021_10_11'")
-    } else if (isFALSE(datestr_arg)) {
-        stop("date_str must set to the data string from the child visit 5 file name: e.g., '2021_09_16'")
+    if (isTRUE(filepat_arg) & !is.character(file_pattern)) {
+        stop("file_pattern must be entered as a string: e.g., 'Child_V5'")
+    } else if (isFALSE(filepat_arg)) {
+        stop("file_pattern must set to the a string matching the name of the raw data file for child visit: e.g., 'Child_V5'")
     }
 
     # check datapath
     datapath_arg <- methods::hasArg(data_path)
 
     if (isTRUE(datapath_arg)) {
-        if (!is.character(date_str)) {
+        if (!is.character(data_path)) {
             stop("data_path must be entered as a string: e.g., '.../Participant_Data/untouchedRaw/'")
         }
     }
 
-
     #### 2. Load Data #####
 
     if (isTRUE(datapath_arg)) {
-        qv5_child_path <- paste0(data_path, "/Final_CovidAtHome/Child_V5_Home_",
-            date_str, ".sav")
+        #check pattern of directories specified in Data manual
+        qv5_child_path <- list.files(path = paste0(data_path, '/Final_Covid/'), pattern = paste0(file_pattern, '_Home'), full.names = TRUE)
+
+        #if no files found, check direct data_path entered
+        if (length(qv5_child_path) == 0) {
+            qv5_child_path <- list.files(path = data_path, pattern = paste0(file_pattern, '_Home'), full.names = TRUE)
+        }
     } else {
-        qv5_child_path <- paste0("Final_CovidAtHome/Child_V5_Home", date_str,
-            ".sav")
+        qv5_child_path <- paste0(pattern = paste0(file_pattern, '_Home'), full.names = TRUE)
+    }
+
+    # check number of files found
+    if (length(qv5_child_path) > 1) {
+        stop("More than one file matched after adding '_Home' to the file_pattern . Be sure thefile_pattern specifies both the respondent (Parent/Child) and visit number (V#). If have more than 1 file matching the pattern in the directory, may need to move to enter a more specific file_pattern than is standard.")
+    } else if (length(qv5_child_path) == 0) {
+        stop("No files found after adding '_Home' to file_pattern. Be sure the data_path and file_pattern are correct and that the file exists.")
+    }
+
+    # check that file is of type '.sav'
+    if (!grepl('.sav', qv5_child_path, fixed = TRUE)){
+        stop("The file found is not an SPSS database (.sav)")
     }
 
     # check if file exists

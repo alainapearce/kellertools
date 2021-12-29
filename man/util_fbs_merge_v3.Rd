@@ -5,25 +5,16 @@
 \title{util_fbs_merge_v3: Merge all Visit 3 raw Qualtrics databases and organize variable in database order}
 \usage{
 util_fbs_merge_v3(
-  date_str,
-  child_date_str,
-  child_home_date_str,
-  child_lab_date_str,
-  parent_date_str,
+  child_file_pattern,
+  parent_file_pattern,
   data_path,
-  model_DD
+  model_DD = FALSE
 )
 }
 \arguments{
-\item{date_str}{If ALL databases have the same  date used in the name of the .sav file, enter the date as a string (e.g., for file 'Parent_V1_2021-10-11.sav', the string '2021-10-11' would be entered)}
+\item{child_file_pattern}{string with the pattern to search for to find the raw child data files. The pattern must contain respondent and visit number (e.g., for files from child visit 1, would enter 'Child_V1').}
 
-\item{child_date_str}{(optional) If the date string differs by file, enter the child full protocol date string}
-
-\item{child_home_date_str}{(optional) If the date string differs by file, enter the child HOME protocol date string}
-
-\item{child_lab_date_str}{(optional) If the date string differs by file, enter the child LAB protocol date string}
-
-\item{parent_date_str}{(optional) If the date string differs by file, enter the parent date string}
+\item{parent_file_pattern}{string with the pattern to search for to find the raw parent data files. The pattern must contain respondent and visit number (e.g., for files from parent visit 1, would enter 'Parent_V1').}
 
 \item{data_path}{(optional) the full path to the directory where the raw Qualtrics database are saved, EXCLUDING the .sav file name (e.g., '.../b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'). If NOT entered, will assume the database is saved in the working directory.}
 
@@ -36,22 +27,18 @@ A list containing: 1) data: data.frame with raw, cleaned data from parent visit 
 This function merges the following visit 3 raw data into a single database and organizes variables in database order: child visit 3, child visit 3-home, child visit 3-lab, and parent visit 3
 }
 \details{
-The databases MUST follow the naming convention: Child_V3_YYYY-MM-DD.sav, Child_V3_Home_YYY-MM-DD.sav, Child_V3_Lab_YYY-MM-DD.sav, and Parent_V3_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered. If it is entered, it must follow
+The databases MUST follow the naming convention: Child_V3_YYYY-MM-DD.sav, Child_V3_Home_YYY-MM-DD.sav, Child_V3_Lab_YYY-MM-DD.sav, and Parent_V3_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered and the directory organization does not follow the structure laid out in the DataManual.
 }
 \examples{
-#if in same working directory as data:
-v3dat_scored <- util_fbs_merge_v3(date_str = '2021-10-11')
-
-#if in same working directory as data and covid collecte data has different dates:
-v3dat_scored <- util_fbs_merge_v3(child_date_str = '2021-10-11', child_home_date_str = '2021-9-15', child_lab_date_str = = '2021-9-15', parent_date_str = '2021-10-11')
+#if in same working directory as data with all data. Note - there is no need to add the COVID protocol (i.e., 'Home' or 'Lab') to file_pattern - these files will be search for automatically:
+v3dat_scored <- util_fbs_merge_v3(child_file_pattern = 'Child_V3', parent_file_pattern = 'Parent_V3')
 
 \dontrun{
-#date must be a string. The following will not run:
-v3dat_scored <- util_fbs_merge_v3(2021-10-11)
+#child_file_pattern and parent_file_pattern must be a strings. The following will not run:
+v3dat_scored <- util_fbs_merge_v3(child_file_pattern = Child_V3, parent_file_pattern = Parent_V3)
 
-#date must match the file name - for file named 'Child_V3_Home_2021_09_15', the
-following will not run:
-v3dat_scored <- util_fbs_merge_v3('2021_10_11')
+# *_file_pattern must have the respondent ('Child') and visit number ('V3'). If just enter 'Child' or 'Parent', the script will not run because it will return multiple files for different child visits. The following will not run:
+v3dat_scored <- util_fbs_merge_v3(child_file_pattern = 'Child', parent_file_pattern = 'Parent')
 }
 
 }
