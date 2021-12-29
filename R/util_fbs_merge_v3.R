@@ -2,8 +2,7 @@
 #'
 #' This function merges the following visit 3 raw data into a single database and organizes variables in database order: child visit 3, child visit 3-home, child visit 3-lab, and parent visit 3
 #'
-#' The databases MUST follow the naming convention: Child_V3_YYYY-MM-DD.sav, Child_V3_Home_YYY-MM-DD.sav, Child_V3_Lab_YYY-MM-DD.sav, and Parent_V3_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered. If it is entered, it must follow
-#'
+#' The databases MUST follow the naming convention: Child_V3_YYYY-MM-DD.sav, Child_V3_Home_YYY-MM-DD.sav, Child_V3_Lab_YYY-MM-DD.sav, and Parent_V3_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered and the directory organization does not follow the structure laid out in the DataManual.
 #' @inheritParams util_fbs_merge_v1
 #' @inheritParams util_fbs_merge_v1
 #' @inheritParams util_fbs_merge_v1
@@ -35,16 +34,16 @@
 #'
 #' @export
 
-util_fbs_merge_v3 <- function(date_str, child_date_str, child_home_date_str, child_lab_date_str, parent_date_str, data_path, model_DD) {
+util_fbs_merge_v3 <- function(date_str, child_date_str, child_home_date_str, child_lab_date_str, parent_date_str, data_path, model_DD = FALSE) {
 
     #### 1. Set up/initial checks #####
 
-    # check if date_str exist and is a string
+    # check if date_str exists and is a string
 
     datestr_arg <- methods::hasArg(date_str)
 
     if (isTRUE(datestr_arg) & !is.character(date_str)) {
-        stop("date_str must be enter as a string: e.g., '2021_10_11'")
+        stop("date_str must be entered as a string: e.g., '2021_10_11'")
     } else if (isFALSE(datestr_arg)) {
 
         # if no date_str, check all databases specific date strings
@@ -59,16 +58,16 @@ util_fbs_merge_v3 <- function(date_str, child_date_str, child_home_date_str, chi
         }
 
         if (!is.character(child_date_str) | !is.character(child_home_date_str) | !is.character(child_lab_date_str) | !is.character(parent_date_str)) {
-            stop("all dates must be enter as a string: e.g., '2021_10_11'")
+            stop("all dates must be entered as a string: e.g., '2021_10_11'")
         }
     }
 
-    # check that file exists
+    # check datapath
     datapath_arg <- methods::hasArg(data_path)
 
     if (isTRUE(datapath_arg)) {
         if (!is.character(data_path)) {
-            stop("data_path must be enter as a string: e.g., '.../Participant_Data/untouchedRaw/util_fbs_Raw/'")
+            stop("data_path must be entered as a string: e.g., '.../Participant_Data/untouchedRaw/'")
         }
     }
 
@@ -224,7 +223,7 @@ util_fbs_merge_v3 <- function(date_str, child_date_str, child_home_date_str, chi
     # ensure labels are up to date
     v3dat_org = sjlabelled::set_label(v3dat_org, label = matrix(unlist(v3dat_labels, use.names = FALSE)))
 
-    #### 7. Organize V3 data ####
+    #### 7. Score V3 data ####
 
     ## 7a) score the Lifestyle Behavior Checklist ####
     lbc_scored <- score_lbc(lbc_data = v3dat_org[c(1, 42:61)], study = 'fbs', parID = 'id')
@@ -324,12 +323,46 @@ util_fbs_merge_v3 <- function(date_str, child_date_str, child_home_date_str, chi
         v3dat_scored_labels <- c(v3dat_scored_labels[1:309], dd_scored_labels[2:9], v3dat_scored_labels[310:325])
     }
 
-    #### 8. PNA data #####
+    #### 8. Food Intake ####
+
+    v3_kcal <- fbs_kcal_intake(v3dat_scored[c(1, 17:41)], meal = 'ps_meal', parID = 'id')
+
+    names(v3_kcal)[7:8] <- c('total_g', 'total_kcal')
+
+    # get labels from scored data and simplify
+    v3_kcal_labels <- sapply(v3_kcal, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
+
+    # make names match because simplify duplicates - not sure why get nested lists
+    names(v3_kcal_labels) <- names(v3_kcal)
+
+    # merge and organize
+    v3dat_scored <- merge(v3dat_scored, v3_kcal, by = 'id', all = TRUE)
+    v3dat_scored_labels <- c(v3dat_scored_labels, v3_kcal_labels[2:8])
+
+    ## add portion size label
+    v3dat_scored['meal_ps'] <- ifelse(is.na(v3dat_scored[['noplate_mac_cheese_g']]), NA, ifelse(v3dat_scored[['noplate_mac_cheese_g']] < 280, 'PS1', ifelse(v3dat_scored[['noplate_mac_cheese_g']] < 360, 'PS2', ifelse(v3dat_scored[['noplate_mac_cheese_g']] < 440, 'PS3', 'PS4'))))
+
+    v3dat_scored_labels[['meal_ps']] <- 'Visit 3 Portion Size Meal Condition'
+
+    if (isTRUE(model_DD)){
+        # organize
+        v3dat_scored <- v3dat_scored[c(1:16, 341, 17:20, 334, 21:24, 335, 25:28, 336, 29:33, 337, 34:37, 338, 38:41, 339:340, 42:333)]
+
+        v3dat_scored_labels <- v3dat_scored_labels[c(1:16, 341, 17:20, 334, 21:24, 335, 25:28, 336, 29:33, 337, 34:37, 338, 38:41, 339:340, 42:333)]
+
+    } else {
+        # organize
+        v3dat_scored <- v3dat_scored[c(1:16, 333, 17:20, 326, 21:24, 327, 25:28, 328, 29:33, 329, 34:37, 330, 38:41, 331:332, 42:325)]
+
+        v3dat_scored_labels <- v3dat_scored_labels[c(1:16, 333, 17:20, 326, 21:24, 327, 25:28, 328, 29:33, 329, 34:37, 330, 38:41, 331:332, 42:325)]
+    }
+
+    #### 9. PNA data #####
 
     # only parent has pna data to organize
     v3dat_pna <- parent_v3dat$pna_data
 
-    #### 9. save to list #####
+    #### 10. save to list #####
 
     # put data in order of participant ID for ease
     v3dat_scored <- v3dat_scored[order(v3dat_scored[["id"]]), ]

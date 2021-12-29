@@ -2,7 +2,7 @@
 #'
 #' This function merges the following visit 6 raw data into a single database and organizes variables in database order: child visit 6, child visit 6-home, child visit 6-lab, and parent visit 6
 #'
-#' The databases MUST follow the naming convention: Child_V6_YYYY-MM-DD.sav, Child_V6_Home_YYY-MM-DD.sav, Child_V6_Lab_YYY-MM-DD.sav, and Parent_V6_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered. If it is entered, it must follow
+#' The databases MUST follow the naming convention: Child_V6_YYYY-MM-DD.sav, Child_V6_Home_YYY-MM-DD.sav, Child_V6_Lab_YYY-MM-DD.sav, and Parent_V6_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered and the directory organization does not follow the structure laid out in the DataManual.
 #'
 #' @inheritParams util_fbs_merge_v1
 #' @inheritParams util_fbs_merge_v1
@@ -36,12 +36,12 @@ util_fbs_merge_v6 <- function(date_str, child_date_str, parent_date_str, data_pa
 
     #### 1. Set up/initial checks #####
 
-    # check if date_str exist and is a string
+    # check if date_str exists and is a string
 
     datestr_arg <- methods::hasArg(date_str)
 
     if (isTRUE(datestr_arg) & !is.character(date_str)) {
-        stop("date_str must be enter as a string: e.g., '2021_10_11'")
+        stop("date_str must be entered as a string: e.g., '2021_10_11'")
     } else if (isFALSE(datestr_arg)) {
 
         # if no date_str, check all databases specific date strings
@@ -53,16 +53,16 @@ util_fbs_merge_v6 <- function(date_str, child_date_str, parent_date_str, data_pa
         }
 
         if (!is.character(child_date_str) | !is.character(parent_date_str)) {
-            stop("all dates must be enter as a string: e.g., '2021_10_11'")
+            stop("all dates must be entered as a string: e.g., '2021_10_11'")
         }
     }
 
-    # check that file exists
+    # check datapath
     datapath_arg <- methods::hasArg(data_path)
 
     if (isTRUE(datapath_arg)) {
         if (!is.character(data_path)) {
-            stop("data_path must be enter as a string: e.g., '.../Participant_Data/untouchedRaw/util_fbs_Raw/'")
+            stop("data_path must be entered as a string: e.g., '.../Participant_Data/untouchedRaw/'")
         }
     }
 

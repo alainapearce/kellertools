@@ -43,17 +43,17 @@ util_fbs_child_v2dat_home <- function(date_str, data_path) {
     datestr_arg <- methods::hasArg(date_str)
 
     if (isTRUE(datestr_arg) & !is.character(date_str)) {
-        stop("date_str must be enter as a string: e.g., '2021_10_11'")
+        stop("date_str must be entered as a string: e.g., '2021_10_11'")
     } else if (isFALSE(datestr_arg)) {
         stop("date_str must set to the data string from the child visit 1 file name: e.g., '2021_09_16'")
     }
 
-    # check that file exists
+    # check datapath
     datapath_arg <- methods::hasArg(data_path)
 
     if (isTRUE(datapath_arg)) {
         if (!is.character(date_str)) {
-            stop("data_path must be enter as a string: e.g., '.../Participant_Data/untouchedRaw/util_fbs_Raw/'")
+            stop("data_path must be entered as a string: e.g., '.../Participant_Data/untouchedRaw/'")
         }
     }
 

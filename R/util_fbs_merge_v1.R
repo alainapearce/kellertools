@@ -2,9 +2,9 @@
 #'
 #' This function merges the following visit 1 raw data into a single database and organizes variables in database order: child visit 1, child visit 1-home, child visit 1-lab, and parent visit 1
 #'
-#' The databases MUST follow the naming convention: Child_V1_YYYY-MM-DD.sav, Child_V1_Home_YYY-MM-DD.sav, Child_V1_Lab_YYY-MM-DD.sav, and Parent_V1_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered. If it is entered, it must follow
+#' The databases MUST follow the naming convention: Child_V1_YYYY-MM-DD.sav, Child_V1_Home_YYY-MM-DD.sav, Child_V1_Lab_YYY-MM-DD.sav, and Parent_V1_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered and the directory organization does not follow the structure laid out in the DataManual.
 #'
-#' @param date_str If ALL databases have the same  date used in the name of the .sav file, enter the date as a string (e.g., for file 'Parent_V1_2021-10-11.sav', the string '2021-10-11' would be entered)
+#' @param date_str If ALL databases have the same date used in the name of the .sav file, enter the date as a string (e.g., for file 'Parent_V1_2021-10-11.sav', the string '2021-10-11' would be entered)
 #' @param child_date_str (optional) If the date string differs by file, enter the child full protocol date string
 #' @param child_home_date_str (optional) If the date string differs by file, enter the child HOME protocol date string
 #' @param child_lab_date_str (optional) If the date string differs by file, enter the child LAB protocol date string
@@ -38,12 +38,12 @@ util_fbs_merge_v1 <- function(date_str, child_date_str, child_home_date_str, chi
 
     #### 1. Set up/initial checks #####
 
-    # check if date_str exist and is a string
+    # check if date_str exists and is a string
 
     datestr_arg <- methods::hasArg(date_str)
 
     if (isTRUE(datestr_arg) & !is.character(date_str)) {
-        stop("date_str must be enter as a string: e.g., '2021_10_11'")
+        stop("date_str must be entered as a string: e.g., '2021_10_11'")
     } else if (isFALSE(datestr_arg)) {
 
         # if no date_str, check all databases specific date strings
@@ -57,16 +57,16 @@ util_fbs_merge_v1 <- function(date_str, child_date_str, child_home_date_str, chi
         }
 
         if (!is.character(child_date_str) | !is.character(child_home_date_str) | !is.character(child_lab_date_str) | !is.character(parent_date_str)) {
-            stop("all dates must be enter as a string: e.g., '2021_10_11'")
+            stop("all dates must be entered as a string: e.g., '2021_10_11'")
         }
     }
 
-    # check that file exists
+    # check datapath
     datapath_arg <- methods::hasArg(data_path)
 
     if (isTRUE(datapath_arg)) {
         if (!is.character(data_path)) {
-            stop("data_path must be enter as a string: e.g., '.../Participant_Data/untouchedRaw/util_fbs_Raw/'")
+            stop("data_path must be entered as a string: e.g., '.../Participant_Data/untouchedRaw/'")
         }
     }
 
@@ -314,15 +314,55 @@ util_fbs_merge_v1 <- function(date_str, child_date_str, child_home_date_str, chi
 
 
     ## organize data
-    v1dat_scored <- v1dat_scored[c(1:8, 687, 9:96, 688, 97:120, 689:690, 121:686)]
+    v1dat_scored <- v1dat_scored[c(1:8, 687, 9:95, 688, 96:120, 689:690, 121:686)]
     v1dat_scored_labels <- v1dat_scored_labels[c(1:8, 687, 9:96, 688, 97:120, 689:690, 121:686)]
 
-    #### 9. PNA data #####
+    #### 9. Food Intake ####
+
+    ## 9a) EAH ####
+    v1_eah_kcal <- fbs_kcal_intake(v1dat_scored[c(1, 303:342)], meal = 'EAH', parID = 'id')
+    names(v1_eah_kcal)[11:12] <- c('eah_total_g', 'eah_total_kcal')
+
+    # get labels from scored data and simplify
+    v1_eah_labels <- sapply(v1_eah_kcal, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
+
+    # make names match because simplify duplicates - not sure why get nested lists
+    names(v1_eah_labels) <- names(v1_eah_kcal)
+
+    # merge and organize
+    v1dat_scored <- merge(v1dat_scored, v1_eah_kcal, by = 'id', all = TRUE)
+    v1dat_scored_labels <- c(v1dat_scored_labels, v1_eah_labels[2:12])
+
+    # organize
+    v1dat_scored <- v1dat_scored[c(1:306, 691, 307:310, 692, 311:314, 693, 315:318, 694, 319:322, 695, 323:326, 696, 327:330, 697, 331:334, 698, 335:338, 699, 339:342, 700:701, 343:690)]
+
+    v1dat_scored_labels <- v1dat_scored_labels[c(1:306, 691, 307:310, 692, 311:314, 693, 315:318, 694, 319:322, 695, 323:326, 696, 327:330, 697, 331:334, 698, 335:338, 699, 339:342, 700:701, 343:690)]
+
+    ## 9b) Standard Meal ####
+    v1_meal_kcal <- fbs_kcal_intake(v1dat_scored[c(1, 255:302)], meal = 'std_meal', parID = 'id')
+    names(v1_meal_kcal)[14:15] <- c('meal_total_g', 'meal_total_kcal')
+
+    # get labels from scored data and simplify
+    v1_meal_labels <- sapply(v1_meal_kcal, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
+
+    # make names match because simplify duplicates - not sure why get nested lists
+    names(v1_meal_labels) <- names(v1_meal_kcal)
+
+    # merge and organize
+    v1dat_scored <- merge(v1dat_scored, v1_meal_kcal, by = 'id', all = TRUE)
+    v1dat_scored_labels <- c(v1dat_scored_labels, v1_meal_labels[c(2:15)])
+
+    # organize
+    v1dat_scored <- v1dat_scored[c(1:258, 702, 259:262, 703, 263:266, 704, 267:270, 705, 271:274, 706, 275:278, 707, 279:282, 708, 283:286, 709, 287:290, 710, 291:294, 711, 295:298, 712, 299:302, 713:715, 303:701)]
+
+    v1dat_scored_labels <- v1dat_scored_labels[c(1:258, 702, 259:262, 703, 263:266, 704, 267:270, 705, 271:274, 706, 275:278, 707, 279:282, 708, 283:286, 709, 287:290, 710, 291:294, 711, 295:298, 712, 299:302, 713:715, 303:701)]
+
+    #### 10. PNA data #####
 
     # only parent has pna data to organize
     v1dat_pna <- parent_v1dat$pna_data
 
-    #### 10. save to list #####
+    #### 11. save to list #####
 
     # put data in order of participant ID for ease
     v1dat_scored <- v1dat_scored[order(v1dat_scored[["id"]]), ]

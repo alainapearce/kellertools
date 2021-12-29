@@ -17,18 +17,18 @@
 #' @param meal string indicating which meals are included in intake_data: 'std_meal' - standard meal before EAH (visits 1 and 7); 'EAH' - eating in the absence of hunger paradigm (visits 1 and 7); and 'ps_meal' - portion size meal (visits 2-5)
 #' @param parID (optional) name of participant ID column in intake_data. If included the output dataset will be matched by parID, if not included the output dataset will be in the order of intake_data but will have no participant identifier.
 #'
-#' @return The intake_data data.frame with kcal consumed added for each food item and total comused in grams and kcal.
+#' @return The intake_data data.frame with kcal consumed added for each food item and total consumed in grams and kcal.
 #'
 #' @examples
 #' # intake for standard meal
-#' intake_data <- intake_data(intake_data, meal = 'std_meal', parID = 'ID')
+#' fbs_kcal_data <- fbs_kcal_intake(intake_data, meal = 'std_meal', parID = 'ID')
 #'
 #' # intake for eah
-#' fbs_kcal_intake <- intake_data(intake_data, meal = 'EAH', parID = 'ID')
+#' fbs_kcal_data <- fbs_kcal_intake(intake_data, meal = 'EAH', parID = 'ID')
 #'
 #' \dontrun{
 #' # no meal specified
-#' fbs_kcal_intake <- intake_data(intake_data, parID = 'ID')
+#' fbs_kcal_data <- fbs_kcal_intake(intake_data, parID = 'ID')
 #' }
 #'
 #' @seealso For the Food and Brain Study, the energy density of each food is in \link{fbs_ED.rda}.
@@ -147,10 +147,22 @@ fbs_kcal_intake <- function(intake_data, meal, parID) {
     }
 
     #### 3. Clean Export/Scored Data #####
+    if (meal == 'std_meal'){
+        meal_vars <- c('consumed_applesauce_kcal', 'consumed_carrot_kcal', 'consumed_cheese_sndwch_kcal', 'consumed_cookies_kcal', 'consumed_ham_sndwch_kcal', 'consumed_milk_kcal', 'consumed_pbj_sndwch_kcal', 'consumed_potatochip_kcal', 'consumed_turkey_sndwch_kcal', 'consumed_ketchup_kcal', 'consumed_mayo_kcal', 'consumed_mustard_kcal', 'consumed_total_g', 'consumed_total_kcal')
+
+    } else if (meal == 'EAH'){
+        meal_vars <- c('consumed_brownies_kcal', 'consumed_cornchips_kcal', 'consumed_hersheys_kcal', 'consumed_icecream_kcal', 'consumed_oreos_kcal', 'consumed_popcorn_kcal', 'consumed_pretzels_kcal', 'consumed_skittles_kcal', 'consumed_starbursts_kcal', 'consumed_total_g', 'consumed_total_kcal')
+
+    } else if (meal == 'ps_meal'){
+        meal_vars <- c('consumed_chkn_nug_kcal', 'consumed_mac_cheese_kcal', 'consumed_grapes_kcal', 'consumed_broccoli_kcal', 'consumed_ketchup_kcal', 'consumed_total_g', 'consumed_total_kcal')
+    }
+
+    intake_data_final <- intake_data[c('id', meal_vars)]
+    intake_dat_labels_final <- intake_dat_labels[c('id', meal_vars)]
+    intake_dat_labels_final['id'] <- 'Participant ID'
 
     ## make sure the variable labels match in the dataset
-    intake_data = sjlabelled::set_label(intake_data, label = matrix(unlist(intake_dat_labels,
-        use.names = FALSE)))
+    intake_data = sjlabelled::set_label(intake_data_final, label = matrix(unlist(intake_dat_labels_final, use.names = FALSE)))
 
     return(intake_data)
 }

@@ -2,7 +2,7 @@
 #'
 #' This function merges the following visit 2 raw data into a single database and organizes variables in database order: child visit 2, child visit 2-home, child visit 2-lab, and parent visit 2
 #'
-#' The databases MUST follow the naming convention: Child_V2_YYYY-MM-DD.sav, Child_V2_Home_YYY-MM-DD.sav, Child_V2_Lab_YYY-MM-DD.sav, and Parent_V2_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered. If it is entered, it must follow
+#' The databases MUST follow the naming convention: Child_V2_YYYY-MM-DD.sav, Child_V2_Home_YYY-MM-DD.sav, Child_V2_Lab_YYY-MM-DD.sav, and Parent_V2_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered and the directory organization does not follow the structure laid out in the DataManual.
 #'
 #' @inheritParams util_fbs_merge_v1
 #' @inheritParams util_fbs_merge_v1
@@ -30,7 +30,7 @@
 #' v2dat_scored <- util_fbs_merge_v2('2021_10_11')
 #' }
 #'
-#' @seealso Raw data from Qualtrics is processed using the following scripts: \code{\link{util_fbs_child_v2dat}}, \code{\link{util_fbs_child_v2dat_home}}, \code{\link{util_fbs_child_v2dat_lab}}, \code{\link{util_fbs_parent_v2dat}}. Visit 2 data is scored using the following scripts: \code{\link{score_cshqa}}, \code{\link{score_tesqe}}, \code{\link{score_kfq}}, \code{\link{score_cebq}}, \code{\link{score_bes}}, \code{\link{score_cf1}}, \code{\link{score_ffbs}}, \code{\link{score_rcmas}}, and \code{\link{score_cbq}}
+#' @seealso Raw data from Qualtrics is processed using the following scripts: \code{\link{util_fbs_child_v2dat}}, \code{\link{util_fbs_child_v2dat_home}}, \code{\link{util_fbs_child_v2dat_lab}}, \code{\link{util_fbs_parent_v2dat}}. Visit 2 data is scored using the following scripts: \code{\link{score_cshqa}}, \code{\link{score_tesqe}}, \code{\link{score_kfq}}, \code{\link{score_cebq}}, \code{\link{score_bes}}, \code{\link{score_cfq}}, \code{\link{score_ffbs}}, \code{\link{score_rcmas}}, and \code{\link{score_cbq}}
 #'
 #'
 #' @export
@@ -39,12 +39,12 @@ util_fbs_merge_v2 <- function(date_str, child_date_str, child_home_date_str, chi
 
     #### 1. Set up/initial checks #####
 
-    # check if date_str exist and is a string
+    # check if date_str exists and is a string
 
     datestr_arg <- methods::hasArg(date_str)
 
     if (isTRUE(datestr_arg) & !is.character(date_str)) {
-        stop("date_str must be enter as a string: e.g., '2021_10_11'")
+        stop("date_str must be entered as a string: e.g., '2021_10_11'")
     } else if (isFALSE(datestr_arg)) {
 
         # if no date_str, check all databases specific date strings
@@ -59,7 +59,7 @@ util_fbs_merge_v2 <- function(date_str, child_date_str, child_home_date_str, chi
 
 
         if (!is.character(child_date_str) | !is.character(child_home_date_str) | !is.character(child_lab_date_str) | !is.character(parent_date_str)) {
-            stop("all dates must be enter as a string: e.g., '2021_10_11'")
+            stop("all dates must be entered as a string: e.g., '2021_10_11'")
         }
     }
 
@@ -68,16 +68,16 @@ util_fbs_merge_v2 <- function(date_str, child_date_str, child_home_date_str, chi
 
     if (isTRUE(parentV4_datestr_arg)){
         if (!is.character(parentV4_datestr_arg)) {
-            stop("all dates must be enter as a string: e.g., '2021_10_11'")
+            stop("all dates must be entered as a string: e.g., '2021_10_11'")
         }
     }
 
-    # check that file exists
+    # check datapath
     datapath_arg <- methods::hasArg(data_path)
 
     if (isTRUE(datapath_arg)) {
         if (!is.character(data_path)) {
-            stop("data_path must be enter as a string: e.g., '.../Participant_Data/untouchedRaw/util_fbs_Raw/'")
+            stop("data_path must be entered as a string: e.g., '.../Participant_Data/untouchedRaw/'")
         }
     }
 
@@ -421,7 +421,33 @@ util_fbs_merge_v2 <- function(date_str, child_date_str, child_home_date_str, chi
         v2dat_scored_labels <- c(v2dat_scored_labels[1:431], cbq_scored_labels[2:19], v2dat_scored_labels[432:447])
     }
 
-    #### 8. PNA data #####
+    #### 8. Food Intake ####
+
+    v2_kcal <- fbs_kcal_intake(v2dat_scored[c(1, 43:67)], meal = 'ps_meal', parID = 'id')
+
+    names(v2_kcal)[7:8] <- c('total_g', 'total_kcal')
+
+    # get labels from scored data and simplify
+    v2_kcal_labels <- sapply(v2_kcal, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
+
+    # make names match because simplify duplicates - not sure why get nested lists
+    names(v2_kcal_labels) <- names(v2_kcal)
+
+    # merge and organize
+    v2dat_scored <- merge(v2dat_scored, v2_kcal, by = 'id', all = TRUE)
+    v2dat_scored_labels <- c(v2dat_scored_labels, v2_kcal_labels[2:8])
+
+    ## add portion size label
+    v2dat_scored['meal_ps'] <- ifelse(is.na(v2dat_scored[['noplate_mac_cheese_g']]), NA, ifelse(v2dat_scored[['noplate_mac_cheese_g']] < 280, 'PS1', ifelse(v2dat_scored[['noplate_mac_cheese_g']] < 360, 'PS2', ifelse(v2dat_scored[['noplate_mac_cheese_g']] < 440, 'PS3', 'PS4'))))
+
+    v2dat_scored_labels[['meal_ps']] <- 'Visit 2 Portion Size Meal Condition'
+
+    # organize
+    v2dat_scored <- v2dat_scored[c(1:42, 474, 43:46, 467, 47:50, 468, 51:54, 469, 55:59, 470, 60:63, 471, 64:67, 472:473, 68:466)]
+
+    v2dat_scored_labels <- v2dat_scored_labels[c(1:42, 474, 43:46, 467, 47:50, 468, 51:54, 469, 55:59, 470, 60:63, 471, 64:67, 472:473, 68:466)]
+
+    #### 9. PNA data #####
 
     # only parent has pna data to organize
     v2dat_pna <- parent_v2dat$pna_data

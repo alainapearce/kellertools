@@ -2,7 +2,7 @@
 #'
 #' This function merges the following visit 7 raw data into a single database and organizes variables in database order: child visit 7, child visit 7-home, child visit 7-lab, and parent visit 7
 #'
-#' The databases MUST follow the naming convention: Child_V7_YYYY-MM-DD.sav, Child_V7_Home_YYY-MM-DD.sav, Child_V7_Lab_YYY-MM-DD.sav, and Parent_V7_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered. If it is entered, it must follow
+#' The databases MUST follow the naming convention: Child_V7_YYYY-MM-DD.sav, Child_V7_Home_YYY-MM-DD.sav, Child_V7_Lab_YYY-MM-DD.sav, and Parent_V7_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered and the directory organization does not follow the structure laid out in the DataManual.
 #'
 #' @inheritParams util_fbs_merge_v1
 #' @inheritParams util_fbs_merge_v1
@@ -30,21 +30,21 @@
 #' v7dat_scored <- util_fbs_merge_v7('2021_10_11')
 #' }
 #'
-#' @seealso Raw data from Qualtrics is processed using the following scripts: \code{\link{util_fbs_child_v7dat}}, \code{\link{util_fbs_child_v7dat_home}}, \code{\link{util_fbs_child_v7dat_lab}}, \code{\link{util_fbs_parent_v7dat}}. Visit 7 data is scored using the following scripts: \code{\link{score_ctc}}, \code{\link{score_audit}}
+#' @seealso Raw data from Qualtrics is processed using the following scripts: \code{\link{util_fbs_child_v7dat}}, \code{\link{util_fbs_child_v7dat_home}}, \code{\link{util_fbs_child_v7dat_lab}}, \code{\link{util_fbs_parent_v7dat}}. Visit 7 data is scored using the following scripts: \code{\link{score_pds}}, \code{\link{score_ctc}}, \code{\link{score_audit}}, \code{\link{score_cshqa}}, \code{\link{score_paq}}, \code{\link{score_cwc}}, \code{\link{score_cebq}}, \code{\link{score_cfq}}, \code{\link{score_brief2}}
 #'
 #'
 #' @export
 
-util_fbs_merge_v7 <- function(date_str, child_date_str, child_home_date_str, child_lab_date_str, parent_date_str, data_path) {
+util_fbs_merge_v7 <- function(date_str, child_date_str, child_home_date_str, child_lab_date_str, parent_date_str, parent_home_date_str, data_path) {
 
     #### 1. Set up/initial checks #####
 
-    # check if date_str exist and is a string
+    # check if date_strs exist and is a string
 
     datestr_arg <- methods::hasArg(date_str)
 
     if (isTRUE(datestr_arg) & !is.character(date_str)) {
-        stop("date_str must be enter as a string: e.g., '2021_10_11'")
+        stop("date_str must be entered as a string: e.g., '2021_10_11'")
     } else if (isFALSE(datestr_arg)) {
 
         # if no date_str, check all databases specific date strings
@@ -59,16 +59,16 @@ util_fbs_merge_v7 <- function(date_str, child_date_str, child_home_date_str, chi
         }
 
         if (!is.character(child_date_str) | !is.character(child_home_date_str) | !is.character(child_lab_date_str) | !is.character(parent_date_str)) {
-            stop("all dates must be enter as a string: e.g., '2021_10_11'")
+            stop("all dates must be entered as a string: e.g., '2021_10_11'")
         }
     }
 
-    # check that file exists
+    # check datapath
     datapath_arg <- methods::hasArg(data_path)
 
     if (isTRUE(datapath_arg)) {
         if (!is.character(data_path)) {
-            stop("data_path must be enter as a string: e.g., '.../Participant_Data/untouchedRaw/util_fbs_Raw/'")
+            stop("data_path must be entered as a string: e.g., '.../Participant_Data/untouchedRaw/'")
         }
     }
 
@@ -311,7 +311,7 @@ util_fbs_merge_v7 <- function(date_str, child_date_str, child_home_date_str, chi
     parent_pds_scored_labels <- sapply(parent_pds_scored, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
 
     # make names match because simplify duplicates - not sure why get nested lists
-    names(pds_scored_labels) <- names(pds_scored)
+    names(parent_pds_scored_labels) <- names(parent_pds_scored)
 
     # merge and organize
     v7dat_scored <- merge(v7dat_scored, parent_pds_scored[c(1, 3:4)], by = 'id', all = TRUE)
@@ -409,7 +409,7 @@ util_fbs_merge_v7 <- function(date_str, child_date_str, child_home_date_str, chi
 
     v7dat_scored_labels <- c(v7dat_scored_labels[1:476], cebq_scored_labels[2:11], v7dat_scored_labels[477:811])
 
-    ## 7h) score the Child Feeding Questionnaire ####
+    ## 7i) score the Child Feeding Questionnaire ####
     cfq_scored <- score_cfq(cfq_data = v7dat_org[c(1, 435:464)], parID = 'id')
 
     # get labels from scored data and simplify
@@ -424,7 +424,7 @@ util_fbs_merge_v7 <- function(date_str, child_date_str, child_home_date_str, chi
 
     v7dat_scored_labels <- c(v7dat_scored_labels[1:516], cfq_scored_labels[2:8], v7dat_scored_labels[517:821])
 
-    ## 7h) score the Behavioral Rating Inventory of Executive Function-2 ####
+    ## 7j) score the Behavioral Rating Inventory of Executive Function-2 ####
     brief_scored <- score_brief2(brief_data = v7dat_org[c(1, 3, 5, 691:753)], age_var = 'age_yr', sex_var = 'sex', parID = 'id')
 
     # get labels from scored data and simplify
@@ -439,7 +439,47 @@ util_fbs_merge_v7 <- function(date_str, child_date_str, child_home_date_str, chi
 
     v7dat_scored_labels <- c(v7dat_scored_labels[1:812], brief_scored_labels[2:49], v7dat_scored_labels[813:828])
 
-    #### 8. PNA data #####
+    #### 9. Food Intake ####
+
+    ## 9a) EAH ####
+    v7_eah_kcal <- fbs_kcal_intake(v7dat_scored[c(1, 362:401)], meal = 'EAH', parID = 'id')
+    names(v7_eah_kcal)[11:12] <- c('eah_total_g', 'eah_total_kcal')
+
+    # get labels from scored data and simplify
+    v7_eah_labels <- sapply(v7_eah_kcal, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
+
+    # make names match because simplify duplicates - not sure why get nested lists
+    names(v7_eah_labels) <- names(v7_eah_kcal)
+
+    # merge and organize
+    v7dat_scored <- merge(v7dat_scored, v7_eah_kcal, by = 'id', all = TRUE)
+    v7dat_scored_labels <- c(v7dat_scored_labels, v7_eah_labels[2:12])
+
+    # organize
+    v7dat_scored <- v7dat_scored[c(1:365, 877, 366:369, 878, 370:373, 879, 374:377, 880, 378:381, 881, 382:385, 882, 386:389, 883, 390:393, 884, 394:397, 885, 398:401, 886:887, 402:876)]
+
+    v7dat_scored_labels <- v7dat_scored_labels[c(1:365, 877, 366:369, 878, 370:373, 879, 374:377, 880, 378:381, 881, 382:385, 882, 386:389, 883, 390:393, 884, 394:397, 885, 398:401, 886:887, 402:876)]
+
+    ## 9b) Standard Meal ####
+    v7_meal_kcal <- fbs_kcal_intake(v7dat_scored[c(1, 314:361)], meal = 'std_meal', parID = 'id')
+    names(v7_meal_kcal)[14:15] <- c('meal_total_g', 'meal_total_kcal')
+
+    # get labels from scored data and simplify
+    v7_meal_labels <- sapply(v7_meal_kcal, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
+
+    # make names match because simplify duplicates - not sure why get nested lists
+    names(v7_meal_labels) <- names(v7_meal_kcal)
+
+    # merge and organize
+    v7dat_scored <- merge(v7dat_scored, v7_meal_kcal, by = 'id', all = TRUE)
+    v7dat_scored_labels <- c(v7dat_scored_labels, v7_meal_labels[c(2:15)])
+
+    # organize
+    v7dat_scored <- v7dat_scored[c(1:317, 888, 318:321, 889, 322:325, 890, 326:329, 891, 330:333, 892, 334:337, 893, 338:341, 894, 342:345, 895, 346:349, 896, 350:353, 897, 354:357, 898, 358:361, 899:901, 362:887)]
+
+    v7dat_scored_labels <- v7dat_scored_labels[c(1:317, 888, 318:321, 889, 322:325, 890, 326:329, 891, 330:333, 892, 334:337, 893, 338:341, 894, 342:345, 895, 346:349, 896, 350:353, 897, 354:357, 898, 358:361, 899:901, 362:887)]
+
+    #### 9. PNA data #####
 
     # child pna data
 
@@ -535,7 +575,7 @@ util_fbs_merge_v7 <- function(date_str, child_date_str, child_home_date_str, chi
 
     v7dat_pna_labels <- c(child_v7dat_pna_labels, parent_v7dat_pna_labels[2:length(parent_v7dat_pna_labels)])
 
-    #### 9. save to list #####
+    #### 10. save to list #####
 
     # put data in order of participant ID for ease
     v7dat_scored <- v7dat_scored[order(v7dat_scored[["id"]]), ]

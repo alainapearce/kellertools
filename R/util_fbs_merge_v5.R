@@ -2,7 +2,7 @@
 #'
 #' This function merges the following visit 5 raw data into a single database and organizes variables in database order: child visit 5, child visit 5-home, child visit 5-lab, and parent visit 5
 #'
-#' The databases MUST follow the naming convention: Child_V5_YYYY-MM-DD.sav, Child_V5_Home_YYY-MM-DD.sav, Child_V5_Lab_YYY-MM-DD.sav, and Parent_V5_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered. If it is entered, it must follow
+#' The databases MUST follow the naming convention: Child_V5_YYYY-MM-DD.sav, Child_V5_Home_YYY-MM-DD.sav, Child_V5_Lab_YYY-MM-DD.sav, and Parent_V5_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered and the directory organization does not follow the structure laid out in the DataManual.
 #'
 #' @inheritParams util_fbs_merge_v1
 #' @inheritParams util_fbs_merge_v1
@@ -38,12 +38,12 @@ util_fbs_merge_v5 <- function(date_str, child_date_str, child_home_date_str, chi
 
     #### 1. Set up/initial checks #####
 
-    # check if date_str exist and is a string
+    # check if date_str exists and is a string
 
     datestr_arg <- methods::hasArg(date_str)
 
     if (isTRUE(datestr_arg) & !is.character(date_str)) {
-        stop("date_str must be enter as a string: e.g., '2021_10_11'")
+        stop("date_str must be entered as a string: e.g., '2021_10_11'")
     } else if (isFALSE(datestr_arg)) {
 
         # if no date_str, check all databases specific date strings
@@ -57,16 +57,16 @@ util_fbs_merge_v5 <- function(date_str, child_date_str, child_home_date_str, chi
         }
 
         if (!is.character(child_date_str) | !is.character(child_home_date_str) | !is.character(child_lab_date_str) | !is.character(parent_date_str)) {
-            stop("all dates must be enter as a string: e.g., '2021_10_11'")
+            stop("all dates must be entered as a string: e.g., '2021_10_11'")
         }
     }
 
-    # check that file exists
+    # check datapath
     datapath_arg <- methods::hasArg(data_path)
 
     if (isTRUE(datapath_arg)) {
         if (!is.character(data_path)) {
-            stop("data_path must be enter as a string: e.g., '.../Participant_Data/untouchedRaw/util_fbs_Raw/'")
+            stop("data_path must be entered as a string: e.g., '.../Participant_Data/untouchedRaw/'")
         }
     }
 
@@ -175,9 +175,6 @@ util_fbs_merge_v5 <- function(date_str, child_date_str, child_home_date_str, chi
 
     #### 4. Merge Child Raw Data #####
 
-
-
-
     # merge child home and lab into single database
     child_covidmerge_v5dat <- merge(child_lab_v5dat$data, child_home_v5dat$data[c(1, 3:18)], by = 'id', all = TRUE)
 
@@ -233,7 +230,7 @@ util_fbs_merge_v5 <- function(date_str, child_date_str, child_home_date_str, chi
 
     #### 7. Organize V5 data ####
 
-    ## 7a) score the US Household Food Security Survey Module: Three Stage ####
+    ## 7a) score the Communities that Care Survey ####
     ## need to make
     ctc_scored <- score_ctc(ctc_data = v5dat_org[c(1, 3:18)], study = 'fbs', parID = 'id')
 
@@ -264,7 +261,34 @@ util_fbs_merge_v5 <- function(date_str, child_date_str, child_home_date_str, chi
 
     v5dat_scored_labels <- c(v5dat_scored_labels[1:32], audit_scored_labels[2:3], v5dat_scored_labels[33:199])
 
-    #### 8. PNA data #####
+
+    #### 8. Food Intake ####
+
+    v5_kcal <- fbs_kcal_intake(v5dat_scored[c(1, 49:73)], meal = 'ps_meal', parID = 'id')
+
+    names(v5_kcal)[7:8] <- c('total_g', 'total_kcal')
+
+    # get labels from scored data and simplify
+    v5_kcal_labels <- sapply(v5_kcal, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
+
+    # make names match because simplify duplicates - not sure why get nested lists
+    names(v5_kcal_labels) <- names(v5_kcal)
+
+    # merge and organize
+    v5dat_scored <- merge(v5dat_scored, v5_kcal, by = 'id', all = TRUE)
+    v5dat_scored_labels <- c(v5dat_scored_labels, v5_kcal_labels[2:8])
+
+    ## add portion size label
+    v5dat_scored['meal_ps'] <- ifelse(is.na(v5dat_scored[['noplate_mac_cheese_g']]), NA, ifelse(v5dat_scored[['noplate_mac_cheese_g']] < 280, 'PS1', ifelse(v5dat_scored[['noplate_mac_cheese_g']] < 360, 'PS2', ifelse(v5dat_scored[['noplate_mac_cheese_g']] < 440, 'PS3', 'PS4'))))
+
+    v5dat_scored_labels[['meal_ps']] <- 'Visit 5 Portion Size Meal Condition'
+
+    # organize
+    v5dat_scored <- v5dat_scored[c(1:48, 209, 49:52, 202, 53:56, 203, 57:60, 204, 61:65, 205, 66:69, 206, 70:73, 207:208, 74:201)]
+
+    v5dat_scored_labels <- v5dat_scored_labels[c(1:48, 209, 49:52, 202, 53:56, 203, 57:60, 204, 61:65, 205, 66:69, 206, 70:73, 207:208, 74:201)]
+
+    #### 9. PNA data #####
 
     # child pna data
 
@@ -319,7 +343,7 @@ util_fbs_merge_v5 <- function(date_str, child_date_str, child_home_date_str, chi
 
     v5dat_pna_labels <- c(child_v5dat_pna_labels, parent_v5dat$pna_dict[2:length(parent_v5dat$pna_dict)])
 
-    #### 9. save to list #####
+    #### 10. save to list #####
 
     # put data in order of participant ID for ease
     v5dat_scored <- v5dat_scored[order(v5dat_scored[["id"]]), ]

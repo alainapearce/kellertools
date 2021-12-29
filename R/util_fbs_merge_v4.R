@@ -2,7 +2,7 @@
 #'
 #' This function merges the following visit 4 raw data into a single database and organizes variables in database order: child visit 4, child visit 4-home, child visit 4-lab, and parent visit 4
 #'
-#' The databases MUST follow the naming convention: Child_V4_YYYY-MM-DD.sav, Child_V4_Home_YYY-MM-DD.sav, Child_V4_Lab_YYY-MM-DD.sav, and Parent_V4_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered. If it is entered, it must follow
+#' The databases MUST follow the naming convention: Child_V4_YYYY-MM-DD.sav, Child_V4_Home_YYY-MM-DD.sav, Child_V4_Lab_YYY-MM-DD.sav, and Parent_V4_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered and the directory organization does not follow the structure laid out in the DataManual.
 #'
 #' @inheritParams util_fbs_merge_v1
 #' @inheritParams util_fbs_merge_v1
@@ -38,12 +38,12 @@ util_fbs_merge_v4 <- function(date_str, child_date_str, child_home_date_str, chi
 
     #### 1. Set up/initial checks #####
 
-    # check if date_str exist and is a string
+    # check if date_str exists and is a string
 
     datestr_arg <- methods::hasArg(date_str)
 
     if (isTRUE(datestr_arg) & !is.character(date_str)) {
-        stop("date_str must be enter as a string: e.g., '2021_10_11'")
+        stop("date_str must be entered as a string: e.g., '2021_10_11'")
     } else if (isFALSE(datestr_arg)) {
 
         # if no date_str, check all databases specific date strings
@@ -58,16 +58,16 @@ util_fbs_merge_v4 <- function(date_str, child_date_str, child_home_date_str, chi
         }
 
         if (!is.character(child_date_str) | !is.character(child_home_date_str) | !is.character(child_lab_date_str) | !is.character(parent_date_str)) {
-            stop("all dates must be enter as a string: e.g., '2021_10_11'")
+            stop("all dates must be entered as a string: e.g., '2021_10_11'")
         }
     }
 
-    # check that file exists
+    # check datapath
     datapath_arg <- methods::hasArg(data_path)
 
     if (isTRUE(datapath_arg)) {
         if (!is.character(data_path)) {
-            stop("data_path must be enter as a string: e.g., '.../Participant_Data/untouchedRaw/util_fbs_Raw/'")
+            stop("data_path must be entered as a string: e.g., '.../Participant_Data/untouchedRaw/'")
         }
     }
 
@@ -226,9 +226,9 @@ util_fbs_merge_v4 <- function(date_str, child_date_str, child_home_date_str, chi
 
     # order of vars: 1) Demographics, 2) Anthro (hw, DXA, sleep, PA), 3) Intake (FF, liking, intake, want), 4) feeding/food Q's, 5) cog/trait Q's, 6) Delay Discounting, 7) MRI related (CAMS, FF, snack info, image ratings), 8) Notes
 
-    v4dat_org <- v4dat[c(1:3, 65:136, 43:51, 4:42, 138:201, 52:61, 137, 62:64, 202:214)]
+    v4dat_org <- v4dat[c(1:3, 65:136, 52:61, 4:51, 138:201, 137, 62:64, 202:214)]
 
-    v4dat_labels <- v4dat_labels[c(1:3, 65:136, 43:51, 4:42, 138:201, 52:61, 137, 62:64, 202:214)]
+    v4dat_labels <- v4dat_labels[c(1:3, 65:136, 52:61, 4:51, 138:201, 137, 62:64, 202:214)]
 
     # ensure labels are up to date
     v4dat_org = sjlabelled::set_label(v4dat_org, label = matrix(unlist(v4dat_labels, use.names = FALSE)))
@@ -281,7 +281,7 @@ util_fbs_merge_v4 <- function(date_str, child_date_str, child_home_date_str, chi
     v4dat_scored_labels <- c(v4dat_scored_labels[1:85], cchip_scored_labels[2:3], v4dat_scored_labels[86:224])
 
     ## 7d) score the Child Weight Concerns Scale ####
-    cwc_scored <- score_cwc(cwc_data = v4dat_org[c(1, 76:80)], parID = 'id')
+    cwc_scored <- score_cwc(cwc_data = v4dat_org[c(1, 125:129)], parID = 'id')
 
     # get labels from scored data and simplify
     cwc_scored_labels <- sapply(cwc_scored, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
@@ -291,12 +291,12 @@ util_fbs_merge_v4 <- function(date_str, child_date_str, child_home_date_str, chi
 
     # merge and organize
     v4dat_scored <- merge(v4dat_scored, cwc_scored, by = 'id', all = TRUE)
-    v4dat_scored <- v4dat_scored[c(1:92, 227, 93:226)]
+    v4dat_scored <- v4dat_scored[c(1:141, 227, 142:226)]
 
-    v4dat_scored_labels <- c(v4dat_scored_labels[1:92], cwc_scored_labels[2], v4dat_scored_labels[93:226])
+    v4dat_scored_labels <- c(v4dat_scored_labels[1:141], cwc_scored_labels[2], v4dat_scored_labels[142:226])
 
     ## 7e) score the Children's Body Image Scale Questionnaire ####
-    cbis_scored <- score_cbis(cbis_data = v4dat_org[c(1, 81:84)], parID = 'id')
+    cbis_scored <- score_cbis(cbis_data = v4dat_org[c(1, 130:133)], parID = 'id')
 
     # get labels from scored data and simplify
     cbis_scored_labels <- sapply(cbis_scored, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
@@ -306,12 +306,12 @@ util_fbs_merge_v4 <- function(date_str, child_date_str, child_home_date_str, chi
 
     # merge and organize
     v4dat_scored <- merge(v4dat_scored, cbis_scored, by = 'id', all = TRUE)
-    v4dat_scored <- v4dat_scored[c(1:98, 228:229, 99:227)]
+    v4dat_scored <- v4dat_scored[c(1:146, 228:229, 147:227)]
 
-    v4dat_scored_labels <- c(v4dat_scored_labels[1:98], cbis_scored_labels[2:3], v4dat_scored_labels[99:227])
+    v4dat_scored_labels <- c(v4dat_scored_labels[1:146], cbis_scored_labels[2:3], v4dat_scored_labels[147:227])
 
     ## 7f) score the Behavioral Rating Inventory of Executive Function-2 ####
-    brief_scored <- score_brief2(brief_data = v4dat_org[c(1, 4:5, 125:187)], age_var = 'age', sex_var = 'sex', parID = 'id')
+    brief_scored <- score_brief2(brief_data = v4dat_org[c(1, 4:5, 135:197)], age_var = 'age', sex_var = 'sex', parID = 'id')
 
     # get labels from scored data and simplify
     brief_scored_labels <- sapply(brief_scored, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
@@ -321,12 +321,12 @@ util_fbs_merge_v4 <- function(date_str, child_date_str, child_home_date_str, chi
 
     # merge and organize
     v4dat_scored <- merge(v4dat_scored, brief_scored, by = 'id', all = TRUE)
-    v4dat_scored <- v4dat_scored[c(1:202, 230:277, 203:229)]
+    v4dat_scored <- v4dat_scored[c(1:212, 230:277, 213:229)]
 
-    v4dat_scored_labels <- c(v4dat_scored_labels[1:202], brief_scored_labels[2:49], v4dat_scored_labels[203:229])
+    v4dat_scored_labels <- c(v4dat_scored_labels[1:212], brief_scored_labels[2:49], v4dat_scored_labels[213:229])
 
     ## 7f) score the Parenting Style Inventory-II ####
-    psi_scored <- score_psi(psi_data = v4dat_org[c(1, 188:197)], study = 'fbs', parID = 'id')
+    psi_scored <- score_psi(psi_data = v4dat_org[c(1, 76:85)], study = 'fbs', parID = 'id')
 
     # get labels from scored data and simplify
     psi_scored_labels <- sapply(psi_scored, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
@@ -336,12 +336,38 @@ util_fbs_merge_v4 <- function(date_str, child_date_str, child_home_date_str, chi
 
     # merge and organize
     v4dat_scored <- merge(v4dat_scored, psi_scored, by = 'id', all = TRUE)
-    v4dat_scored <- v4dat_scored[c(1:260, 278:279, 261:277)]
+    v4dat_scored <- v4dat_scored[c(1:97, 278:279, 98:277)]
 
-    v4dat_scored_labels <- c(v4dat_scored_labels[1:260], psi_scored_labels[2:3], v4dat_scored_labels[261:277])
+    v4dat_scored_labels <- c(v4dat_scored_labels[1:97], psi_scored_labels[2:3], v4dat_scored_labels[98:277])
 
 
-    #### 8. PNA data #####
+    #### 8. Food Intake ####
+
+    v4_kcal <- fbs_kcal_intake(v4dat_scored[c(1, 114:138)], meal = 'ps_meal', parID = 'id')
+
+    names(v4_kcal)[7:8] <- c('total_g', 'total_kcal')
+
+    # get labels from scored data and simplify
+    v4_kcal_labels <- sapply(v4_kcal, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
+
+    # make names match because simplify duplicates - not sure why get nested lists
+    names(v4_kcal_labels) <- names(v4_kcal)
+
+    # merge and organize
+    v4dat_scored <- merge(v4dat_scored, v4_kcal, by = 'id', all = TRUE)
+    v4dat_scored_labels <- c(v4dat_scored_labels, v4_kcal_labels[2:8])
+
+    ## add portion size label
+    v4dat_scored['meal_ps'] <- ifelse(is.na(v4dat_scored[['noplate_mac_cheese_g']]), NA, ifelse(v4dat_scored[['noplate_mac_cheese_g']] < 280, 'PS1', ifelse(v4dat_scored[['noplate_mac_cheese_g']] < 360, 'PS2', ifelse(v4dat_scored[['noplate_mac_cheese_g']] < 440, 'PS3', 'PS4'))))
+
+    v4dat_scored_labels[['meal_ps']] <- 'Visit 4 Portion Size Meal Condition'
+
+    # organize
+    v4dat_scored <- v4dat_scored[c(1:113, 287, 114:117, 280, 118:121, 281, 122:125, 282, 126:130, 283, 131:134, 284, 135:138, 285:286, 139:279)]
+
+    v4dat_scored_labels <- v4dat_scored_labels[c(1:113, 287, 114:117, 280, 118:121, 281, 122:125, 282, 126:130, 283, 131:134, 284, 135:138, 285:286, 139:279)]
+
+    #### 9. PNA data #####
 
     # child pna data
 
@@ -396,7 +422,7 @@ util_fbs_merge_v4 <- function(date_str, child_date_str, child_home_date_str, chi
 
     v4dat_pna_labels <- c(child_v4dat_pna_labels, parent_v4dat$pna_dict[2:length(parent_v4dat$pna_dict)])
 
-    #### 9. save to list #####
+    #### 10. save to list #####
 
     # put data in order of participant ID for ease
     v4dat_scored <- v4dat_scored[order(v4dat_scored[["id"]]), ]
