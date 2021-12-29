@@ -120,9 +120,9 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
     }
 
     # check write_path
-    datapath_arg <- methods::hasArg(data_path)
+    writepath_arg <- methods::hasArg(write_path)
 
-    if (isTRUE(write_dat)) {
+    if (isTRUE(writepath_arg)) {
         if (!is.character(write_path)) {
             stop("write_path must be entered as a string: e.g., '.../Participant_Data/Databases/")
         }
@@ -152,6 +152,11 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
 
     ## Visit 3 data - need for the food/eating behavior, cog/psych, and delay discounting databases
     if (isFALSE(databases_arg) | 'food_qs' %in% database_list | 'psych_qs' %in% database_list | 'dd' %in% database_list){
+
+        if (isTRUE(databases_arg) & 'dd' %in% database_list){
+            model_DD <- TRUE
+        }
+
         if (isTRUE(datapath_arg)){
             v3_data <- util_fbs_merge_v3(child_file_pattern = paste0(child_fp, '_', visit_fp, '3'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '3'), data_path = data_path, model_DD = model_DD)
         } else {
@@ -235,7 +240,7 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
         names(v7_demo_labels)[2] <- 'v7_date'
 
         #re-name variables with 'v7_' and add 'Visit 7 - ' to labels
-        for (v in 3:118){
+        for (v in 3:ncol(v7_demo_data)){
             #names
             var_name <- names(v7_demo_data)[v]
             v7_name <- paste0('v7_', var_name)
@@ -260,6 +265,17 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
         # ensure labels are up to date
         demographic_data = sjlabelled::set_label(demo_v1v4v5v7_data, label = matrix(unlist(demographic_labels, use.names = FALSE)))
 
+        if (isTRUE(write_dat)){
+
+            #data dictionary
+            demo_dict <- labelled::generate_dictionary(demographic_data, details = TRUE)
+            demo_dict$label <- matrix(unlist(demographic_labels, use.names = FALSE))
+            if (isTRUE(writepath_arg)){
+                write_sav(demographic_data, path = write_path)
+            } else {
+
+            }
+        }
     }
 
     ## 3b) Anthropometrics ####
@@ -284,7 +300,7 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
         names(v7_anthro_labels)[2] <- 'v7_date'
 
         #re-name variables with 'v7_' and add 'Visit 7 - ' to labels
-        for (v in 3:140){
+        for (v in 3:ncol(v7_anthro_data)){
             #names
             var_name <- names(v7_anthro_data)[v]
             v7_name <- paste0('v7_', var_name)
@@ -314,7 +330,7 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
 
     }
 
-    ## 3b) Intake ####
+    ## 3c) Intake ####
     if (isFALSE(databases_arg) | 'intake' %in% database_list){
 
         #visit 1
@@ -322,7 +338,7 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
         v1_intake_labels <- v1_data[['dict']][c(1, 227:395)]
 
         #re-name variables with 'v1_' and add 'Visit 1 - ' to labels
-        for (v in 2:170){
+        for (v in 2:ncol(v1_intake_data)){
             #names
             var_name <- names(v1_intake_data)[v]
             v1_name <- paste0('v1_', var_name)
@@ -342,7 +358,7 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
         names(v2_intake_labels)[2] <- 'v2_date'
 
         #re-name variables with 'v2_' and add 'Visit 2 - ' to labels
-        for (v in 3:49){
+        for (v in 3:ncol(v2_intake_data)){
             #names
             var_name <- names(v2_intake_data)[v]
             v2_name <- paste0('v2_', var_name)
@@ -362,7 +378,7 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
         names(v3_intake_labels)[2] <- 'v3_date'
 
         #re-name variables with 'v3_' and add 'Visit 3 - ' to labels
-        for (v in 3:49){
+        for (v in 3:ncol(v3_intake_data)){
             #names
             var_name <- names(v3_intake_data)[v]
             v3_name <- paste0('v3_', var_name)
@@ -382,7 +398,7 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
         names(v4_intake_labels)[2] <- 'v4_date'
 
         #re-name variables with 'v4_' and add 'Visit 4 - ' to labels
-        for (v in 3:49){
+        for (v in 3:ncol(v4_intake_data)){
             #names
             var_name <- names(v4_intake_data)[v]
             v4_name <- paste0('v4_', var_name)
@@ -402,7 +418,7 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
         names(v5_intake_labels)[2] <- 'v5_date'
 
         #re-name variables with 'v5_' and add 'Visit 5 - ' to labels
-        for (v in 3:49){
+        for (v in 3:ncol(v5_intake_data)){
             #names
             var_name <- names(v5_intake_data)[v]
             v5_name <- paste0('v5_', var_name)
@@ -422,7 +438,7 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
         names(v7_intake_labels)[2] <- 'v7_date'
 
         #re-name variables with 'v7_' and add 'Visit 7 - ' to labels
-        for (v in 3:175){
+        for (v in 3:ncol(v7_intake_data)){
             #names
             var_name <- names(v7_intake_data)[v]
             v7_name <- paste0('v7_', var_name)
@@ -455,7 +471,425 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
 
         ## add sort by portion size to database
 
+        ps_vars <- c('id', 'date', 'freddy_pre_meal', 'freddy_post_meal', 'vas_mac_cheese', 'vas_chkn_nug', 'vas_broccoli', 'vas_grape', 'vas_water', 'rank_mac_cheese', 'rank_chkn_nug', 'rank_broccoli', 'rank_grape', 'meal_start', 'meal_end', 'meal_dur', 'noplate_chkn_nug_g', 'plate_chkn_nug_g', 'post_chkn_nug_g', 'consumed_chkn_nug_g', 'consumed_chkn_nug_kcal', 'noplate_mac_cheese_g', 'plate_mac_cheese_g', 'post_mac_cheese_g', 'consumed_mac_cheese_g', 'consumed_mac_cheese_kcal', 'noplate_grapes_g', 'plate_grapes_g', 'post_grapes_g', 'consumed_grapes_g', 'consumed_grapes_kcal', 'noplate_broccoli_g', 'plate_broccoli_g', 'post_broccoli_g', 'consumed_broccoli_g', 'consumed_broccoli_kcal', 'noplate_ketchup_g', 'plate_ketchup_g', 'post_ketchup_g', 'consumed_ketchup_g', 'consumed_ketchup_kcal', 'noplate_water_g', 'plate_water_g', 'post_water_g', 'consumed_water_g', 'total_g', 'total_kcal')
+
+        ps_convert_fn <- function(intake_data, ps, ps_var) {
+
+            if (ps_var == 'id'){
+                ps_var_dat <- intake_data[['id']]
+            } else {
+
+                #visit vars
+                v2_var_name <- paste0('v2_', ps_var)
+                v3_var_name <- paste0('v3_', ps_var)
+                v4_var_name <- paste0('v4_', ps_var)
+                v5_var_name <- paste0('v5_', ps_var)
+
+                #portion size string
+                ps_str <- paste0('PS', ps)
+
+                #get new variable added to dataset
+                if (ps_var == 'date'){
+                    ps_var_dat <- ifelse(intake_data[['v2_meal_ps']] == ps_str, as.character(intake_data[[v2_var_name]]), ifelse(intake_data[['v3_meal_ps']] == ps_str, as.character(intake_data[[v3_var_name]]), ifelse(intake_data[['v4_meal_ps']] == ps_str, as.character(intake_data[[v4_var_name]]), ifelse(intake_data[['v5_meal_ps']] == ps_str, as.character(intake_data[[v5_var_name]]), NA))))
+                } else {
+                    ps_var_dat <- ifelse(intake_data[['v2_meal_ps']] == ps_str, intake_data[[v2_var_name]], ifelse(intake_data[['v3_meal_ps']] == ps_str, intake_data[[v3_var_name]], ifelse(intake_data[['v4_meal_ps']] == ps_str, intake_data[[v4_var_name]], ifelse(intake_data[['v5_meal_ps']] == ps_str, intake_data[[v5_var_name]], NA))))
+                }
+            }
+
+            return(ps_var_dat)
+        }
+
+        ## portion size data
+        ps1_intake_data <- as.data.frame(sapply(ps_vars, FUN = ps_convert_fn, intake_data = intake_data, ps = 1, simplify = TRUE, USE.NAMES = TRUE))
+        names(ps1_intake_data)[2:ncol(ps1_intake_data)] <- paste0('ps1_', ps_vars[2:length(ps_vars)])
+        intake_data <- merge(intake_data, ps1_intake_data, by = 'id',  all = TRUE)
+
+        ps2_intake_data <- as.data.frame(sapply(ps_vars, FUN = ps_convert_fn, intake_data = intake_data, ps = 2, simplify = TRUE, USE.NAMES = TRUE))
+        names(ps2_intake_data)[2:ncol(ps2_intake_data)] <- paste0('ps2_', ps_vars[2:length(ps_vars)])
+        intake_data <- merge(intake_data, ps2_intake_data, by = 'id',  all = TRUE)
+
+        ps3_intake_data <- as.data.frame(sapply(ps_vars, FUN = ps_convert_fn, intake_data = intake_data, ps = 3, simplify = TRUE, USE.NAMES = TRUE))
+        names(ps3_intake_data)[2:ncol(ps3_intake_data)] <- paste0('ps3_', ps_vars[2:length(ps_vars)])
+        intake_data <- merge(intake_data, ps3_intake_data, by = 'id',  all = TRUE)
+
+        ps4_intake_data <- as.data.frame(sapply(ps_vars, FUN = ps_convert_fn, intake_data = intake_data, ps = 4, simplify = TRUE, USE.NAMES = TRUE))
+        names(ps4_intake_data)[2:ncol(ps4_intake_data)] <- paste0('ps4_', ps_vars[2:length(ps_vars)])
+        intake_data <- merge(intake_data, ps4_intake_data, by = 'id',  all = TRUE)
+
+
+        ## update/add portion size labels
+        for (ps in 1:4) {
+            for (v in 2:length(ps_vars)){
+                #new portion size name
+                ps_var_name <- paste0('ps', ps, '_', ps_vars[v])
+
+                #visit vars
+                v2_var_name <- paste0('v2_', ps_vars[v])
+
+                #get label information with visit information removed
+                novisit_label <- gsub('Visit 2 - ', '', intake_labels[[v2_var_name]], fixed = TRUE)
+
+                #add new label with portion size information
+                intake_labels[[ps_var_name]] <- paste0('Portion Size ', ps, ': ', novisit_label)
+            }
+        }
+
+        #update and match labels
+        names(intake_labels) <- names(intake_data)
+        intake_data = sjlabelled::set_label(intake_data, label = matrix(unlist(intake_labels, use.names = FALSE)))
     }
+
+    ## 3d) Eating Behavior/Food Intake Questionnaires ####
+    if (isFALSE(databases_arg) | 'food_q' %in% database_list){
+
+        #visit 1
+        v1_foodqs_data <- v1_data[['data']][c(1, 396:711)]
+        v1_foodqs_labels <- v1_data[['dict']][c(1, 396:711)]
+
+        #visit 2
+        v2_foodqs_data <- v2_data[['data']][c(1:2, 77:299)]
+        v2_foodqs_labels <- v2_data[['dict']][c(1:2, 77:299)]
+
+        names(v2_foodqs_data)[2] <- 'v2_date'
+        names(v2_foodqs_labels)[2] <- 'v2_date'
+
+        #visit 3
+        v3_foodqs_data <- v3_data[['data']][c(1:2, 50:160)]
+        v3_foodqs_labels <- v3_data[['dict']][c(1:2, 50:160)]
+
+        names(v3_foodqs_data)[2] <- 'v3_date'
+        names(v3_foodqs_labels)[2] <- 'v3_date'
+
+        #visit 4
+        v4_foodqs_data <- v4_data[['data']][c(1:2, 147:158)]
+        v4_foodqs_labels <- v4_data[['dict']][c(1:2, 147:158)]
+
+        names(v4_foodqs_data)[2] <- 'v4_date'
+        names(v4_foodqs_labels)[2] <- 'v4_date'
+
+        #visit 5
+        v5_foodqs_data <- v5_data[['data']][c(1:2, 82:104)]
+        v5_foodqs_labels <- v5_data[['dict']][c(1:2, 82:104)]
+
+        names(v5_foodqs_data)[2] <- 'v5_date'
+        names(v5_foodqs_labels)[2] <- 'v5_date'
+
+        #visit 6
+        v6_foodqs_data <- v6_data[['data']][c(1:2, 330:336)]
+        v6_foodqs_labels <- v6_data[['dict']][c(1:2, 330:336)]
+
+        names(v6_foodqs_data)[2] <- 'v6_date'
+        names(v6_foodqs_labels)[2] <- 'v6_date'
+
+        #visit 7
+        v7_foodqs_data <- v7_data[['data']][c(1:2, 459:774)]
+        v7_foodqs_labels <- v7_data[['dict']][c(1:2, 459:774)]
+
+        names(v7_foodqs_data)[2] <- 'v7_date'
+        names(v7_foodqs_labels)[2] <- 'v7_date'
+
+        #re-name variables with 'v7_' and add 'Visit 7 - ' to labels
+        for (v in 3:ncol(v7_foodqs_data)){
+            #names
+            var_name <- names(v7_foodqs_data)[v]
+            v7_name <- paste0('v7_', var_name)
+            names(v7_foodqs_data)[v] <- v7_name
+
+            #labels
+            v7_foodqs_labels[[var_name]] <- paste0('Visit 7 - ', v7_foodqs_labels[[var_name]])
+        }
+
+        #make names match
+        names(v7_foodqs_labels) <- names(v7_foodqs_data)
+
+        ## merge databases from v1
+        foodqs_demov1_data <- merge(common_demo_data, v1_foodqs_data, by = 'id', all = TRUE)
+
+        ## merge databases - set all.x = FALSE so only get the participants with data at later visits/have not been screened out
+        foodqs_demov1v2_data <- merge(foodqs_demov1_data, v2_foodqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
+
+        ## other merges - set all = TRUE so get all participants in visits 2-7
+        foodqs_demov1v2v3_data <- merge(foodqs_demov1v2_data, v3_foodqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
+        foodqs_demov1v2v3v4_data <- merge(foodqs_demov1v2v3_data, v4_foodqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
+        foodqs_demov1v2v3v4v5_data <- merge(foodqs_demov1v2v3v4_data, v5_foodqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
+        foodqs_demov1v2v3v4v5v6_data <- merge(foodqs_demov1v2v3v4v5_data, v6_foodqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
+        foodqs_demov1v2v3v4v5v6v7_data <- merge(foodqs_demov1v2v3v4v5v6_data, v7_foodqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
+
+        #get labels
+        foodqs_labels <- c(common_demo_labels, v1_foodqs_labels[2:length(v1_foodqs_labels)], v2_foodqs_labels[2:length(v2_foodqs_labels)], v3_foodqs_labels[2:length(v3_foodqs_labels)], v4_foodqs_labels[2:length(v4_foodqs_labels)], v5_foodqs_labels[2:length(v5_foodqs_labels)], v6_foodqs_labels[2:length(v6_foodqs_labels)], v7_foodqs_labels[2:length(v7_foodqs_labels)])
+
+        # ensure labels are up to date
+        foodqs_data = sjlabelled::set_label(foodqs_demov1v2v3v4v5v6v7_data, label = matrix(unlist(foodqs_labels, use.names = FALSE)))
+    }
+
+    ## 3e) Cognitive and Psychosocial Questionnaires/Measures ####
+    if (isFALSE(databases_arg) | 'psych_q' %in% database_list){
+
+        #visit 2
+        v2_psychqs_data <- v2_data[['data']][c(1:2, 300:458)]
+        v2_psychqs_labels <- v2_data[['dict']][c(1:2, 300:458)]
+
+        names(v2_psychqs_data)[2] <- 'v2_date'
+        names(v2_psychqs_labels)[2] <- 'v2_date'
+
+        #visit 3
+        v3_psychqs_data <- v3_data[['data']][c(1:2, 161:248)]
+        v3_psychqs_labels <- v3_data[['dict']][c(1:2, 161:248)]
+
+        names(v3_psychqs_data)[2] <- 'v3_date'
+        names(v3_psychqs_labels)[2] <- 'v3_date'
+
+        #visit 4
+        v4_psychqs_data <- v4_data[['data']][c(1:2, 159:270)]
+        v4_psychqs_labels <- v4_data[['dict']][c(1:2, 159:270)]
+
+        names(v4_psychqs_data)[2] <- 'v4_date'
+        names(v4_psychqs_labels)[2] <- 'v4_date'
+
+        #visit 7
+        v7_psychqs_data <- v7_data[['data']][c(1:2, 775:885)]
+        v7_psychqs_labels <- v7_data[['dict']][c(1:2, 775:885)]
+
+        names(v7_psychqs_data)[2] <- 'v7_date'
+        names(v7_psychqs_labels)[2] <- 'v7_date'
+
+        #re-name variables with 'v7_' and add 'Visit 7 - ' to labels
+        for (v in 3:ncol(v7_psychqs_data)){
+            #names
+            var_name <- names(v7_psychqs_data)[v]
+            v7_name <- paste0('v7_', var_name)
+            names(v7_psychqs_data)[v] <- v7_name
+
+            #labels
+            v7_psychqs_labels[[var_name]] <- paste0('Visit 7 - ', v7_psychqs_labels[[var_name]])
+        }
+
+        #make names match
+        names(v7_psychqs_labels) <- names(v7_psychqs_data)
+
+        ## merge databases - set all.x = FALSE so only get the participants with data at later visits/have not been screened out
+        psychqs_demov2_data <- merge(common_demo_data, v2_psychqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
+
+        ## other merges - set all = TRUE so get all participants in visits 2-7
+        psychqs_demov2v3_data <- merge(psychqs_demov2_data, v3_psychqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
+        psychqs_demov2v3v4_data <- merge(psychqs_demov2v3_data, v4_psychqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
+        psychqs_demov2v3v4v7_data <- merge(psychqs_demov2v3v4_data, v7_psychqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
+
+        #get labels
+        psychqs_labels <- c(common_demo_labels, v2_psychqs_labels[2:length(v2_psychqs_labels)], v3_psychqs_labels[2:length(v3_psychqs_labels)], v4_psychqs_labels[2:length(v4_psychqs_labels)], v7_psychqs_labels[2:length(v7_psychqs_labels)])
+
+        # ensure labels are up to date
+        psychqs_data = sjlabelled::set_label(psychqs_demov2v3v4v7_data, label = matrix(unlist(psychqs_labels, use.names = FALSE)))
+    }
+
+    ## 3f) Delay Discounting ####
+    if (isTRUE(model_DD)){
+
+        #visit 3
+        v3_dd_data <- v3_data[['data']][c(1:2, 249:225)]
+        v3_dd_labels <- v3_data[['dict']][c(1:2, 249:225)]
+
+        names(v3_dd_data)[2] <- 'v3_date'
+        names(v3_dd_labels)[2] <- 'v3_date'
+
+        ## merge databases - set all.x = FALSE so only get the participants with data at later visits/have not been screened out
+        dd_demov3_data <- merge(common_demo_data, v3_dd_data, by = 'id', all.x = FALSE, all.y = TRUE)
+
+        #get labels
+        dd_labels <- c(common_demo_labels, v3_dd_labels[2:length(v3_dd_labels)])
+
+        # ensure labels are up to date
+        dd_data = sjlabelled::set_label(dd_demov3_data, label = matrix(unlist(dd_labels, use.names = FALSE)))
+    }
+
+    ## 3g) Interoception ####
+    if (isFALSE(databases_arg) | 'intero' %in% database_list){
+
+        #visit 3
+        v5_intero_data <- v5_data[['data']][c(1:2, 105:191)]
+        v5_intero_labels <- v5_data[['dict']][c(1:2, 105:191)]
+
+        names(v5_intero_data)[2] <- 'v5_date'
+        names(v5_intero_labels)[2] <- 'v5_date'
+
+        ## merge databases - set all.x = FALSE so only get the participants with data at later visits/have not been screened out
+        intero_demov5_data <- merge(common_demo_data, v5_intero_data, by = 'id', all.x = FALSE, all.y = TRUE)
+
+        #get labels
+        intero_labels <- c(common_demo_labels, v5_intero_labels[2:length(v5_intero_labels)])
+
+        # ensure labels are up to date
+        intero_data = sjlabelled::set_label(intero_demov5_data, label = matrix(unlist(intero_labels, use.names = FALSE)))
+    }
+
+    ## 3h) Notes ####
+    if (isFALSE(databases_arg) | 'intero' %in% database_list){
+
+        #visit 1
+        v1_notes_data <- v1_data[['data']][c(1, 712:715)]
+        v1_notes_labels <- v1_data[['dict']][c(1, 712:715)]
+
+        #re-name variables with 'v1_' and add 'Visit 1 - ' to labels
+        for (v in 2:ncol(v1_notes_data)){
+            #names
+            var_name <- names(v1_notes_data)[v]
+            v1_name <- paste0('v1_', var_name)
+            names(v1_notes_data)[v] <- v1_name
+
+            #labels
+            v1_notes_labels[[var_name]] <- paste0('Visit 1 - ', v1_notes_labels[[var_name]])
+        }
+
+        names(v1_notes_labels) <- names(v1_notes_data)
+
+        #visit 2
+        v2_notes_data <- v2_data[['data']][c(1:2, 459:474)]
+        v2_notes_labels <- v2_data[['dict']][c(1:2, 459:474)]
+
+        names(v2_notes_data)[2] <- 'v2_date'
+        names(v2_notes_labels)[2] <- 'v2_date'
+
+        #re-name variables with 'v2_' and add 'Visit 2 - ' to labels
+        for (v in 3:ncol(v2_notes_data)){
+            #names
+            var_name <- names(v2_notes_data)[v]
+            v2_name <- paste0('v2_', var_name)
+            names(v2_notes_data)[v] <- v2_name
+
+            #labels
+            v2_notes_labels[[var_name]] <- paste0('Visit 2 - ', v2_notes_labels[[var_name]])
+        }
+
+        names(v2_notes_labels) <- names(v2_notes_data)
+
+        #visit 3
+        if (isTRUE(model_DD)){
+            v3_notes_data <- v3_data[['data']][c(1:2, 326:341)]
+            v3_notes_labels <- v3_data[['dict']][c(1:2, 326:341)]
+        } else {
+            v3_notes_data <- v3_data[['data']][c(1:2, 318:333)]
+            v3_notes_labels <- v3_data[['dict']][c(1:2, 318:333)]
+        }
+
+
+        names(v3_notes_data)[2] <- 'v3_date'
+        names(v3_notes_labels)[2] <- 'v3_date'
+
+        #re-name variables with 'v3_' and add 'Visit 3 - ' to labels
+        for (v in 3:ncol(v3_notes_data)){
+            #names
+            var_name <- names(v3_notes_data)[v]
+            v3_name <- paste0('v3_', var_name)
+            names(v3_notes_data)[v] <- v3_name
+
+            #labels
+            v3_notes_labels[[var_name]] <- paste0('Visit 3 - ', v3_notes_labels[[var_name]])
+        }
+
+        names(v3_notes_labels) <- names(v3_notes_data)
+
+        #visit 4
+        v4_notes_data <- v4_data[['data']][c(1:2, 271:287)]
+        v4_notes_labels <- v4_data[['dict']][c(1:2, 271:287)]
+
+        names(v4_notes_data)[2] <- 'v4_date'
+        names(v4_notes_labels)[2] <- 'v4_date'
+
+        #re-name variables with 'v4_' and add 'Visit 4 - ' to labels
+        for (v in 3:ncol(v4_notes_data)){
+            #names
+            var_name <- names(v4_notes_data)[v]
+            v4_name <- paste0('v4_', var_name)
+            names(v4_notes_data)[v] <- v4_name
+
+            #labels
+            v4_notes_labels[[var_name]] <- paste0('Visit 4 - ', v4_notes_labels[[var_name]])
+        }
+
+        names(v4_notes_labels) <- names(v4_notes_data)
+
+        #visit 5
+        v5_notes_data <- v5_data[['data']][c(1:2, 192:209)]
+        v5_notes_labels <- v5_data[['dict']][c(1:2, 192:209)]
+
+        names(v5_notes_data)[2] <- 'v5_date'
+        names(v5_notes_labels)[2] <- 'v5_date'
+
+        #re-name variables with 'v5_' and add 'Visit 5 - ' to labels
+        for (v in 3:ncol(v5_notes_data)){
+            #names
+            var_name <- names(v5_notes_data)[v]
+            v5_name <- paste0('v5_', var_name)
+            names(v5_notes_data)[v] <- v5_name
+
+            #labels
+            v5_notes_labels[[var_name]] <- paste0('Visit 5 - ', v5_notes_labels[[var_name]])
+        }
+
+        names(v5_notes_labels) <- names(v5_notes_data)
+
+        #visit 6
+        v6_notes_data <- v6_data[['data']][c(1:2, 337:360)]
+        v6_notes_labels <- v6_data[['dict']][c(1:2, 337:360)]
+
+        names(v6_notes_data)[2] <- 'v6_date'
+        names(v6_notes_labels)[2] <- 'v6_date'
+
+        #re-name variables with 'v6_' and add 'Visit 7 - ' to labels
+        for (v in 3:ncol(v6_notes_data)){
+            #names
+            var_name <- names(v6_notes_data)[v]
+            v6_name <- paste0('v6_', var_name)
+            names(v6_notes_data)[v] <- v6_name
+
+            #labels
+            v6_notes_labels[[var_name]] <- paste0('Visit 6 - ', v6_notes_labels[[var_name]])
+        }
+
+        #make names match
+        names(v6_notes_labels) <- names(v6_notes_data)
+
+        #visit 7
+        v7_notes_data <- v7_data[['data']][c(1:2, 886:901)]
+        v7_notes_labels <- v7_data[['dict']][c(1:2, 886:901)]
+
+        names(v7_notes_data)[2] <- 'v7_date'
+        names(v7_notes_labels)[2] <- 'v7_date'
+
+        #re-name variables with 'v7_' and add 'Visit 7 - ' to labels
+        for (v in 3:ncol(v7_notes_data)){
+            #names
+            var_name <- names(v7_notes_data)[v]
+            v7_name <- paste0('v7_', var_name)
+            names(v7_notes_data)[v] <- v7_name
+
+            #labels
+            v7_notes_labels[[var_name]] <- paste0('Visit 7 - ', v7_notes_labels[[var_name]])
+        }
+
+        #make names match
+        names(v7_notes_labels) <- names(v7_notes_data)
+
+        ## merge databases from v1
+        notes_demov1_data <- merge(common_demo_data, v1_notes_data, by = 'id', all = TRUE)
+
+        ## merge databases - set all.x = FALSE so only get the participants with data at later visits/have not been screened out
+        notes_demov1v2_data <- merge(notes_demov1_data, v2_notes_data, by = 'id', all.x = FALSE, all.y = TRUE)
+
+        ## other merges - set all = TRUE so get all participants in visits 2-7
+        notes_demov1v2v3_data <- merge(notes_demov1v2_data, v3_notes_data, by = 'id', all.x = FALSE, all.y = TRUE)
+        notes_demov1v2v3v4_data <- merge(notes_demov1v2v3_data, v4_notes_data, by = 'id', all.x = FALSE, all.y = TRUE)
+        notes_demov1v2v3v4v5_data <- merge(notes_demov1v2v3v4_data, v5_notes_data, by = 'id', all.x = FALSE, all.y = TRUE)
+        notes_demov1v2v3v4v5v6_data <- merge(notes_demov1v2v3v4v5_data, v6_notes_data, by = 'id', all.x = FALSE, all.y = TRUE)
+        notes_demov1v23v4v5v6v7_data <- merge(notes_demov1v2v3v4v5v6_data, v7_notes_data, by = 'id', all.x = FALSE, all.y = TRUE)
+
+        #get labels
+        notes_labels <- c(common_demo_labels, v1_notes_labels[2:length(v1_notes_labels)], v2_notes_labels[2:length(v2_notes_labels)], v3_notes_labels[2:length(v3_notes_labels)], v4_notes_labels[2:length(v4_notes_labels)], v5_notes_labels[2:length(v5_notes_labels)], v6_notes_labels[2:length(v6_notes_labels)], v7_notes_labels[2:length(v7_notes_labels)])
+
+        # ensure labels are up to date
+        notes_data = sjlabelled::set_label(notes_demov1v23v4v5v6v7_data, label = matrix(unlist(notes_labels, use.names = FALSE)))
+    }
+
 
     #### 9. PNA data #####
 

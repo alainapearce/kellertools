@@ -91,14 +91,24 @@ score_risk <- function(risk_data, respondent, parID) {
 
     # measured BMI
     risk_score_dat[['hw_measured']] <- ifelse(is.na(risk_data[['parent_bmi']]), 0, 1)
+
     risk_score_dat[['hw_measured']] <- sjlabelled::set_labels(risk_score_dat[['hw_measured']], labels = c(No = 0, Yes = 1))
+    class(risk_score_dat[["hw_measured"]]) <- c("haven_labelled", "vctrs_vctr", "double")
+
     risk_score_dat_labels[['hw_measured']] <- "Parent attending Visit 1 had measured height and weight"
 
-    risk_score_dat[['measured_parent']] <- ifelse(!is.na(risk_data[['parent_bmi']]), risk_data[[respondent]], NA)
+    risk_score_dat[['measured_parent']] <- ifelse(is.na(risk_data[['parent_bmi']]), NA, ifelse(risk_data[[respondent]] %in% mom_strs, 0, 1))
+
+    risk_score_dat[['measured_parent']] <- sjlabelled::set_labels(risk_score_dat[['measured_parent']], labels = c(mom = 0, dad = 1))
+    class(risk_score_dat[["measured_parent"]]) <- c("haven_labelled", "vctrs_vctr", "double")
+
     risk_score_dat_labels[['measured_parent']] <- 'Parent with measured BMI at Visit 1'
 
     # risk status
-    risk_score_dat[['risk_cat']] <- ifelse(risk_score_dat[['hw_measured']] == 0, ifelse(is.na(risk_data[['sr_mom_bmi']]) | is.na(risk_data[['sr_dad_bmi']]), NA, ifelse(risk_data[['sr_mom_bmi']] >= 29 & risk_data[['sr_dad_bmi']] >= 24, 'High Risk', ifelse(risk_data[['sr_mom_bmi']] < 26 & risk_data[['sr_dad_bmi']] < 26, 'Low Risk', 'Neither'))), ifelse(risk_data[[respondent]] == 'mom',  ifelse(risk_data[['parent_bmi']] >= 29 & risk_data[['sr_dad_bmi']] >= 24, 'High Risk',  ifelse(risk_data[['parent_bmi']] < 26 & risk_data[['sr_dad_bmi']] < 26, 'Low Risk', 'Neither')),  ifelse(risk_data[['sr_mom_bmi']] >= 29 & risk_data[['parent_bmi']] >= 24, 'High Risk',  ifelse(risk_data[['sr_mom_bmi']] < 26 & risk_data[['parent_bmi']] < 26, 'Low Risk', 'Neither'))))
+    risk_score_dat[['risk_cat']] <- ifelse(risk_score_dat[['hw_measured']] == 0, ifelse(is.na(risk_data[['sr_mom_bmi']]) | is.na(risk_data[['sr_dad_bmi']]), NA, ifelse(risk_data[['sr_mom_bmi']] >= 29 & risk_data[['sr_dad_bmi']] >= 24, 1, ifelse(risk_data[['sr_mom_bmi']] < 26 & risk_data[['sr_dad_bmi']] < 26, 0, 2))), ifelse(risk_data[[respondent]] == 'mom',  ifelse(risk_data[['parent_bmi']] >= 29 & risk_data[['sr_dad_bmi']] >= 24, 1,  ifelse(risk_data[['parent_bmi']] < 26 & risk_data[['sr_dad_bmi']] < 26, 0, 2)),  ifelse(risk_data[['sr_mom_bmi']] >= 29 & risk_data[['parent_bmi']] >= 24, 1,  ifelse(risk_data[['sr_mom_bmi']] < 26 & risk_data[['parent_bmi']] < 26, 0, 2))))
+
+    risk_score_dat[['risk_cat']] <- sjlabelled::set_labels(risk_score_dat[['risk_cat']], labels = c(`Low Risk` = 0, `High Risk` = 1, Neither = 2))
+    class(risk_score_dat[["risk_cat"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     risk_score_dat_labels[['risk_cat']] <- "Child risk category"
 

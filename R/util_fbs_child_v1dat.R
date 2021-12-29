@@ -165,7 +165,11 @@ util_fbs_child_v1dat <- function(file_pattern, data_path) {
     qv1_child_clean_labels[["bmi_percentile"]] <- "BMI percentile updated: calculated using childsds R package and scripted average height and weight"
 
     #update/confirm child screenout - can only change for those NOT screened out as if they were screened out we wont have data for them. The initial criteria was BMI percentile < 85 but now it is < 90
+    bmi_set_attr <- attributes(qv1_child_clean[["bmi_screenout"]])
+
     qv1_child_clean[["bmi_screenout"]] <- ifelse(qv1_child_clean[["bmi_screenout"]] == 0 & qv1_child_clean[["bmi_percentile"]] >= 90, 1, qv1_child_clean[["bmi_screenout"]])
+
+    attributes(qv1_child_clean[["bmi_screenout"]]) <- bmi_set_attr
 
     # child bmi z score : sds (standard deviations away from center/50th centile) - new variable so need to add to labels
     qv1_child_clean[["bmi_z"]] <- round(childsds::sds(value = qv1_child_clean[["bmi"]], age = qv1_child_clean[["age_yr"]], sex = qv1_child_clean[['sex']], item = "bmi", ref = childsds::cdc.ref, type = "SDS", male = 1, female = 2), digits = 2)
@@ -184,9 +188,7 @@ util_fbs_child_v1dat <- function(file_pattern, data_path) {
     for (var in 1:length(intake_vars)) {
         var_name <- intake_vars[[var]]
 
-        qv1_child_clean[[var_name]] <- ifelse(qv1_child_clean[[var_name]] == "-", NA, ifelse(qv1_child_clean[[var_name]] ==
-            "66.19231.35", "66.19", ifelse(qv1_child_clean[[var_name]] == "246.60q", "246.60", ifelse(qv1_child_clean[[var_name]] ==
-            "na", NA, qv1_child_clean[[var_name]]))))
+        qv1_child_clean[[var_name]] <- ifelse(qv1_child_clean[[var_name]] == "-", NA, ifelse(qv1_child_clean[[var_name]] == "66.19231.35", "66.19", ifelse(qv1_child_clean[[var_name]] == "246.60q", "246.60", ifelse(qv1_child_clean[[var_name]] == "na", NA, qv1_child_clean[[var_name]]))))
 
         if (is.character(qv1_child_clean[[var_name]])) {
             qv1_child_clean[[var_name]] <- as.numeric(qv1_child_clean[[var_name]])

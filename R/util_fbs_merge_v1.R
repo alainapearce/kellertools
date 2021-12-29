@@ -168,15 +168,15 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
     risk_scored <- score_risk(risk_data = v1dat_org[c(1, 4, 100, 113:114)], respondent = 'parent_respondent', parID = 'id')
 
     # set id = 7 to low risk - only has dad measured, no mom
-    risk_scored[risk_scored[['id']] == 7, 'risk_cat'] <- 'Low Risk'
+    risk_scored[risk_scored[['id']] == 7, 'risk_cat'] <- 0
 
-    # manually exclude for other reasons/based on older criteria
-    risk_scored[risk_scored[['id']] == 12, 'risk_cat'] <- 'Neither'
-    risk_scored[risk_scored[['id']] == 14, 'risk_cat'] <- 'Neither'
-    risk_scored[risk_scored[['id']] == 44, 'risk_cat'] <- 'Neither'
-    risk_scored[risk_scored[['id']] == 66, 'risk_cat'] <- 'Neither'
-    risk_scored[risk_scored[['id']] == 88, 'risk_cat'] <- 'Neither'
-    risk_scored[risk_scored[['id']] == 29, 'risk_cat'] <- 'Neither'
+    # manually exclude ('Neither' cat) for other reasons/based on older criteria
+    risk_scored[risk_scored[['id']] == 12, 'risk_cat'] <- 2
+    risk_scored[risk_scored[['id']] == 14, 'risk_cat'] <- 2
+    risk_scored[risk_scored[['id']] == 44, 'risk_cat'] <- 2
+    risk_scored[risk_scored[['id']] == 66, 'risk_cat'] <- 2
+    risk_scored[risk_scored[['id']] == 88, 'risk_cat'] <- 2
+    risk_scored[risk_scored[['id']] == 29, 'risk_cat'] <- 2
 
     # get labels from scored data and simplify
     risk_scored_labels <- sapply(risk_scored, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
@@ -192,24 +192,35 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
 
     #### 6. Add manual vars to scored data and updated labels ####
     # create manual re-code to fit lab exceptions
-    v1dat_scored[['man_recode_risk']] <- v1dat_scored[['risk_cat']]
+    v1dat_scored[['lab_recode_risk']] <- v1dat_scored[['risk_cat']]
 
-    v1dat_scored[v1dat_scored[['id']] == 54, 'man_recode_risk'] <- 'High Risk'
-    v1dat_scored[v1dat_scored[['id']] == 112, 'man_recode_risk'] <- 'Low Risk'
-    v1dat_scored[v1dat_scored[['id']] == 113, 'man_recode_risk'] <- 'Low Risk'
+    v1dat_scored[v1dat_scored[['id']] == 54, 'lab_recode_risk'] <- 2
+    v1dat_scored[v1dat_scored[['id']] == 112, 'lab_recode_risk'] <- 1
+    v1dat_scored[v1dat_scored[['id']] == 113, 'lab_recode_risk'] <- 1
 
     v1dat_scored_labels[['man_recode_risk']] <- 'Manually re-coded child risk category to match lab assigment'
 
     ## weight status
-    v1dat_scored[['weight_status']] <- ifelse(v1dat_scored[['bmi_percentile']] < 5, 'UW', ifelse(v1dat_scored[['bmi_percentile']] < 85, 'HW', ifelse(v1dat_scored[['bmi_percentile']] < 95, 'OW', 'OB')))
+    v1dat_scored[['weight_status']] <- ifelse(v1dat_scored[['bmi_percentile']] < 5, -99, ifelse(v1dat_scored[['bmi_percentile']] < 85, 0, ifelse(v1dat_scored[['bmi_percentile']] < 95, 1, 2)))
+
+    v1dat_scored[['weight_status']] <- sjlabelled::set_labels(v1dat_scored[['weight_status']], labels = c(UW = -99, HW = 0, OW = 1, OB = 2))
+    class(v1dat_scored[['weight_status']]) <- c("haven_labelled", "vctrs_vctr", "double")
+
     v1dat_scored_labels[['weight_status']] <- 'Child weight status using CDC BMI percentile cutoffs'
 
-    v1dat_scored[['dad_weight_status']] <- ifelse(is.na(v1dat_scored[['parent_respondent']]) | v1dat_scored[['parent_respondent']] == 2, NA, ifelse(v1dat_scored[['parent_respondent']] == 1, ifelse(v1dat_scored[['parent_bmi']] < 18.5, 'UW', ifelse(v1dat_scored[['parent_bmi']] < 25, 'HW', ifelse(v1dat_scored[['parent_bmi']] < 30, 'OW', ifelse(v1dat_scored[['parent_bmi']] < 35, 'C1-OB', ifelse(v1dat_scored[['parent_bmi']] < 40, 'C2-OB', 'C3-Severe OB'))))), ifelse(v1dat_scored[['sr_dad_bmi']] < 18.5, 'UW', ifelse(v1dat_scored[['sr_dad_bmi']] < 25, 'HW', ifelse(v1dat_scored[['sr_dad_bmi']] < 30, 'OW', ifelse(v1dat_scored[['sr_dad_bmi']] < 35, 'C1-OB', ifelse(v1dat_scored[['sr_dad_bmi']] < 40, 'C2-OB', 'C3-Severe OB')))))))
+    v1dat_scored[['dad_weight_status']] <- ifelse(is.na(v1dat_scored[['parent_respondent']]) | v1dat_scored[['parent_respondent']] == 2, NA, ifelse(v1dat_scored[['parent_respondent']] == 1, ifelse(v1dat_scored[['parent_bmi']] < 18.5, -99, ifelse(v1dat_scored[['parent_bmi']] < 25, 0, ifelse(v1dat_scored[['parent_bmi']] < 30, 1, ifelse(v1dat_scored[['parent_bmi']] < 35, 2, ifelse(v1dat_scored[['parent_bmi']] < 40, 3, 4))))), ifelse(v1dat_scored[['sr_dad_bmi']] < 18.5, -99, ifelse(v1dat_scored[['sr_dad_bmi']] < 25, 0, ifelse(v1dat_scored[['sr_dad_bmi']] < 30, 1, ifelse(v1dat_scored[['sr_dad_bmi']] < 35, 2, ifelse(v1dat_scored[['sr_dad_bmi']] < 40, 3, 4)))))))
+
+    v1dat_scored[['dad_weight_status']] <- sjlabelled::set_labels(v1dat_scored[['dad_weight_status']], labels = c(UW = -99, HW = 0, OW = 1, `C1-OB` = 2, `C2-OB` = 3, `C3-Severe OB` = 4))
+    class(v1dat_scored[['dad_weight_status']]) <- c("haven_labelled", "vctrs_vctr", "double")
+
     v1dat_scored_labels[['dad_weight_status']] <- 'Dad weight status using CDC cutoffs'
 
-    v1dat_scored[['mom_weight_status']] <- ifelse(is.na(v1dat_scored[['parent_respondent']]) | v1dat_scored[['parent_respondent']] == 2, NA, ifelse(v1dat_scored[['parent_respondent']] == 0, ifelse(v1dat_scored[['parent_bmi']] < 18.5, 'UW', ifelse(v1dat_scored[['parent_bmi']] < 25, 'HW', ifelse(v1dat_scored[['parent_bmi']] < 30, 'OW', ifelse(v1dat_scored[['parent_bmi']] < 35, 'C1-OB', ifelse(v1dat_scored[['parent_bmi']] < 40, 'C2-OB', 'C3-Severe OB'))))), ifelse(v1dat_scored[['sr_mom_bmi']] < 18.5, 'UW', ifelse(v1dat_scored[['sr_mom_bmi']] < 25, 'HW', ifelse(v1dat_scored[['sr_mom_bmi']] < 30, 'OW', ifelse(v1dat_scored[['sr_mom_bmi']] < 35, 'C1-OB', ifelse(v1dat_scored[['sr_mom_bmi']] < 40, 'C2-OB', 'C3-Severe OB')))))))
-    v1dat_scored_labels[['mom_weight_status']] <- 'Mom weight status using CDC cutoffs'
+    v1dat_scored[['mom_weight_status']] <- ifelse(is.na(v1dat_scored[['parent_respondent']]) | v1dat_scored[['parent_respondent']] == 2, NA, ifelse(v1dat_scored[['parent_respondent']] == 0, ifelse(v1dat_scored[['parent_bmi']] < 18.5, -99, ifelse(v1dat_scored[['parent_bmi']] < 25, 0, ifelse(v1dat_scored[['parent_bmi']] < 30, 1, ifelse(v1dat_scored[['parent_bmi']] < 35, 2, ifelse(v1dat_scored[['parent_bmi']] < 40, 3, 4))))), ifelse(v1dat_scored[['sr_mom_bmi']] < 18.5, -99, ifelse(v1dat_scored[['sr_mom_bmi']] < 25, 0, ifelse(v1dat_scored[['sr_mom_bmi']] < 30, 2, ifelse(v1dat_scored[['sr_mom_bmi']] < 35, 2, ifelse(v1dat_scored[['sr_mom_bmi']] < 40, 3, 4)))))))
 
+    v1dat_scored[['mom_weight_status']] <- sjlabelled::set_labels(v1dat_scored[['mom_weight_status']], labels = c(UW = -99, HW = 0, OW = 1, `C1-OB` = 2, `C2-OB` = 3, `C3-Severe OB` = 4))
+    class(v1dat_scored[['mom_weight_status']]) <- c("haven_labelled", "vctrs_vctr", "double")
+
+    v1dat_scored_labels[['mom_weight_status']] <- 'Mom weight status using CDC cutoffs'
 
     ## organize data
     v1dat_scored <- v1dat_scored[c(1:8, 687, 9:95, 688, 96:120, 689:690, 121:686)]

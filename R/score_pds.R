@@ -248,6 +248,8 @@ score_pds <- function(pds_data, respondent, male = 0, female = 1, parID) {
     ## add attributes to for tanner category to data
     pds_score_dat[["pds_tanner_cat"]] <- sjlabelled::add_labels(pds_score_dat[["pds_tanner_cat"]], labels = c(`Prepubertal` = 1, `Early Puberty` = 2, `Mid-Puberty` = 3, `Late Puberty` = 4,  `Postpubertal` = 5))
     pds_score_dat[["pds_tanner_cat"]] <- sjlabelled::as_numeric(pds_score_dat[["pds_tanner_cat"]])
+    pds_score_dat[["pds_tanner_cat"]] <- sjlabelled::set_labels(pds_score_dat[["pds_tanner_cat"]], labels = c(`Prepubertal` = 1, `Early Puberty` = 2, `Mid-Puberty` = 3, `Late Puberty` = 4,  `Postpubertal` = 5))
+    class(pds_score_dat[["pds_tanner_cat"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     ## set names based on respondent
     if (respondent == "child") {

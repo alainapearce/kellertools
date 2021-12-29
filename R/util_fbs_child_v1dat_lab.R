@@ -188,7 +188,11 @@ util_fbs_child_v1dat_lab <- function(file_pattern, data_path) {
     qv1_child_clean_labels[["bmi_percentile"]] <- "BMI percentile updated: calculated using childsds R package and scripted average height and weight"
 
     #update/confirm child screenout - can only change for those NOT screened out as if they were screened out we wont have data for them. The inital criteria was BMI percentile < 85 but now it is < 90
+    bmi_set_attr <- attributes(qv1_child_clean[["bmi_screenout"]])
+
     qv1_child_clean[["bmi_screenout"]] <- ifelse(qv1_child_clean[["bmi_screenout"]] == 0 & qv1_child_clean[["bmi_percentile"]] >= 90, 1, qv1_child_clean[["bmi_screenout"]])
+
+    attributes(qv1_child_clean[["bmi_screenout"]]) <- bmi_set_attr
 
     # child bmi z score : sds (standard deviations away from center/50th centile) - new variable so need to add to
     # labels
