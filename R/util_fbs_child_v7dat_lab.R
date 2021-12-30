@@ -165,6 +165,10 @@ util_fbs_child_v7dat_lab <- function(file_pattern, data_path) {
     qv7_child_clean[["dob"]] <- as.Date(qv7_child_clean[["dob"]], format = "%m/%d/%Y")
     qv7_child_clean_labels[["dob"]] <- "date of birth converted to format yyyy-mm-dd in R"
 
+    #make freaddy fullness numeric
+    qv7_child_clean[c(13:17, 40, 157:160)] <- sapply(qv7_child_clean[c(13:17, 40, 157:160)], FUN = as.numeric)
+
+
     # 6) re-calculate manual variables ####
 
     # avg child height, update label
@@ -293,6 +297,9 @@ util_fbs_child_v7dat_lab <- function(file_pattern, data_path) {
         attributes(qv7_child_clean[[pvar]]) <- pvar_attr
     }
 
+    # make loc2a-loc2c numeric
+    qv7_child_clean[165:167] <- sapply(qv7_child_clean[165:167], FUN = as.numeric)
+
     # 8) fix labels ####
 
     ## remove 'V7', 'V6', and 'V1' in labels
@@ -334,6 +341,13 @@ util_fbs_child_v7dat_lab <- function(file_pattern, data_path) {
     qv7_child_clean_labels[["spacegame_reward"]] <- "Type of candy selected for Space Game reward"
 
     #### 9) Format for export ####
+
+    ## 9a) add attributes to pna data
+    qv7_child_pna[2:ncol(qv7_child_pna)] <- as.data.frame(lapply(qv7_child_pna[2:ncol(qv7_child_pna)], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+
+    for (v in 2:ncol(qv7_child_pna)){
+        class(qv7_child_pna[[v]]) <- c("haven_labelled", "vctrs_vctr", "double")
+    }
 
     #put data in order of participant ID for ease
     qv7_child_clean <- qv7_child_clean[order(qv7_child_clean[["id"]]), ]

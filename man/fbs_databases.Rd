@@ -51,30 +51,19 @@ This function will generate up-to-date databases for the Food and Brain Study. T
 To process the raw data, the raw databases from Qualtrics MUST follow the naming convention: Child_V1_YYYY-MM-DD.sav, Child_V1_Home_YYY-MM-DD.sav, Child_V1_Lab_YYY-MM-DD.sav, and Parent_V1_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered and the directory organization does not follow the structure laid out in the DataManual.
 }
 \examples{
-#if in same working directory as data with all data having the same date in filename:
-fbs_data_proc <- fbs_databases(date_str = '2021-10-11')
+#if in same working directory as data, want all databases, and the databases to be written to working directory:
+fbs_data_proc <- fbs_databases(model_DD = TRUE)
 
-#if only want the Demographics and Intake databases:
-fbs_data_proc <- fbs_databases(date_str = '2021-10-11', databases = c('demo', 'intake'))
+#if only want the Demographics and Intake databases written to working directory:
+fbs_data_proc <- fbs_databases(databases = c('demo', 'intake'))
 
-#if in same working directory as data and covid collecte data has different dates for visit 1:
-#make visit 1 list of date strings:
-v1_datestr = list(child = '2021-9-15', child_home = '2021-10-11', child_lab = '2021-10-11', parent = '2021-9-15')
-
-#run - note: value for date_str will be use for visits 2-7 dates since only visit 1 has a list of date strings specified
-fbs_data_proc <- fbs_databases(date_str = '2021-10-11', v1_date_str = v1_datestr)
+#if want to work with the Demographics database but not write it to a file:
+fbs_data_proc <- fbs_databases(databases = 'demo', write_dat = FALSE)
 
 \dontrun{
-#date must be a string. The following will not run:
-fbs_data_proc <- fbs_databases(2021-10-11)
+#databases must be strings. The following will not run:
+fbs_data_proc <- fbs_databases(databases = c(demo, intake))
 
-#date must match the file name - for file named 'Child_V1_Home_2021_09_15', the
-following will not run:
-fbs_data_proc <- fbs_databases('2021_10_11')
-
-#visit specific dates must be saved as strings in a list. The following will NOT work in the function:
-#make visit 1 list of date strings:
-v1_datestr = c(child = '2021-9-15', child_home = '2021-10-11', child_lab = '2021-10-11', parent = '2021-9-15')
 }
 
 }

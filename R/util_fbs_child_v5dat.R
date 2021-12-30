@@ -144,6 +144,10 @@ util_fbs_child_v5dat <- function(file_pattern, data_path) {
     qv5_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv5_child_clean[["start_date"]]))
     qv5_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
+    #make freaddy fullness numeric
+    qv5_child_clean[c(3:4, 10:13, 16)] <- sapply(qv5_child_clean[c(3:4, 10:13, 16)], FUN = as.numeric)
+
+
     # 6) re-calculate manual variables ####
 
     ## re-calculate all intake values
@@ -237,6 +241,9 @@ util_fbs_child_v5dat <- function(file_pattern, data_path) {
         attributes(qv5_child_clean[[pvar]]) <- pvar_attr
     }
 
+    # make loc2a-loc2c numeric
+    qv5_child_clean[43:45] <- sapply(qv5_child_clean[43:45], FUN = as.numeric)
+
     ## Fix 99 in interoception heartbeat count questions
     ### Note, both "don't remember" and 99 heartbeats were coded as 99 in qualtrics. However, experience with data collection and distribution of numbers suggests that children did not count 99 heartbeats and that 99s are indicative of "don't remember" responses. Therefore: 1) if 99's exist, make a 'prefer not to answer' (pna) variable to go in pna database, 2) replace 99's with NA and make variable numeric
 
@@ -318,6 +325,13 @@ util_fbs_child_v5dat <- function(file_pattern, data_path) {
     }
 
     # 9) Format for export ####
+
+    ## 9a) add attributes to pna data
+    qv5_child_pna[2:ncol(qv5_child_pna)] <- as.data.frame(lapply(qv5_child_pna[2:ncol(qv5_child_pna)], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+
+    for (v in 2:ncol(qv5_child_pna)){
+        class(qv5_child_pna[[v]]) <- c("haven_labelled", "vctrs_vctr", "double")
+    }
 
     #put data in order of participant ID for ease
     qv5_child_clean <- qv5_child_clean[order(qv5_child_clean[["id"]]), ]

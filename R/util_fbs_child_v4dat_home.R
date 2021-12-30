@@ -92,26 +92,10 @@ util_fbs_child_v4dat_home <- function(file_pattern, data_path) {
 
     } else {
 
-        #check if in the main database rather than 'Final_CovidAtHome' database
         if (isTRUE(datapath_arg)) {
-            qv4_child_path2 <- paste0(data_path, "/Child_V4_Home_", date_str, ".sav")
+            stop("File does not exist. Check date_str and data_path entered")
         } else {
-            qv4_child_path2 <- paste0("Child_V4_Home", date_str, ".sav")
-        }
-
-        # check if file exists
-        qv4_child_exists2 <- file.exists(qv4_child_path2)
-
-        # load data if it exists
-        if (isTRUE(qv4_child_exists2)) {
-            qv4_child_dat <- as.data.frame(haven::read_spss(qv4_child_path2))
-
-        } else {
-            if (isTRUE(datapath_arg)) {
-                stop("File does not exist. Check date_str and data_path entered")
-            } else {
-                stop("File does not exist. Check date_str and that the data exists in current working directory")
-            }
+            stop("File does not exist. Check date_str and that the data exists in current working directory")
         }
     }
 
@@ -179,7 +163,7 @@ util_fbs_child_v4dat_home <- function(file_pattern, data_path) {
 
             # add label to pna database
             qv4_child_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,
-                ": ", qv4_child_clean_labels[[pvar]])
+                                                                   ": ", qv4_child_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
             qv4_child_clean_labels[[pvar]] <- paste0(qv4_child_clean_labels[[pvar]], " -- ", pna_label)
@@ -204,7 +188,16 @@ util_fbs_child_v4dat_home <- function(file_pattern, data_path) {
     ## id label
     qv4_child_clean_labels[["id"]] <- "participant ID"
 
-    #### 8) Format for export #### put data in order of participant ID for ease ####
+    #### 8) Format for export ####
+
+    ## 8a) add attributes to pna data
+    qv4_child_pna[2:ncol(qv4_child_pna)] <- as.data.frame(lapply(qv4_child_pna[2:ncol(qv4_child_pna)], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+
+    for (v in 2:ncol(qv4_child_pna)){
+        class(qv4_child_pna[[v]]) <- c("haven_labelled", "vctrs_vctr", "double")
+    }
+
+    #put data in order of participant ID for ease
     qv4_child_clean <- qv4_child_clean[order(qv4_child_clean[["id"]]), ]
 
     qv4_child_pna <- qv4_child_pna[order(qv4_child_pna[["id"]]), ]

@@ -111,11 +111,9 @@ util_fbs_parent_v1dat <- function(file_pattern, data_path) {
 
     #general order: 1) child information (sex, dob,) 2) anthro - h/w, puberty, PA, parent measured h/w, parent related info, 3) general demographics, 4) meal related Q's - ranking, eat out, PSS, feeding strategies, 6) Fasting procedure
 
-    qv1_parent_clean <- qv1_parent_clean[c(2, 1, 127, 5:15, 128:201, 16:20, 371:377, 213:218, 21:51, 125:126, 52:124,
-        206:212, 202:205, 219:370, 3:4)]
+    qv1_parent_clean <- qv1_parent_clean[c(2, 1, 127, 5:15, 128:201, 16:20, 371:377, 213:218, 21:51, 125:126, 52:124, 206:212, 202:205, 219:370, 3:4)]
 
-    qv1_parent_clean_labels <- qv1_parent_clean_labels[c(2, 1, 127, 5:15, 128:201, 16:20, 371:377, 213:218, 21:51, 125:126,
-        52:124, 206:212, 202:205, 219:370, 3:4)]
+    qv1_parent_clean_labels <- qv1_parent_clean_labels[c(2, 1, 127, 5:15, 128:201, 16:20, 371:377, 213:218, 21:51, 125:126, 52:124, 206:212, 202:205, 219:370, 3:4)]
 
     ## re-name variables
 
@@ -339,7 +337,9 @@ util_fbs_parent_v1dat <- function(file_pattern, data_path) {
 
     ## 6c) continuous variables with 99's data ####
 
-    level99_issue_contvars <- names(qv1_parent_clean)[c(5:7, 9, 11, 107:122, 145:146, 158)]
+    level99_issue_contvars <- names(qv1_parent_clean)[c(5:7, 9, 11, 23, 25, 107:122, 145:146, 158)]
+    #update 1 label
+    qv1_parent_clean_labels[['pds_5fd']] <- paste0(qv1_parent_clean_labels[['pds_5fd']], 'in weeks')
 
     for (v in 1:length(level99_issue_contvars)) {
         # get variable name
@@ -607,8 +607,7 @@ util_fbs_parent_v1dat <- function(file_pattern, data_path) {
 
         qv1_parent_clean[[pvar]] <- sjlabelled::set_labels(qv1_parent_clean[[pvar]], labels = c(`White/Caucasian` = 0, `American Indian/Alaskan Native` = 1, `Asian` = 2, `Black/African American` = 3, `Hawaiian/Pacific Islander` = 4))
         set_attr <- attributes(qv1_parent_clean[[pvar]])
-        qv1_parent_clean[[pvar]] <- ifelse(is.na(qv1_parent_clean[[pvar]]), NA, ifelse(qv1_parent_clean[[pvar]] == 5,
-            0, qv1_parent_clean[[pvar]]))
+        qv1_parent_clean[[pvar]] <- ifelse(is.na(qv1_parent_clean[[pvar]]), NA, ifelse(qv1_parent_clean[[pvar]] == 5, 0, qv1_parent_clean[[pvar]]))
         attributes(qv1_parent_clean[[pvar]]) <- set_attr
         qv1_parent_clean_labels[[pvar]] <- paste0(qv1_parent_clean_labels[[pvar]], " re-leveled in R to start with 0 and set 'White/Caucasion' = 0")
     }
@@ -630,9 +629,11 @@ util_fbs_parent_v1dat <- function(file_pattern, data_path) {
 
 
     ## 11b) add attributes to pna data
-    n_pna_cols <- length(names(qv1_parent_pna))
-    qv1_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv1_parent_pna[2:n_pna_cols], function(x) sjlabelled::add_labels(x,
-        labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+    qv1_parent_pna[2:ncol(qv1_parent_pna)] <- as.data.frame(lapply(qv1_parent_pna[2:ncol(qv1_parent_pna)], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+
+    for (v in 2:ncol(qv1_parent_pna)){
+        class(qv1_parent_pna[[v]]) <- c("haven_labelled", "vctrs_vctr", "double")
+    }
 
     # 11c) put data in order of participant ID for ease
     qv1_parent_clean <- qv1_parent_clean[order(qv1_parent_clean[["id"]]), ]

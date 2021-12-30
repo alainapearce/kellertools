@@ -77,7 +77,7 @@ util_fbs_merge_v7 <- function(child_file_pattern, parent_file_pattern, data_path
     #### 3. Merge Child Raw Data #####
 
     # merge child home and lab into single database
-    child_covidmerge_v7dat <- merge(child_lab_v7dat$data, child_home_v7dat$data[c(1, 5:39)], by = 'id', all = TRUE)
+    child_covidmerge_v7dat <- merge(child_lab_v7dat[['data']], child_home_v7dat[['data']][c(1, 5:39)], by = 'id', all = TRUE)
 
     # re-order so matches child_v7dat
     child_covidmerge_v7dat <- child_covidmerge_v7dat[c(1:15, 190:203, 16:186, 204:224, 187:189)]
@@ -88,13 +88,13 @@ util_fbs_merge_v7 <- function(child_file_pattern, parent_file_pattern, data_path
     set_attr_loc4 <- attributes(child_covidmerge_v7dat[['loc4']])
     set_attr_loc14 <- attributes(child_covidmerge_v7dat[['loc14']])
 
-    child_v7dat$data[['loc4']] <- as.numeric(child_v7dat$data[['loc4']])
+    child_v7dat[['data']][['loc4']] <- as.numeric(child_v7dat[['data']][['loc4']])
     child_covidmerge_v7dat[['loc4']] <- as.numeric(child_covidmerge_v7dat[['loc4']])
 
-    child_v7dat$data[['loc14']] <- as.numeric(child_v7dat$data[['loc14']])
+    child_v7dat[['data']][['loc14']] <- as.numeric(child_v7dat[['data']][['loc14']])
     child_covidmerge_v7dat[['loc14']] <- as.numeric(child_covidmerge_v7dat[['loc14']])
 
-    all_child_v7dat <- rbind.data.frame(child_v7dat$data, child_covidmerge_v7dat)
+    all_child_v7dat <- rbind.data.frame(child_v7dat[['data']], child_covidmerge_v7dat)
 
     attributes(all_child_v7dat[['loc4']]) <- set_attr_loc4
     attributes(all_child_v7dat[['loc14']]) <- set_attr_loc14
@@ -103,47 +103,51 @@ util_fbs_merge_v7 <- function(child_file_pattern, parent_file_pattern, data_path
 
     # update labels with 'parent report'
 
-    for (v in 1:ncol(parent_v7dat$data)) {
-        var_name <- names(parent_v7dat$data)[v]
+    for (v in 1:ncol(parent_v7dat[['data']])) {
+        var_name <- names(parent_v7dat[['data']])[v]
 
         # remove existing label
-        if (grepl("parent-reported", parent_v7dat$dict[[var_name]], fixed = TRUE)) {
-            parent_v7dat$dict[[var_name]] <- gsub("parent-reported", "", parent_v7dat$dict[[var_name]])
+        if (grepl("parent-reported", parent_v7dat[['dict']][[var_name]], fixed = TRUE)) {
+            parent_v7dat[['dict']][[var_name]] <- gsub("parent-reported", "", parent_v7dat[['dict']][[var_name]])
+        }
+
+        if (grepl("Parent Reported: ", parent_v7dat[['dict']][[var_name]], fixed = TRUE)) {
+            parent_v7dat[['dict']][[var_name]] <- gsub("Parent Reported: ", "", parent_v7dat[['dict']][[var_name]])
         }
 
         # add universal label
-        parent_v7dat$dict[[var_name]] <- paste0('Parent Reported: ', parent_v7dat$dict[[var_name]])
+        parent_v7dat[['dict']][[var_name]] <- paste0('Parent Reported: ', parent_v7dat[['dict']][[var_name]])
     }
 
-    for (v in 1:ncol(parent_home_v7dat$data)) {
-        var_name <- names(parent_home_v7dat$data)[v]
+    for (v in 1:ncol(parent_home_v7dat[['data']])) {
+        var_name <- names(parent_home_v7dat[['data']])[v]
 
         # remove existing label
-        if (grepl("parent-reported", parent_home_v7dat$dict[[var_name]], fixed = TRUE)) {
-            parent_home_v7dat$dict[[var_name]] <- gsub("parent-reported", "", parent_home_v7dat$dict[[var_name]])
+        if (grepl("parent-reported", parent_home_v7dat[['dict']][[var_name]], fixed = TRUE)) {
+            parent_home_v7dat[['dict']][[var_name]] <- gsub("parent-reported", "", parent_home_v7dat[['dict']][[var_name]])
         }
 
         # add universal label
-        parent_home_v7dat$dict[[var_name]] <- paste0('Parent Reported: ', parent_home_v7dat$dict[[var_name]])
+        parent_home_v7dat[['dict']][[var_name]] <- paste0('Parent Reported: ', parent_home_v7dat[['dict']][[var_name]])
     }
 
     ##need to had measured parent h/w to home data to match standard columns
-    parent_home_v7dat$data['parent_height1'] <- NA
-    parent_home_v7dat$data['parent_height2'] <- NA
-    parent_home_v7dat$data['parent_weight1'] <- NA
-    parent_home_v7dat$data['parent_weight2'] <- NA
-    parent_home_v7dat$data['parent_height_avg'] <- NA
-    parent_home_v7dat$data['parent_weight_avg'] <- NA
-    parent_home_v7dat$data['parent_bmi'] <- NA
+    parent_home_v7dat[['data']]['parent_height1'] <- NA
+    parent_home_v7dat[['data']]['parent_height2'] <- NA
+    parent_home_v7dat[['data']]['parent_weight1'] <- NA
+    parent_home_v7dat[['data']]['parent_weight2'] <- NA
+    parent_home_v7dat[['data']]['parent_height_avg'] <- NA
+    parent_home_v7dat[['data']]['parent_weight_avg'] <- NA
+    parent_home_v7dat[['data']]['parent_bmi'] <- NA
 
-    parent_home_v7dat$data <- parent_home_v7dat$data[c(1:119, 543:549, 120:542)]
+    parent_home_v7dat[['data']] <- parent_home_v7dat[['data']][c(1:119, 543:549, 120:542)]
 
     #merge parent data
     #brute force to get same data type for pss_milk_freq
-    parent_home_v7dat$data[[356]] <- as.numeric(parent_home_v7dat$data[[356]])
-    parent_v7dat$data[[356]] <- as.numeric(parent_v7dat$data[[356]])
+    parent_home_v7dat[['data']][[356]] <- as.numeric(parent_home_v7dat[['data']][[356]])
+    parent_v7dat[['data']][[356]] <- as.numeric(parent_v7dat[['data']][[356]])
 
-    v7dat_parent <- rbind.data.frame(parent_v7dat$data, parent_home_v7dat$data)
+    v7dat_parent <- rbind.data.frame(parent_v7dat[['data']], parent_home_v7dat[['data']])
 
     #re-name pds data for parents
     for (var in 6:19){
@@ -157,13 +161,13 @@ util_fbs_merge_v7 <- function(child_file_pattern, parent_file_pattern, data_path
         names(v7dat_parent)[var] <- p_var_name
     }
 
-    names(parent_v7dat$dict) <- names(v7dat_parent)
+    names(parent_v7dat[['dict']]) <- names(v7dat_parent)
 
     #merge parent and child
     v7dat <- merge(all_child_v7dat, v7dat_parent[c(1, 5:549)], by = 'id', all = TRUE)
 
     # merge labels/dictionary
-    v7dat_labels <- c(child_v7dat$dict, parent_v7dat$dict[5:549])
+    v7dat_labels <- c(child_v7dat[['dict']], parent_v7dat[['dict']][5:549])
 
     #### 5. Organize V7 data ####
 
@@ -374,27 +378,55 @@ util_fbs_merge_v7 <- function(child_file_pattern, parent_file_pattern, data_path
 
     v7dat_scored_labels <- v7dat_scored_labels[c(1:317, 888, 318:321, 889, 322:325, 890, 326:329, 891, 330:333, 892, 334:337, 893, 338:341, 894, 342:345, 895, 346:349, 896, 350:353, 897, 354:357, 898, 358:361, 899:901, 362:887)]
 
-    #### 8. PNA data #####
+    #### 8. Weight Status - Manual ####
+    ## weight status
+    v7dat_scored[['weight_status']] <- ifelse(v7dat_scored[['bmi_percentile']] < 5, -99, ifelse(v7dat_scored[['bmi_percentile']] < 85, 0, ifelse(v7dat_scored[['bmi_percentile']] < 95, 1, 2)))
+
+    v7dat_scored[['weight_status']] <- sjlabelled::set_labels(v7dat_scored[['weight_status']], labels = c(UW = -99, HW = 0, OW = 1, OB = 2))
+    class(v7dat_scored[['weight_status']]) <- c("haven_labelled", "vctrs_vctr", "double")
+
+    v7dat_scored_labels[['weight_status']] <- 'Child weight status using CDC BMI percentile cutoffs'
+
+    v7dat_scored[['dad_weight_status']] <- ifelse(is.na(v7dat_scored[['parent_respondent']]) | v7dat_scored[['parent_respondent']] == 2, NA, ifelse(v7dat_scored[['parent_respondent']] == 1, ifelse(v7dat_scored[['parent_bmi']] < 18.5, -99, ifelse(v7dat_scored[['parent_bmi']] < 25, 0, ifelse(v7dat_scored[['parent_bmi']] < 30, 1, ifelse(v7dat_scored[['parent_bmi']] < 35, 2, ifelse(v7dat_scored[['parent_bmi']] < 40, 3, 4))))), ifelse(v7dat_scored[['sr_dad_bmi']] < 18.5, -99, ifelse(v7dat_scored[['sr_dad_bmi']] < 25, 0, ifelse(v7dat_scored[['sr_dad_bmi']] < 30, 1, ifelse(v7dat_scored[['sr_dad_bmi']] < 35, 2, ifelse(v7dat_scored[['sr_dad_bmi']] < 40, 3, 4)))))))
+
+    v7dat_scored[['dad_weight_status']] <- sjlabelled::set_labels(v7dat_scored[['dad_weight_status']], labels = c(UW = -99, HW = 0, OW = 1, `C1-OB` = 2, `C2-OB` = 3, `C3-Severe OB` = 4))
+    class(v7dat_scored[['dad_weight_status']]) <- c("haven_labelled", "vctrs_vctr", "double")
+
+    v7dat_scored_labels[['dad_weight_status']] <- 'Dad weight status using CDC cutoffs'
+
+    v7dat_scored[['mom_weight_status']] <- ifelse(is.na(v7dat_scored[['parent_respondent']]) | v7dat_scored[['parent_respondent']] == 2, NA, ifelse(v7dat_scored[['parent_respondent']] == 0, ifelse(v7dat_scored[['parent_bmi']] < 18.5, -99, ifelse(v7dat_scored[['parent_bmi']] < 25, 0, ifelse(v7dat_scored[['parent_bmi']] < 30, 1, ifelse(v7dat_scored[['parent_bmi']] < 35, 2, ifelse(v7dat_scored[['parent_bmi']] < 40, 3, 4))))), ifelse(v7dat_scored[['sr_mom_bmi']] < 18.5, -99, ifelse(v7dat_scored[['sr_mom_bmi']] < 25, 0, ifelse(v7dat_scored[['sr_mom_bmi']] < 30, 2, ifelse(v7dat_scored[['sr_mom_bmi']] < 35, 2, ifelse(v7dat_scored[['sr_mom_bmi']] < 40, 3, 4)))))))
+
+    v7dat_scored[['mom_weight_status']] <- sjlabelled::set_labels(v7dat_scored[['mom_weight_status']], labels = c(UW = -99, HW = 0, OW = 1, `C1-OB` = 2, `C2-OB` = 3, `C3-Severe OB` = 4))
+    class(v7dat_scored[['mom_weight_status']]) <- c("haven_labelled", "vctrs_vctr", "double")
+
+    v7dat_scored_labels[['mom_weight_status']] <- 'Mom weight status using CDC cutoffs'
+
+    # organize
+    v7dat_scored <- v7dat_scored[c(1:129, 902, 130:285, 903:904, 286:901)]
+
+    v7dat_scored_labels <- v7dat_scored_labels[c(1:129, 902, 130:285, 903:904, 286:901)]
+
+    #### 9. PNA data #####
 
     # child pna data
 
     #merge lab and home
-    child_v7dat_covidmerge_pna <- merge(child_lab_v7dat$pna_data, child_home_v7dat$pna_data, by = 'id', all = TRUE)
+    child_v7dat_covidmerge_pna <- merge(child_lab_v7dat[['pna_data']], child_home_v7dat[['pna_data']], by = 'id', all = TRUE)
 
     #find names in common and unique
-    common_names <- intersect(names(child_v7dat$pna_data), names(child_v7dat_covidmerge_pna))
-    child_v7dat_uniq_names <- c('id', names(child_v7dat$pna_data)[!(names(child_v7dat$pna_data) %in% common_names)])
+    common_names <- intersect(names(child_v7dat[['pna_data']]), names(child_v7dat_covidmerge_pna))
+    child_v7dat_uniq_names <- c('id', names(child_v7dat[['pna_data']])[!(names(child_v7dat[['pna_data']]) %in% common_names)])
     child_covidmerge_v7dat_uniq_names <- c('id', names(child_v7dat_covidmerge_pna)[!(names(child_v7dat_covidmerge_pna) %in% common_names)])
 
     # initial merge with common names
-    child_v7dat_pna_m1 <- rbind.data.frame(child_v7dat$pna_data[common_names], child_v7dat_covidmerge_pna[common_names])
+    child_v7dat_pna_m1 <- rbind.data.frame(child_v7dat[['pna_data']][common_names], child_v7dat_covidmerge_pna[common_names])
 
     # full merge with unique names
     if (length(child_v7dat_uniq_names) > 1 & length(child_covidmerge_v7dat_uniq_names) > 1){
-        child_v7dat_m2 <- merge(child_v7dat_pna_m1, child_v7dat$pna_data[child_v7dat_uniq_names], by = 'id', all = TRUE)
+        child_v7dat_m2 <- merge(child_v7dat_pna_m1, child_v7dat[['pna_data']][child_v7dat_uniq_names], by = 'id', all = TRUE)
         child_v7dat_pna <- merge(child_v7dat_m2, child_v7dat_covidmerge_pna[child_covidmerge_v7dat_uniq_names], by = 'id', all = TRUE)
     } else if (length(child_v7dat_uniq_names) > 1) {
-        child_v7dat_pna <- merge(child_v7dat_pna_m1, child_v7dat$pna_data[child_v7dat_uniq_names], by = 'id', all = TRUE)
+        child_v7dat_pna <- merge(child_v7dat_pna_m1, child_v7dat[['pna_data']][child_v7dat_uniq_names], by = 'id', all = TRUE)
     } else if (length(child_covidmerge_v7dat_uniq_names) > 1){
         child_v7dat_pna <- merge(child_v7dat_m1, child_v7dat_covidmerge_pna[child_covidmerge_v7dat_uniq_names], by = 'id', all = TRUE)
     } else {
@@ -408,33 +440,33 @@ util_fbs_merge_v7 <- function(child_file_pattern, parent_file_pattern, data_path
     for (v in 1:length(names(child_v7dat_pna))){
         var_name = names(child_v7dat_pna)[v]
 
-        if (var_name %in% names(child_v7dat$pna_data)){
-            child_v7dat_pna_labels[[var_name]] <- child_v7dat$pna_dict[[var_name]]
-        } else if (var_name %in% names(child_lab_v7dat$pna_data)){
-            child_v7dat_pna_labels[[var_name]] <- child_lab_v7dat$pna_dict[[var_name]]
-        } else if (var_name %in% names(child_home_v7dat$pna_data)){
-            child_v7dat_pna_labels[[var_name]] <- child_home_v7dat$pna_dict[[var_name]]
+        if (var_name %in% names(child_v7dat[['pna_data']])){
+            child_v7dat_pna_labels[[var_name]] <- child_v7dat[['pna_dict']][[var_name]]
+        } else if (var_name %in% names(child_lab_v7dat[['pna_data']])){
+            child_v7dat_pna_labels[[var_name]] <- child_lab_v7dat[['pna_dict']][[var_name]]
+        } else if (var_name %in% names(child_home_v7dat[['pna_data']])){
+            child_v7dat_pna_labels[[var_name]] <- child_home_v7dat[['pna_dict']][[var_name]]
         }
 
     }
 
     ## parent pna
     #find names in common and unique
-    p_common_names <- intersect(names(parent_v7dat$pna_data), names(parent_home_v7dat$pna_data))
-    parent_v7dat_uniq_names <- c('id', names(parent_v7dat$pna_data)[!(names(parent_v7dat$pna_data) %in% p_common_names)])
-    parent_home_v7dat_uniq_names <- c('id', names(parent_home_v7dat$pna_data)[!(names(parent_home_v7dat$pna_data) %in% p_common_names)])
+    p_common_names <- intersect(names(parent_v7dat[['pna_data']]), names(parent_home_v7dat[['pna_data']]))
+    parent_v7dat_uniq_names <- c('id', names(parent_v7dat[['pna_data']])[!(names(parent_v7dat[['pna_data']]) %in% p_common_names)])
+    parent_home_v7dat_uniq_names <- c('id', names(parent_home_v7dat[['pna_data']])[!(names(parent_home_v7dat[['pna_data']]) %in% p_common_names)])
 
     # initial merge with common names
-    parent_v7dat_pna_m1 <- rbind.data.frame(parent_v7dat$pna_data[p_common_names], parent_home_v7dat$pna_data[p_common_names])
+    parent_v7dat_pna_m1 <- rbind.data.frame(parent_v7dat[['pna_data']][p_common_names], parent_home_v7dat[['pna_data']][p_common_names])
 
     # full merge with unique names
     if (length(parent_v7dat_uniq_names) > 1 & length(parent_home_v7dat_uniq_names) > 1){
-        parent_v7dat_m2 <- merge(parent_v7dat_pna_m1, parent_v7dat$pna_data[parent_v7dat_uniq_names], by = 'id', all = TRUE)
-        parent_v7dat_pna <- merge(parent_v7dat_m2, parent_home_v7dat$pna_data[parent_home_v7dat_uniq_names], by = 'id', all = TRUE)
+        parent_v7dat_m2 <- merge(parent_v7dat_pna_m1, parent_v7dat[['pna_data']][parent_v7dat_uniq_names], by = 'id', all = TRUE)
+        parent_v7dat_pna <- merge(parent_v7dat_m2, parent_home_v7dat[['pna_data']][parent_home_v7dat_uniq_names], by = 'id', all = TRUE)
     } else if (length(parent_v7dat_uniq_names) > 1) {
-        parent_v7dat_pna <- merge(parent_v7dat_pna_m1, parent_v7dat$pna_data[parent_v7dat_uniq_names], by = 'id', all = TRUE)
+        parent_v7dat_pna <- merge(parent_v7dat_pna_m1, parent_v7dat[['pna_data']][parent_v7dat_uniq_names], by = 'id', all = TRUE)
     } else if (length(parent_home_v7dat_uniq_names) > 1){
-        parent_v7dat_pna <- merge(parent_v7dat_m1, parent_home_v7dat$pna_data[parent_home_v7dat_uniq_names], by = 'id', all = TRUE)
+        parent_v7dat_pna <- merge(parent_v7dat_m1, parent_home_v7dat[['pna_data']][parent_home_v7dat_uniq_names], by = 'id', all = TRUE)
     } else {
         parent_v7dat_pna <- parent_v7dat_m1
     }
@@ -446,31 +478,31 @@ util_fbs_merge_v7 <- function(child_file_pattern, parent_file_pattern, data_path
     for (v in 1:length(names(parent_v7dat_pna))){
         var_name = names(parent_v7dat_pna)[v]
 
-        if (var_name %in% names(parent_v7dat$pna_data)){
-            parent_v7dat_pna_labels[[var_name]] <- parent_v7dat$pna_dict[[var_name]]
-        } else if (var_name %in% names(parent_home_v7dat$pna_data)){
-            parent_v7dat_pna_labels[[var_name]] <- parent_home_v7dat$pna_dict[[var_name]]
+        if (var_name %in% names(parent_v7dat[['pna_data']])){
+            parent_v7dat_pna_labels[[var_name]] <- parent_v7dat[['pna_dict']][[var_name]]
+        } else if (var_name %in% names(parent_home_v7dat[['pna_data']])){
+            parent_v7dat_pna_labels[[var_name]] <- parent_home_v7dat[['pna_dict']][[var_name]]
         }
     }
 
     # parent pna data
-    for (v in 1:ncol(parent_v7dat$pna_data)) {
-        var_name <- names(parent_v7dat$pna_data)[v]
+    for (v in 1:ncol(parent_v7dat[['pna_data']])) {
+        var_name <- names(parent_v7dat[['pna_data']])[v]
 
         # remove existing label
-        if (grepl("parent-reported", parent_v7dat$pna_dict[[var_name]], fixed = TRUE)) {
-            parent_v7dat$pna_dict[[var_name]] <- gsub("parent-reported", "", parent_v7dat$pna_dict[[var_name]])
+        if (grepl("parent-reported", parent_v7dat[['pna_dict']][[var_name]], fixed = TRUE)) {
+            parent_v7dat[['pna_dict']][[var_name]] <- gsub("parent-reported", "", parent_v7dat[['pna_dict']][[var_name]])
         }
 
         # add universal label
-        parent_v7dat$pna_dict[[var_name]] <- paste0('Parent Reported: ', parent_v7dat$pna_dict[[var_name]])
+        parent_v7dat[['pna_dict']][[var_name]] <- paste0('Parent Reported: ', parent_v7dat[['pna_dict']][[var_name]])
     }
 
     v7dat_pna <- merge(child_v7dat_pna, parent_v7dat_pna, by = 'id', all = TRUE)
 
     v7dat_pna_labels <- c(child_v7dat_pna_labels, parent_v7dat_pna_labels[2:length(parent_v7dat_pna_labels)])
 
-    #### 9. save to list #####
+    #### 10. save to list #####
 
     # put data in order of participant ID for ease
     v7dat_scored <- v7dat_scored[order(v7dat_scored[["id"]]), ]
@@ -480,7 +512,7 @@ util_fbs_merge_v7 <- function(child_file_pattern, parent_file_pattern, data_path
     v7dat_scored = sjlabelled::set_label(v7dat_scored, label = matrix(unlist(v7dat_scored_labels, use.names = FALSE)))
     v7dat_pna = sjlabelled::set_label(v7dat_pna, label = matrix(unlist(v7dat_pna_labels, use.names = FALSE)))
 
-    v7data_list <- list(data = v7dat_scored, dict = v7dat_scored_labels, pna_dat = v7dat_pna, pna_dict = v7dat_pna_labels)
+    v7data_list <- list(data = v7dat_scored, dict = v7dat_scored_labels, pna_data = v7dat_pna, pna_dict = v7dat_pna_labels)
 
     return(v7data_list)
 }

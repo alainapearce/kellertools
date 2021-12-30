@@ -74,7 +74,7 @@ util_fbs_merge_v3 <- function(child_file_pattern, parent_file_pattern, data_path
     #### 3. Merge Child Raw Data #####
 
     # merge child home and lab into single database
-    child_covidmerge_v3dat <- merge(child_lab_v3dat$data, child_home_v3dat$data[c(1, 3:71)], by = 'id', all = TRUE)
+    child_covidmerge_v3dat <- merge(child_lab_v3dat[['data']], child_home_v3dat[['data']][c(1, 3:71)], by = 'id', all = TRUE)
 
     #remove 120 - need to manually incorporate 'home' DD answers only
     child_covidmerge_v3dat_no120 <- child_covidmerge_v3dat[child_covidmerge_v3dat[['id']] != 120, ]
@@ -83,31 +83,31 @@ util_fbs_merge_v3 <- function(child_file_pattern, parent_file_pattern, data_path
     child_covidmerge_v3dat_no120 <- child_covidmerge_v3dat_no120[c(1:41, 44:112, 42:43)]
 
     # merge all child into single database
-    all_child_v3dat <- rbind.data.frame(child_v3dat$data, child_covidmerge_v3dat_no120)
+    all_child_v3dat <- rbind.data.frame(child_v3dat[['data']], child_covidmerge_v3dat_no120)
 
     #add DD back for 120
-    all_child_v3dat[all_child_v3dat[['id']] == 120, c(42:110)] <- child_home_v3dat$data[child_home_v3dat$data[['id']] == 120, 3:71]
+    all_child_v3dat[all_child_v3dat[['id']] == 120, c(42:110)] <- child_home_v3dat[['data']][child_home_v3dat[['data']][['id']] == 120, 3:71]
 
     #### 4. Merge Parent Raw Data #####
 
     # update labels with 'parent report'
 
-    for (v in 1:ncol(parent_v3dat$data)) {
-        var_name <- names(parent_v3dat$data)[v]
+    for (v in 1:ncol(parent_v3dat[['data']])) {
+        var_name <- names(parent_v3dat[['data']])[v]
 
         # remove existing label
-        if (grepl("parent-reported", parent_v3dat$dict[[var_name]], fixed = TRUE)) {
-            parent_v3dat$dict[[var_name]] <- gsub("parent-reported", "", parent_v3dat$dict[[var_name]])
+        if (grepl("parent-reported", parent_v3dat[['dict']][[var_name]], fixed = TRUE)) {
+            parent_v3dat[['dict']][[var_name]] <- gsub("parent-reported", "", parent_v3dat[['dict']][[var_name]])
         }
 
         # add universal label
-        parent_v3dat$dict[[var_name]] <- paste0('Parent Reported: ', parent_v3dat$dict[[var_name]])
+        parent_v3dat[['dict']][[var_name]] <- paste0('Parent Reported: ', parent_v3dat[['dict']][[var_name]])
     }
 
-    v3dat <- merge(all_child_v3dat, parent_v3dat$data[c(1, 3:188)], by = 'id', all = TRUE)
+    v3dat <- merge(all_child_v3dat, parent_v3dat[['data']][c(1, 3:188)], by = 'id', all = TRUE)
 
     # merge labels/dictionary
-    v3dat_labels <- c(child_v3dat$dict, parent_v3dat$dict[3:188])
+    v3dat_labels <- c(child_v3dat[['dict']], parent_v3dat[['dict']][3:188])
 
     #### 5. Organize V3 data ####
 
@@ -237,7 +237,10 @@ util_fbs_merge_v3 <- function(child_file_pattern, parent_file_pattern, data_path
     v3dat_scored_labels <- c(v3dat_scored_labels, v3_kcal_labels[2:8])
 
     ## add portion size label
-    v3dat_scored['meal_ps'] <- ifelse(is.na(v3dat_scored[['noplate_mac_cheese_g']]), NA, ifelse(v3dat_scored[['noplate_mac_cheese_g']] < 280, 'PS1', ifelse(v3dat_scored[['noplate_mac_cheese_g']] < 360, 'PS2', ifelse(v3dat_scored[['noplate_mac_cheese_g']] < 440, 'PS3', 'PS4'))))
+    v3dat_scored['meal_ps'] <- ifelse(is.na(v3dat_scored[['noplate_mac_cheese_g']]), NA, ifelse(v3dat_scored[['noplate_mac_cheese_g']] < 280, 0, ifelse(v3dat_scored[['noplate_mac_cheese_g']] < 360, 1, ifelse(v3dat_scored[['noplate_mac_cheese_g']] < 440, 2, 3))))
+
+    v3dat_scored[["meal_ps"]] <- sjlabelled::add_labels(v3dat_scored[["meal_ps"]], labels = c(ps1 = 0, ps2 = 1, ps3 = 2, ps4 = 3))
+    class(v3dat_scored[["meal_ps"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     v3dat_scored_labels[['meal_ps']] <- 'Visit 3 Portion Size Meal Condition'
 
@@ -257,7 +260,7 @@ util_fbs_merge_v3 <- function(child_file_pattern, parent_file_pattern, data_path
     #### 8. PNA data #####
 
     # only parent has pna data to organize
-    v3dat_pna <- parent_v3dat$pna_data
+    v3dat_pna <- parent_v3dat[['pna_data']]
 
     #### 9. save to list #####
 
@@ -267,9 +270,9 @@ util_fbs_merge_v3 <- function(child_file_pattern, parent_file_pattern, data_path
 
     # set labels
     v3dat_scored = sjlabelled::set_label(v3dat_scored, label = matrix(unlist(v3dat_scored_labels, use.names = FALSE)))
-    v3dat_pna = sjlabelled::set_label(v3dat_pna, label = matrix(unlist(parent_v3dat$pna_dict, use.names = FALSE)))
+    v3dat_pna = sjlabelled::set_label(v3dat_pna, label = matrix(unlist(parent_v3dat[['pna_dict']], use.names = FALSE)))
 
-    v3data_list <- list(data = v3dat_scored, dict = v3dat_scored_labels, pna_dat = v3dat_pna, pna_dict = parent_v3dat$pna_dict)
+    v3data_list <- list(data = v3dat_scored, dict = v3dat_scored_labels, pna_data = v3dat_pna, pna_dict = parent_v3dat[['pna_dict']])
 
     return(v3data_list)
 }

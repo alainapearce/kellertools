@@ -91,27 +91,10 @@ util_fbs_child_v7dat_home <- function(file_pattern, data_path) {
         qv7_child_dat <- as.data.frame(haven::read_spss(qv7_child_path))
 
     } else {
-
-        #check if in the main database rather than 'Final_CovidAtHome' database
         if (isTRUE(datapath_arg)) {
-            qv7_child_path2 <- paste0(data_path, "/Child_V7_Home_", date_str, ".sav")
+            stop("File does not exist. Check date_str and data_path entered")
         } else {
-            qv7_child_path2 <- paste0("/Child_V7_Home_", date_str, ".sav")
-        }
-
-        # check if file exists
-        qv7_child_exists2 <- file.exists(qv7_child_path2)
-
-        if (isTRUE(qv7_child_exists2)) {
-            qv7_child_dat <- as.data.frame(haven::read_spss(qv7_child_path2))
-
-        } else {
-
-            if (isTRUE(datapath_arg)) {
-                stop("File does not exist. Check date_str and data_path entered")
-            } else {
-                stop("File does not exist. Check date_str and that the data exists in current working directory")
-            }
+            stop("File does not exist. Check date_str and that the data exists in current working directory")
         }
     }
 
@@ -240,6 +223,36 @@ util_fbs_child_v7dat_home <- function(file_pattern, data_path) {
         qv7_child_clean_labels[[var_name]] <- paste0(qv7_child_clean_labels[[var_name]], " - re-leveled in R so skip = -99")
     }
 
+    ## Fix continuous variables ####
+    level99_issue_contvars <- names(qv7_child_clean)[c(13, 15)]
+
+    #update 1 label
+    qv7_child_clean_labels[['pds_5fd']] <- paste0(qv7_child_clean_labels[['pds_5fd']], 'in weeks')
+
+    for (v in 1:length(level99_issue_contvars)) {
+        # get variable name
+        pvar <- level99_issue_contvars[v]
+
+        # if has '99' value, create new pna variable marking pna == 1
+        if (is.element(99, qv7_child_clean[[pvar]])) {
+            pna_dat <- ifelse(is.na(qv7_child_clean[[pvar]]), 0, ifelse(qv7_child_clean[[pvar]] == 99, 1, 0))
+
+            new_pna <- length(names(qv1_parent_pna)) + 1
+            qv1_parent_pna[[new_pna]] <- pna_dat
+
+            names(qv1_parent_pna)[new_pna] <- paste0(pvar, "_pna")
+
+            # add label to pna database
+            qv1_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar, ": ", qv7_child_clean_labels[[pvar]])
+
+            # update true data label (only want to pna label if needed)
+            qv7_child_clean_labels[[pvar]] <- paste0(qv7_child_clean_labels[[pvar]], " -- ", pna_label)
+        }
+
+        # convert 99 to NA and make numeric variable labels only update if had 99 - done in if statement above
+        qv7_child_clean[[pvar]] <- ifelse(qv7_child_clean[[pvar]] == 99, NA, as.numeric(qv7_child_clean[[pvar]]))
+    }
+
     # 8) fix labels ####
 
     ## remove 'V7' and 'V1' in labels
@@ -265,6 +278,13 @@ util_fbs_child_v7dat_home <- function(file_pattern, data_path) {
 
 
     #### 9) Format for export ####
+
+    ## 9a) add attributes to pna data
+    qv7_child_pna[2:ncol(qv7_child_pna)] <- as.data.frame(lapply(qv7_child_pna[2:ncol(qv7_child_pna)], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+
+    for (v in 2:ncol(qv7_child_pna)){
+        class(qv7_child_pna[[v]]) <- c("haven_labelled", "vctrs_vctr", "double")
+    }
 
     #put data in order of participant ID for ease
     qv7_child_clean <- qv7_child_clean[order(qv7_child_clean[["id"]]), ]

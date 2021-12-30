@@ -83,6 +83,8 @@ score_hfias <- function(hfias_data, parID) {
                              ifelse(hfias_data[["hfias5a"]] == 3 | hfias_data[["hfias6a"]] == 3 | hfias_data[["hfias7a"]] > 0 | hfias_data[["hfias8a"]] > 0 | hfias_data[["hfias9a"]] > 0, 3, -99))))
 
     hfias_score_dat[["hfias_category"]] <- sjlabelled::add_labels(hfias_score_dat[["hfias_category"]], labels = c(`No Category Fit` = -99, `Severely Food Insecure` = 2, `Moderately Food Insecure` = 2, `Midly Food Insecure` = 1, `Food Secure` = 0))
+    class(hfias_score_dat[["hfias_category"]]) <- c("haven_labelled", "vctrs_vctr", "double")
+
 
     hfias_score_dat_labels[["hfias_category"]] <- "HFIAS Food Insecurity Access Category"
 

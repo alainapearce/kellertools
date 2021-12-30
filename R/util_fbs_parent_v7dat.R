@@ -152,9 +152,9 @@ util_fbs_parent_v7dat <- function(file_pattern, data_path) {
 
     }
 
-    names(qv7_parent_clean)[2:79] <- c("start_date", "sex", "age", "grade", "pds_1", "pds_2", "pds_3", "pds_4m", "pds_5m", "pds_6m", "pds_4f",  "pds_5f_a", "pds_5f_b", "pds_5f_c", "pds_5f_d", "pds_6f", "tanner_male", "tanner_female", "paq_m_wakeup", "paq_m_travel_school", "paq_m_traveltime_school", "paq_m_arriveschool", "paq_m_leaveschool", "paq_m_travel_home", "paq_m_traveltime_home", "paq_m_indoor_lowintensity", "paq_m_indoor_highintensity", "paq_m_outdoor_lowintensity", "paq_m_outdoor_highintensity", "paq_m_bedtime", "paq_t_wakeup", "paq_t_travel_school", "paq_t_traveltime_school", "paq_t_arriveschool", "paq_t_leaveschool", "paq_t_travel_home", "paq_t_traveltime_home", "paq_t_indoor_lowintensity", "paq_t_indoor_highintensity", "paq_t_outdoor_lowintensity", "paq_t_outdoor_highintensity", "paq_t_bedtime", "paq_w_wakeup", "paq_w_travel_school", "paq_w_traveltime_school", "paq_w_arriveschool", "paq_w_leaveschool", "paq_w_travel_home", "paq_w_traveltime_home", "paq_w_indoor_lowintensity", "paq_w_indoor_highintensity", "paq_w_outdoor_lowintensity", "paq_w_outdoor_highintensity", "paq_w_bedtime", "paq_th_wakeup", "paq_th_travel_school", "paq_th_traveltime_school", "paq_th_arriveschool", "paq_th_leaveschool", "paq_th_travel_home", "paq_th_traveltime_home", "paq_th_indoor_lowintensity", "paq_th_indoor_highintensity", "paq_th_outdoor_lowintensity",  "paq_th_outdoor_highintensity", "paq_th_bedtime", "paq_f_wakeup", "paq_f_travel_school", "paq_f_traveltime_school", "paq_f_arriveschool", "paq_f_leaveschool", "paq_f_travel_home", "paq_f_traveltime_home", "paq_f_indoor_lowintensity", "paq_f_indoor_highintensity", "paq_f_outdoor_lowintensity", "paq_f_outdoor_highintensity", "paq_f_bedtime")
+    names(qv7_parent_clean)[2:79] <- c("start_date", "sex", "age", "grade", "pds_1", "pds_2", "pds_3", "pds_4m", "pds_5m", "pds_6m", "pds_4f",  "pds_5fa", "pds_5fb", "pds_5fc", "pds_5fd", "pds_6f", "tanner_male", "tanner_female", "paq_m_wakeup", "paq_m_travel_school", "paq_m_traveltime_school", "paq_m_arriveschool", "paq_m_leaveschool", "paq_m_travel_home", "paq_m_traveltime_home", "paq_m_indoor_lowintensity", "paq_m_indoor_highintensity", "paq_m_outdoor_lowintensity", "paq_m_outdoor_highintensity", "paq_m_bedtime", "paq_t_wakeup", "paq_t_travel_school", "paq_t_traveltime_school", "paq_t_arriveschool", "paq_t_leaveschool", "paq_t_travel_home", "paq_t_traveltime_home", "paq_t_indoor_lowintensity", "paq_t_indoor_highintensity", "paq_t_outdoor_lowintensity", "paq_t_outdoor_highintensity", "paq_t_bedtime", "paq_w_wakeup", "paq_w_travel_school", "paq_w_traveltime_school", "paq_w_arriveschool", "paq_w_leaveschool", "paq_w_travel_home", "paq_w_traveltime_home", "paq_w_indoor_lowintensity", "paq_w_indoor_highintensity", "paq_w_outdoor_lowintensity", "paq_w_outdoor_highintensity", "paq_w_bedtime", "paq_th_wakeup", "paq_th_travel_school", "paq_th_traveltime_school", "paq_th_arriveschool", "paq_th_leaveschool", "paq_th_travel_home", "paq_th_traveltime_home", "paq_th_indoor_lowintensity", "paq_th_indoor_highintensity", "paq_th_outdoor_lowintensity",  "paq_th_outdoor_highintensity", "paq_th_bedtime", "paq_f_wakeup", "paq_f_travel_school", "paq_f_traveltime_school", "paq_f_arriveschool", "paq_f_leaveschool", "paq_f_travel_home", "paq_f_traveltime_home", "paq_f_indoor_lowintensity", "paq_f_indoor_highintensity", "paq_f_outdoor_lowintensity", "paq_f_outdoor_highintensity", "paq_f_bedtime")
 
-    names(qv7_parent_clean)[98:145] <- c("parent_respondant", "parent_dob", "parent_height1", "parent_height2", "parent_weight1","parent_weight2", "parent_height_avg", "parent_weight_avg", "parent_bmi", "sr_dad_height_ft", "sr_dad_height_in", "sr_dad_weight_lb", "sr_mom_height_ft", "sr_mom_height_in", "sr_mom_weight_lb", "household_n_mom", "household_n_dad", "household_n_stepmom", "household_n_stepdad", "household_n_brother", "household_n_sister", "household_n_stepbrother", "household_n_stepsister", "household_n_grandmom", "household_n_grandad", "household_n_aunt", "household_n_uncle", "household_n_cousin", "household_n_other", "n_parental_separations", "n_fostercare_placements", "living_with_partner", "maritalstatus", "maritalstatus_other", "income", "parent_ed", "parent_ed_other", "partner_ed", "partner_ed_other", "parent_employed", "parent_retired", "parent_wk_workhr", "partner_employed", "partner_retired", "partner_wk_workhr", "mom_weightgain_10lb", "allowance", "allowance_amount")
+    names(qv7_parent_clean)[98:145] <- c("parent_respondent", "parent_dob", "parent_height1", "parent_height2", "parent_weight1","parent_weight2", "parent_height_avg", "parent_weight_avg", "parent_bmi", "sr_dad_height_ft", "sr_dad_height_in", "sr_dad_weight_lb", "sr_mom_height_ft", "sr_mom_height_in", "sr_mom_weight_lb", "household_n_mom", "household_n_dad", "household_n_stepmom", "household_n_stepdad", "household_n_brother", "household_n_sister", "household_n_stepbrother", "household_n_stepsister", "household_n_grandmom", "household_n_grandad", "household_n_aunt", "household_n_uncle", "household_n_cousin", "household_n_other", "n_parental_separations", "n_fostercare_placements", "living_with_partner", "maritalstatus", "maritalstatus_other", "income", "parent_ed", "parent_ed_other", "partner_ed", "partner_ed_other", "parent_employed", "parent_retired", "parent_wk_workhr", "partner_employed", "partner_retired", "partner_wk_workhr", "mom_weightgain_10lb", "allowance", "allowance_amount")
 
     names(qv7_parent_clean)[156:235] <- c("feedschild", "feedschild_other", "buysfood", "buysfood_other", "feq_eatout", "freq_familydinner", "freq_homelunch", "family_foodcond", "snap", "wic", "tanf", "medicaid", "liheap", "partial_lunch_assistance", "full_lunch_assistance", "other_program", "other_program_freetxt", "foodpantry_use", "freq_foodpantry", "foodbudget_mo", "prefered_grocerystore", "rank_packagedbread", "rank_bakerybread", "rank_saltysnack", "rank_sweetsnack", "rank_cheese", "rank_milk", "rank_yogurt", "rank_butter", "rank_eggs", "rank_otherdairy", "rank_coffeetea", "rank_carbonated_drink", "rank_fruitjuice_drink", "rank_sports_drink", "rank_alcohol_drink", "rank_redmeat", "rank_poultry", "rank_seafood", "rank_pasta_rice", "rank_soup", "rank_nuts_seeds", "rank_nutjelly_spread", "rank_breakfast_cereal", "rank_breakfast_replacement", "rank_meal_replacement", "rank_freshprep_foods", "rank_fresh_veg", "rank_fresh_fruit", "rank_can_veg", "rank_can_fruit",  "rank_frozen_veg", "rank_frozen_fruit", "rank_frozen_dinner", "rank_frozen_breakfast", "rank_frozen_desert", "rank_candygum", "rank_bakingsupplies", "rank_condiments", "rank_dips_spreads", "rank_salad_dressings", "rank_spice_seasoning",  "rank_cooking_oil", "grow_fruits", "grow_veg", "grow_jellyspreads", "grow_nuts_seeds", "grow_milk", "grow_cheese", "grow_butter", "grow_eggs", "grow_redmeat", "grow_poultry", "encourage_plateclean_vas", "child_plateclean_vas",  "percieved_child_kcal", "pcent_parent_portionchoice", "pcent_partner_portionchoice", "pcent_child_portionchoice",  "pcent_other_portionchoice")
 
@@ -262,11 +262,12 @@ util_fbs_parent_v7dat <- function(file_pattern, data_path) {
             new_pna <- length(names(qv7_parent_pna)) + 1
             qv7_parent_pna[[new_pna]] <- pna_dat
 
+            # make logical variable and name it
+            pna_name <- paste0(pvar, "_pna")
             names(qv7_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,
-                ": ", qv7_parent_clean_labels[[pvar]])
+            qv7_parent_pna_labels[[pna_name]] <- paste0("prefer not to answer marked for variable ", pvar,  ": ", qv7_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
             qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], " -- ", pna_label)
@@ -275,8 +276,7 @@ util_fbs_parent_v7dat <- function(file_pattern, data_path) {
         if (grepl("lb", pvar, fixed = TRUE)) {
             # check for values '119' and '400' as they indicate < 119 and 400+, respectively (values are kept in
             # the categorical version of this variable - see above) labels were updated above
-            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]), NA, ifelse(qv7_parent_clean[[pvar]] ==
-                119, NA, ifelse(qv7_parent_clean[[pvar]] == 400, NA, as.numeric(qv7_parent_clean[[pvar]]))))
+            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]), NA, ifelse(qv7_parent_clean[[pvar]] == 119, NA, ifelse(qv7_parent_clean[[pvar]] == 400, NA, as.numeric(qv7_parent_clean[[pvar]]))))
         } else {
             # convert 99 to NA and make numeric variable labels only update if had 99 - done in if statement above
             qv7_parent_clean[[pvar]] <- ifelse(qv7_parent_clean[[pvar]] == 99, NA, as.numeric(qv7_parent_clean[[pvar]]))
@@ -300,11 +300,11 @@ util_fbs_parent_v7dat <- function(file_pattern, data_path) {
             qv7_parent_pna[[new_pna]] <- pna_dat
 
             # make logical variable and name it
+            pna_name <- paste0(pvar, "_pna")
             names(qv7_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,
-                ": ", qv7_parent_clean_labels[[pvar]])
+            qv7_parent_pna_labels[[pna_name]] <- paste0("prefer not to answer marked for variable ", pvar,  ": ", qv7_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
             qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], " -- ", pna_label)
@@ -317,17 +317,13 @@ util_fbs_parent_v7dat <- function(file_pattern, data_path) {
             names(qv7_parent_clean)[[nvar + 1]] <- paste0(pvar, "_cat")
 
             # update label
-            qv7_parent_clean_labels[[paste0(pvar, "_cat")]] <- paste0("categorical ", qv7_parent_clean_labels[[pvar]],
-                " -note: 1 = 'Before 5 AM' and 15 = 'After 8 AM'")
+            qv7_parent_clean_labels[[paste0(pvar, "_cat")]] <- paste0("categorical ", qv7_parent_clean_labels[[pvar]], " -note: 1 = 'Before 5 AM' and 15 = 'After 8 AM'")
 
             # convert to factor label values
             qv7_parent_clean[[pvar]] <- haven::as_factor(qv7_parent_clean[[pvar]])
 
-            # check for values 'Before 5 am', 'After 8:00 am', and 'Don't want to answer' (values are kept in the
-            # categorical version of this variable)
-            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == "Before 5:00 AM" |
-                qv7_parent_clean[[pvar]] == "After 8:00 AM" | qv7_parent_clean[[pvar]] == "Don't want to answer", NA,
-                as.character(qv7_parent_clean[[pvar]]))
+            # check for values 'Before 5 am', 'After 8:00 am', and 'Don't want to answer' (values are kept in the categorical version of this variable)
+            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == "Before 5:00 AM" | qv7_parent_clean[[pvar]] == "After 8:00 AM" | qv7_parent_clean[[pvar]] == "Don't want to answer", NA, as.character(qv7_parent_clean[[pvar]]))
 
         } else if (grepl("arriveschool", pvar, fixed = TRUE)) {
             # duplicate to make categorical variable
@@ -336,16 +332,13 @@ util_fbs_parent_v7dat <- function(file_pattern, data_path) {
             names(qv7_parent_clean)[[nvar + 1]] <- paste0(pvar, "_cat")
 
             # update label
-            qv7_parent_clean_labels[[paste0(pvar, "_cat")]] <- paste0("categorical ", qv7_parent_clean_labels[[pvar]],
-                " -note: 15 = 'After 8:45 PM'")
+            qv7_parent_clean_labels[[paste0(pvar, "_cat")]] <- paste0("categorical ", qv7_parent_clean_labels[[pvar]], " -note: 15 = 'After 8:45 PM'")
 
             # convert to factor label values
             qv7_parent_clean[[pvar]] <- haven::as_factor(qv7_parent_clean[[pvar]])
 
-            # check for value 'After 8:45 AM' and 'Don't want to answer' (values are kept in the categorical
-            # version of this variable)
-            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == "After 8:45 AM" |
-                qv7_parent_clean[[pvar]] == "Don't want to answer", NA, as.character(qv7_parent_clean[[pvar]]))
+            # check for value 'After 8:45 AM' and 'Don't want to answer' (values are kept in the categorical version of this variable)
+            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == "After 8:45 AM" | qv7_parent_clean[[pvar]] == "Don't want to answer", NA, as.character(qv7_parent_clean[[pvar]]))
 
         } else if (grepl("leaveschool", pvar, fixed = TRUE)) {
             # duplicate to make categorical variable
@@ -354,17 +347,13 @@ util_fbs_parent_v7dat <- function(file_pattern, data_path) {
             names(qv7_parent_clean)[[nvar + 1]] <- paste0(pvar, "_cat")
 
             # update label
-            qv7_parent_clean_labels[[paste0(pvar, "_cat")]] <- paste0("categorical ", qv7_parent_clean_labels[[pvar]],
-                " -note: 15 = 'After 8:45 PM'")
+            qv7_parent_clean_labels[[paste0(pvar, "_cat")]] <- paste0("categorical ", qv7_parent_clean_labels[[pvar]], " -note: 15 = 'After 8:45 PM'")
 
             # convert to factor label values
             qv7_parent_clean[[pvar]] <- haven::as_factor(qv7_parent_clean[[pvar]])
 
-            # check for value 'Before 2 PM', 'After 6 PM', and 'Don't want to answer' (values are kept in the
-            # categorical version of this variable)
-            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == "Before 2:00 PM" |
-                qv7_parent_clean[[pvar]] == "After 6:00 PM" | qv7_parent_clean[[pvar]] == "Don't want to answer", NA,
-                as.character(qv7_parent_clean[[pvar]]))
+            # check for value 'Before 2 PM', 'After 6 PM', and 'Don't want to answer' (values are kept in the categorical version of this variable)
+            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == "Before 2:00 PM" | qv7_parent_clean[[pvar]] == "After 6:00 PM" | qv7_parent_clean[[pvar]] == "Don't want to answer", NA, as.character(qv7_parent_clean[[pvar]]))
 
         } else if (grepl("bedtime", pvar, fixed = TRUE)) {
             # duplicate to make categorical variable
@@ -373,16 +362,13 @@ util_fbs_parent_v7dat <- function(file_pattern, data_path) {
             names(qv7_parent_clean)[[nvar + 1]] <- paste0(pvar, "_cat")
 
             # update label
-            qv7_parent_clean_labels[[paste0(pvar, "_cat")]] <- paste0("categorical ", qv7_parent_clean_labels[[pvar]],
-                " -note: 15 = 'After 10:00 PM'")
+            qv7_parent_clean_labels[[paste0(pvar, "_cat")]] <- paste0("categorical ", qv7_parent_clean_labels[[pvar]], " -note: 15 = 'After 10:00 PM'")
 
             # convert to factor label values
             qv7_parent_clean[[pvar]] <- haven::as_factor(qv7_parent_clean[[pvar]])
 
-            # check for value 'After 10 PM' and 'Don't want to answer' (values are kept in the categorical version
-            # of this variable)
-            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == "After 10:00 PM" |
-                qv7_parent_clean[[pvar]] == "Don't want to answer", NA, as.character(qv7_parent_clean[[pvar]]))
+            # check for value 'After 10 PM' and 'Don't want to answer' (values are kept in the categorical version of this variable)
+            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == "After 10:00 PM" | qv7_parent_clean[[pvar]] == "Don't want to answer", NA, as.character(qv7_parent_clean[[pvar]]))
 
         } else {
             # drop 99 level label labels only update if had 99 - done in if statement above
@@ -392,8 +378,7 @@ util_fbs_parent_v7dat <- function(file_pattern, data_path) {
             pvar_attr <- attributes(qv7_parent_clean[[pvar]])
 
             # replace 99 values
-            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == 99, NA,
-                qv7_parent_clean[[pvar]])
+            qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == 99, NA, qv7_parent_clean[[pvar]])
 
             # replace attributes
             attributes(qv7_parent_clean[[pvar]]) <- pvar_attr
@@ -402,7 +387,10 @@ util_fbs_parent_v7dat <- function(file_pattern, data_path) {
 
     ## 6c) continuous variables with 99's data ####
 
-    level99_issue_contvars <- names(qv7_parent_clean)[c(113:128, 161:162, 174)]
+    level99_issue_contvars <- names(qv7_parent_clean)[c(5, 14, 16, 113:128, 161:162, 174)]
+
+    #update 1 label
+    qv7_parent_clean_labels[['pds_5fd']] <- paste0(qv7_parent_clean_labels[['pds_5fd']], 'in weeks')
 
     for (v in 1:length(level99_issue_contvars)) {
         # get variable name
@@ -415,11 +403,12 @@ util_fbs_parent_v7dat <- function(file_pattern, data_path) {
             new_pna <- length(names(qv7_parent_pna)) + 1
             qv7_parent_pna[[new_pna]] <- pna_dat
 
+            # make logical variable and name it
+            pna_name <- paste0(pvar, "_pna")
             names(qv7_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,
-                ": ", qv7_parent_clean_labels[[pvar]])
+            qv7_parent_pna_labels[[pna_name]] <- paste0("prefer not to answer marked for variable ", pvar,  ": ", qv7_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
             qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], " -- ", pna_label)
@@ -443,11 +432,12 @@ util_fbs_parent_v7dat <- function(file_pattern, data_path) {
             new_pna <- length(names(qv7_parent_pna)) + 1
             qv7_parent_pna[[new_pna]] <- pna_dat
 
+            # make logical variable and name it
+            pna_name <- paste0(pvar, "_pna")
             names(qv7_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,
-                ": ", qv7_parent_clean_labels[[pvar]])
+            qv7_parent_pna_labels[[pna_name]] <- paste0("prefer not to answer marked for variable ", pvar,  ": ", qv7_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
             qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], " -- ", pna_label)
@@ -481,11 +471,12 @@ util_fbs_parent_v7dat <- function(file_pattern, data_path) {
             new_pna <- length(names(qv7_parent_pna)) + 1
             qv7_parent_pna[[new_pna]] <- pna_dat
 
+            # make logical variable and name it
+            pna_name <- paste0(pvar, "_pna")
             names(qv7_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,
-                ": ", qv7_parent_clean_labels[[pvar]])
+            qv7_parent_pna_labels[[pna_name]] <- paste0("prefer not to answer marked for variable ", pvar,  ": ", qv7_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
             qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], " -- ", pna_label)
@@ -499,10 +490,8 @@ util_fbs_parent_v7dat <- function(file_pattern, data_path) {
         # update label
         qv7_parent_clean_labels[[paste0(pvar, "_cat")]] <- paste0("categorical ", qv7_parent_clean_labels[[pvar]], " -note: 61 = 'More than 60'")
 
-        # check for value 66 = 'More than 60' and 99 = 'Don't want to answer' (values are kept in the categorical
-        # version of this variable)
-        qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == 99 | qv7_parent_clean[[pvar]] ==
-            61, NA, as.numeric(qv7_parent_clean[[pvar]]))
+        # check for value 66 = 'More than 60' and 99 = 'Don't want to answer' (values are kept in the categorical version of this variable)
+        qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == 99 | qv7_parent_clean[[pvar]] == 61, NA, as.numeric(qv7_parent_clean[[pvar]]))
     }
 
     #### 7) reformatting dates/times #### 7a) dates (start, dobs) ####
@@ -551,12 +540,10 @@ util_fbs_parent_v7dat <- function(file_pattern, data_path) {
     qv7_parent_clean_labels[["parent_bmi"]] <- "measured parent bmi calculated in R package using scripted average height and weight"
 
     # convert to cm and kg
-    qv7_parent_clean[["sr_dad_height_cm"]] <- (qv7_parent_clean[["sr_dad_height_ft"]] * 12 + qv7_parent_clean[["sr_dad_height_in"]]) *
-        2.54
+    qv7_parent_clean[["sr_dad_height_cm"]] <- (qv7_parent_clean[["sr_dad_height_ft"]] * 12 + qv7_parent_clean[["sr_dad_height_in"]]) * 2.54
     qv7_parent_clean_labels[["sr_dad_height_cm"]] <- "parent-reported father height in feet and inches converted to cm in R"
 
-    qv7_parent_clean[["sr_mom_height_cm"]] <- (qv7_parent_clean[["sr_mom_height_ft"]] * 12 + qv7_parent_clean[["sr_mom_height_in"]]) *
-        2.54
+    qv7_parent_clean[["sr_mom_height_cm"]] <- (qv7_parent_clean[["sr_mom_height_ft"]] * 12 + qv7_parent_clean[["sr_mom_height_in"]]) * 2.54
     qv7_parent_clean_labels[["sr_mom_height_cm"]] <- "parent-reported mother height in feet and inches converted to cm in R"
 
     qv7_parent_clean[["sr_dad_weight_kg"]] <- qv7_parent_clean[["sr_dad_weight_lb"]]/2.205
@@ -612,8 +599,11 @@ util_fbs_parent_v7dat <- function(file_pattern, data_path) {
     qv7_parent_clean_labels <- qv7_parent_clean_labels[c(1:19, 522, 20:22, 523, 23, 524, 24:30, 525, 31, 526, 32:34, 527, 35, 528, 36:42, 529, 43, 530, 44:46, 531, 47, 532, 48:54, 533, 55, 534, 56:58, 535, 59, 536, 60:66, 537, 67, 538, 68:70, 539, 71, 540, 72:78, 541, 79:109, 520, 110:112, 521, 544:549, 113:139, 542, 140:142, 543, 143:519)]
 
     ## 11b) add attributes to pna data
-    n_pna_cols <- length(names(qv7_parent_pna))
-    qv7_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv7_parent_pna[2:n_pna_cols], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+    qv7_parent_pna[2:ncol(qv7_parent_pna)] <- as.data.frame(lapply(qv7_parent_pna[2:ncol(qv7_parent_pna)], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+
+    for (v in 2:ncol(qv7_parent_pna)){
+        class(qv7_parent_pna[[v]]) <- c("haven_labelled", "vctrs_vctr", "double")
+    }
 
     ## 11c) put data in order of participant ID for ease
     qv7_parent_clean <- qv7_parent_clean[order(qv7_parent_clean[["id"]]), ]

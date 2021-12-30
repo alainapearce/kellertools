@@ -92,26 +92,10 @@ util_fbs_child_v2dat_lab <- function(file_pattern, data_path) {
 
     } else {
 
-        #check if in the main database rather than 'Final_CovidAtHome' database
         if (isTRUE(datapath_arg)) {
-            qv2_child_path2 <- paste0(data_path, "/Child_V2_Lab_", date_str, ".sav")
+            stop("File does not exist. Check date_str and data_path entered")
         } else {
-            qv2_child_path2 <- paste0("Child_V2_Lab", date_str, ".sav")
-        }
-
-        # check if file exists
-        qv2_child_exists2 <- file.exists(qv2_child_path2)
-
-        # load data if it exists
-        if (isTRUE(qv2_child_exists2)) {
-            qv2_child_dat <- as.data.frame(haven::read_spss(qv2_child_path2))
-
-        } else {
-            if (isTRUE(datapath_arg)) {
-                stop("File does not exist. Check date_str and data_path entered")
-            } else {
-                stop("File does not exist. Check date_str and that the data exists in current working directory")
-            }
+            stop("File does not exist. Check date_str and that the data exists in current working directory")
         }
     }
 
@@ -146,6 +130,9 @@ util_fbs_child_v2dat_lab <- function(file_pattern, data_path) {
     # 5) reformatting dates to be appropriate and computer readable YYYY-MM-DD  ####
     qv2_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv2_child_clean[["start_date"]]))
     qv2_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
+
+    ## freddy fullness as numeric
+    qv2_child_clean[c(3:4, 10:13, 16)] <- sapply(qv2_child_clean[c(3:4, 10:13, 16)], FUN = as.numeric)
 
     # 6) re-calculate manual variables ####
 

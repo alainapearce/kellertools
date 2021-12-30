@@ -128,13 +128,13 @@ score_cshqa <- function(cshqa_data, study = 'fbs', parID) {
     cshqa_score_dat_labels[['cshqa_bedtime_resit']] <- 'CSHQ-A Bedtime Resistance Total Score'
 
     # Sleep Onset Delay
-    cshqa_score_dat[['cshqa_sleep_delay']] <- cshqa_data[['cshq_a2_rev']]
+    cshqa_score_dat[['cshqa_sleep_delay']] <- as.numeric(cshqa_data[['cshq_a2_rev']])
 
     ##add labels to data
     cshqa_score_dat_labels[['cshqa_sleep_delay']] <- 'CSHQ-A Sleep Onset Delay Total Score'
 
     # Sleep Duration
-    cshqa_score_dat[['cshqa_sleepdur']] <- cshqa_data[['cshq_a10_rev']]
+    cshqa_score_dat[['cshqa_sleepdur']] <- as.numeric(cshqa_data[['cshq_a10_rev']])
 
     ##add labels to data
     cshqa_score_dat_labels[['cshqa_sleepdur']] <- 'CSHQ-A Sleep Duration Total Score'
@@ -161,7 +161,7 @@ score_cshqa <- function(cshqa_data, study = 'fbs', parID) {
     cshqa_score_dat_labels[['cshqa_parasomnias']] <- 'CSHQ-A Parasomnias Total Score'
 
     # Sleep Disordered Breathing
-    cshqa_score_dat[['cshqa_dis_breathing']] <- cshqa_data[['cshq_a14']]
+    cshqa_score_dat[['cshqa_dis_breathing']] <- as.numeric(cshqa_data[['cshq_a14']])
 
     ##add labels to data
     cshqa_score_dat_labels[['cshqa_dis_breathing']] <- 'CSHQ-A Sleep Disordered Breathing Total Score'

@@ -141,6 +141,10 @@ util_fbs_child_v2dat <- function(file_pattern, data_path) {
     qv2_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv2_child_clean[["start_date"]]))
     qv2_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
+    ## freddy fullness as numeric
+    qv2_child_clean[c(3:4, 10:13, 16)] <- sapply(qv2_child_clean[c(3:4, 10:13, 16)], FUN = as.numeric)
+
+
     # 6) re-calculate manual variables ####
 
     ## re-calculate all intake values

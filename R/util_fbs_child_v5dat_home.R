@@ -91,27 +91,10 @@ util_fbs_child_v5dat_home <- function(file_pattern, data_path) {
 
     } else {
 
-        #check if in the main database rather than 'Final_CovidAtHome' database
         if (isTRUE(datapath_arg)) {
-            qv5_child_path2 <- paste0(data_path, "/Child_V5_Home_",  date_str, ".sav")
+            stop("File does not exist. Check date_str and data_path entered")
         } else {
-            qv5_child_path2 <- paste0("Child_V5_Home", date_str,  ".sav")
-        }
-
-        # check if file exists
-        qv5_child_exists2 <- file.exists(qv5_child_path2)
-
-        # load data if it exists
-        if (isTRUE(qv5_child_exists2)) {
-            qv5_child_dat <- as.data.frame(haven::read_spss(qv5_child_path2))
-
-        } else {
-
-            if (isTRUE(datapath_arg)) {
-                stop("File does not exist. Check date_str and data_path entered")
-            } else {
-                stop("File does not exist. Check date_str and that the data exists in current working directory")
-            }
+            stop("File does not exist. Check date_str and that the data exists in current working directory")
         }
     }
 
@@ -129,7 +112,7 @@ util_fbs_child_v5dat_home <- function(file_pattern, data_path) {
 
     # 3) removing all practice events (e.g., 999) Note, ID variable is 'ID'
     qv5_child_clean <- qv5_child_clean[!is.na(qv5_child_clean[["ID"]]) & qv5_child_clean[["ID"]] <
-        999, ]
+                                           999, ]
 
     # 4) re-ordering and re-name data columns general order: 1) child information
     # (ID, start date), 2) ctc

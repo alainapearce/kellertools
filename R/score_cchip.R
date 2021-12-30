@@ -77,6 +77,7 @@ score_cchip <- function(cchip_data, parID) {
     cchip_score_dat[["cchip_category"]] <- ifelse(cchip_score_dat[["cchip_total"]] >= 5, 2, ifelse(cchip_score_dat[["cchip_total"]] >= 1, 1, 0))
 
     cchip_score_dat[["cchip_category"]] <- sjlabelled::add_labels(cchip_score_dat[["cchip_category"]], labels = c(`Hungry` = 2, `At Risk for Hunger` = 1, `Not Hungry` = 0))
+    class(cchip_score_dat[["cchip_category"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     cchip_score_dat_labels[["cchip_category"]] <- "CCHIP Hunger Category"
 

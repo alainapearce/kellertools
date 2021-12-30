@@ -91,28 +91,10 @@ util_fbs_child_v5dat_lab <- function(file_pattern, data_path) {
 
     } else {
 
-        #check if in the main database rather than 'Final_CovidAtHome' database
         if (isTRUE(datapath_arg)) {
-            qv5_child_path2 <- paste0(data_path, "/Child_V5_Lab_",
-                                     date_str, ".sav")
+            stop("File does not exist. Check date_str and data_path entered")
         } else {
-            qv5_child_path2 <- paste0("Child_V5_Lab", date_str, ".sav")
-        }
-
-        # check if file exists
-        qv5_child_exists2 <- file.exists(qv5_child_path2)
-
-
-        if (isTRUE(qv5_child_exists2)) {
-            qv5_child_dat <- as.data.frame(haven::read_spss(qv5_child_path2))
-
-        } else {
-
-            if (isTRUE(datapath_arg)) {
-                stop("File does not exist. Check date_str and data_path entered")
-            } else {
-                stop("File does not exist. Check date_str and that the data exists in current working directory")
-            }
+            stop("File does not exist. Check date_str and that the data exists in current working directory")
         }
     }
 
@@ -129,7 +111,7 @@ util_fbs_child_v5dat_lab <- function(file_pattern, data_path) {
 
     # 3) removing all practice events (e.g., 999) #####
     qv5_child_clean <- qv5_child_clean[!is.na(qv5_child_clean[["ID"]]) & qv5_child_clean[["ID"]] <
-        999, ]
+                                           999, ]
 
     # 4) re-ordering and re-name data columns  #####
 
@@ -157,16 +139,7 @@ util_fbs_child_v5dat_lab <- function(file_pattern, data_path) {
     }
 
     ## Manually rename
-    names(qv5_child_clean)[2:41] <- c("start_date", "freddy_pre_meal", "freddy_post_meal",
-        "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water",
-        "rank_mac_cheese", "rank_chkn_nug", "rank_broccoli", "rank_grape",
-        "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g",
-        "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g",
-        "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g",
-        "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g",
-        "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g",
-        "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g",
-        "plate_water_g", "post_water_g", "consumed_water_g")
+    names(qv5_child_clean)[2:41] <- c("start_date", "freddy_pre_meal", "freddy_post_meal", "vas_mac_cheese", "vas_chkn_nug", "vas_broccoli", "vas_grape", "vas_water", "rank_mac_cheese", "rank_chkn_nug", "rank_broccoli", "rank_grape",  "meal_start", "meal_end", "meal_dur", "noplate_chkn_nug_g", "plate_chkn_nug_g", "post_chkn_nug_g", "consumed_chkn_nug_g", "noplate_mac_cheese_g", "plate_mac_cheese_g", "post_mac_cheese_g", "consumed_mac_cheese_g", "noplate_grapes_g", "plate_grapes_g", "post_grapes_g", "consumed_grapes_g", "noplate_margerine_g", "noplate_broccoli_g", "plate_broccoli_g", "post_broccoli_g", "consumed_broccoli_g", "noplate_ketchup_g", "plate_ketchup_g", "post_ketchup_g", "consumed_ketchup_g", "noplate_water_g", "plate_water_g", "post_water_g", "consumed_water_g")
 
     names(qv5_child_clean)[65:155] <- c("hrv_dur", "hrv_starttime", "intero_prac_start_target", "intero_prac_start_actual", "intero_prac_stop_target", "intero_prac_stop_actual",  "intero_prac_hbcount", "intero_prac_dur", "intero_prac_starttime", "intero_prac2_start_target", "intero_prac2_start_actual", "intero_prac2_stop_target", "intero_prac2_stop_actual", "intero_prac2_hbcount", "intero_prac2_dur", "intero_prac2_starttime", "intero_15s_start_target", "intero_15s_start_actual", "intero_15s_stop_target", "intero_15s_stop_actual", "intero_15s_hbcount", "intero_15s_dur", "intero_15s_starttime", "intero_20s_start_target", "intero_20s_start_actual", "intero_20s_stop_target", "intero_20s_stop_actual", "intero_20s_hbcount", "intero_20s_dur", "intero_20s_starttime", "intero_18s_start_target", "intero_18s_start_actual", "intero_18s_stop_target", "intero_18s_stop_actual", "intero_18s_hbcount", "intero_18s_dur", "intero_18s_starttime",  "intero_pulse_prac_start_target", "intero_pulse_prac_start_actual", "intero_pulse_prac_stop_target", "intero_pulse_prac_stop_actual", "intero_pulse_prac_hbcount", "intero_pulse_prac_dur", "intero_pulse_prac_starttime", "intero_pulse_prac_loc", "intero_pulse_prac2_start_target", "intero_pulse_prac2_start_actual", "intero_pulse_prac2_stop_target", "intero_pulse_prac2_stop_actual", "intero_pulse_prac2_hbcount", "intero_pulse_prac2_dur", "intero_pulse_prac2_starttime", "intero_pulse_prac2_loc", "intero_pulse_15s_start_target",  "intero_pulse_15s_start_actual", "intero_pulse_15s_stop_target", "intero_pulse_15s_stop_actual",  "intero_pulse_15s_hbcount", "intero_pulse_15s_dur",  "intero_pulse_15s_starttime", "intero_pulse_15s_loc", "intero_pulse_20s_start_target", "intero_pulse_20s_start_actual", "intero_pulse_20s_stop_target", "intero_pulse_20s_stop_actual", "intero_pulse_20s_hbcount", "intero_pulse_20s_dur", "intero_pulse_20s_starttime", "intero_pulse_20s_loc",  "intero_pulse_18s_start_target", "intero_pulse_18s_start_actual", "intero_pulse_18s_stop_target", "intero_pulse_18s_stop_actual", "intero_pulse_18s_hbcount", "intero_pulse_18s_dur", "intero_pulse_18s_starttime", "intero_pulse_18s_loc", "intero_prac_notes", "intero_prac2_notes", "intero_15s_notes", "intero_20s_notes", "intero_18s_notes", "intero_pulse_prac_notes", "intero_pulse_prac2_notes", "intero_pulse_15s_notes", "intero_pulse_20s_notes", "intero_pulse_18s_notes", "food_initials", "extra_mock_needed", "mockscan2_notes", "child_notes")
 
@@ -177,6 +150,9 @@ util_fbs_child_v5dat_lab <- function(file_pattern, data_path) {
     # YYYY-MM-DD
     qv5_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv5_child_clean[["start_date"]]))
     qv5_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
+
+    ## freddy fullness as numeric
+    qv5_child_clean[c(3:4, 10:13, 16)] <- sapply(qv5_child_clean[c(3:4, 10:13, 16)], FUN = as.numeric)
 
     # 6) re-calculate manual variables ####
 
@@ -190,7 +166,7 @@ util_fbs_child_v5dat_lab <- function(file_pattern, data_path) {
         var_name <- intake_vars[[var]]
 
         qv5_child_clean[[var_name]] <- ifelse(qv5_child_clean[[var_name]] == "-" |
-            qv5_child_clean[[var_name]] == "NA", NA, qv5_child_clean[[var_name]])
+                                                  qv5_child_clean[[var_name]] == "NA", NA, qv5_child_clean[[var_name]])
 
         if (is.character(qv5_child_clean[[var_name]])) {
             qv5_child_clean[[var_name]] <- as.numeric(qv5_child_clean[[var_name]])
@@ -199,9 +175,9 @@ util_fbs_child_v5dat_lab <- function(file_pattern, data_path) {
 
     # get all foods served - extract prefix and thne postfix in name
     food_strs_g <- unique(sapply(intake_vars, function(x) gsub(".*plate_|.*post_|.*consumed_",
-        "\\1", x), USE.NAMES = FALSE))
+                                                               "\\1", x), USE.NAMES = FALSE))
     food_strs <- unique(sapply(food_strs_g, function(x) gsub("_g.*", "\\1", x),
-        USE.NAMES = FALSE))
+                               USE.NAMES = FALSE))
 
     # loop through foods
     for (f in 1:length(food_strs)) {
@@ -217,11 +193,11 @@ util_fbs_child_v5dat_lab <- function(file_pattern, data_path) {
             qv5_child_clean[[consumed_var]] <- qv5_child_clean[[plate_var]] -
                 qv5_child_clean[[post_var]]
             qv5_child_clean[[consumed_var]] <- ifelse(qv5_child_clean[[consumed_var]] <
-                0, 0, qv5_child_clean[[consumed_var]])
+                                                          0, 0, qv5_child_clean[[consumed_var]])
 
             # update labels
             qv5_child_clean_labels[[consumed_var]] <- paste0(qv5_child_clean_labels[[consumed_var]],
-                " - recalcuated difference in R with values < 0 set to 0")
+                                                             " - recalcuated difference in R with values < 0 set to 0")
         }
     }
 
@@ -272,6 +248,10 @@ util_fbs_child_v5dat_lab <- function(file_pattern, data_path) {
         # replace attributes
         attributes(qv5_child_clean[[pvar]]) <- pvar_attr
     }
+
+    # make loc2a-loc2c numeric
+    qv5_child_clean[43:45] <- sapply(qv5_child_clean[43:45], FUN = as.numeric)
+
 
     ## Fix 99 in interoception heartbeat count questions
     ### Note, both "don't remember" and 99 heartbeats were coded as 99 in qualtrics. However, experience with data collection and distribution of numbers suggests that children did not count 99 heartbeats and that 99s are indicative of "don't remember" responses. Therefore: 1) if 99's exist, make a 'prefer not to answer' (pna) variable to go in pna database, 2) replace 99's with NA and make variable numeric
@@ -335,6 +315,14 @@ util_fbs_child_v5dat_lab <- function(file_pattern, data_path) {
     }
 
     #### 9) Format for export #### put data in order of participant ID for ease
+
+    ## 9a) add attributes to pna data
+    qv5_child_pna[2:ncol(qv5_child_pna)] <- as.data.frame(lapply(qv5_child_pna[2:ncol(qv5_child_pna)], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+
+    for (v in 2:ncol(qv5_child_pna)){
+        class(qv5_child_pna[[v]]) <- c("haven_labelled", "vctrs_vctr", "double")
+    }
+
     qv5_child_clean <- qv5_child_clean[order(qv5_child_clean[["id"]]), ]
 
     qv5_child_pna <- qv5_child_pna[order(qv5_child_pna[["id"]]), ]

@@ -335,8 +335,11 @@ util_fbs_parent_v4dat <- function(file_pattern, data_path) {
     #### 8) Format for export ####
 
     ## 8a) add attributes to pna data
-    n_pna_cols <- length(names(qv4_parent_pna))
-    qv4_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv4_parent_pna[2:n_pna_cols], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+    qv4_parent_pna[2:ncol(qv4_parent_pna)] <- as.data.frame(lapply(qv4_parent_pna[2:ncol(qv4_parent_pna)], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+
+    for (v in 2:ncol(qv4_parent_pna)){
+        class(qv4_parent_pna[[v]]) <- c("haven_labelled", "vctrs_vctr", "double")
+    }
 
     ## 8b) put data in order of participant ID for ease
     qv4_parent_clean <- qv4_parent_clean[order(qv4_parent_clean[["id"]]), ]

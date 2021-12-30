@@ -100,34 +100,34 @@ util_fbs_merge_v2 <- function(child_file_pattern, parent_file_pattern, parentV4_
     #### 3. Merge Child Raw Data #####
 
     # merge child home and lab into single database
-    child_covidmerge_v2dat <- merge(child_lab_v2dat$data, child_home_v2dat$data[c(1, 3:109)], by = 'id', all = TRUE)
+    child_covidmerge_v2dat <- merge(child_lab_v2dat[['data']], child_home_v2dat[['data']][c(1, 3:109)], by = 'id', all = TRUE)
 
     # re-order so matches child_v2dat
     child_covidmerge_v2dat <- child_covidmerge_v2dat[c(1:41, 44:150, 42:43)]
 
     # merge all child into single database
-    all_child_v2dat <- rbind.data.frame(child_v2dat$data, child_covidmerge_v2dat)
+    all_child_v2dat <- rbind.data.frame(child_v2dat[['data']], child_covidmerge_v2dat)
 
     #### 4. Merge Parent Raw Data #####
 
     # update labels with 'parent report'
 
-    for (v in 1:ncol(parent_v2dat$data)) {
-        var_name <- names(parent_v2dat$data)[v]
+    for (v in 1:ncol(parent_v2dat[['data']])) {
+        var_name <- names(parent_v2dat[['data']])[v]
 
         # remove existing label
-        if (grepl("parent-reported", parent_v2dat$dict[[var_name]], fixed = TRUE)) {
-            parent_v2dat$dict[[var_name]] <- gsub("parent-reported", "", parent_v2dat$dict[[var_name]])
+        if (grepl("parent-reported", parent_v2dat[['dict']][[var_name]], fixed = TRUE)) {
+            parent_v2dat[['dict']][[var_name]] <- gsub("parent-reported", "", parent_v2dat[['dict']][[var_name]])
         }
 
         # add universal label
-        parent_v2dat$dict[[var_name]] <- paste0('Parent Reported: ', parent_v2dat$dict[[var_name]])
+        parent_v2dat[['dict']][[var_name]] <- paste0('Parent Reported: ', parent_v2dat[['dict']][[var_name]])
     }
 
-    v2dat <- merge(all_child_v2dat, parent_v2dat$data[c(1, 3:229)], by = 'id', all = TRUE)
+    v2dat <- merge(all_child_v2dat, parent_v2dat[['data']][c(1, 3:229)], by = 'id', all = TRUE)
 
     # merge labels/dictionary
-    v2dat_labels <- c(child_v2dat$dict, parent_v2dat$dict[3:229])
+    v2dat_labels <- c(child_v2dat[['dict']], parent_v2dat[['dict']][3:229])
 
     #### 5. Organize V2 data ####
 
@@ -259,9 +259,9 @@ util_fbs_merge_v2 <- function(child_file_pattern, parent_file_pattern, parentV4_
     }
 
     if (isTRUE(load_qv4_parent)){
-        rcmas_data <- merge(v2dat_org[c(1, 231:267)], parent_v4dat$data[c(1, 5)], by = 'id', all.x = TRUE, all.y = FALSE)
+        rcmas_data <- merge(v2dat_org[c(1, 231:267)], parent_v4dat[['data']][c(1, 5)], by = 'id', all.x = TRUE, all.y = FALSE)
         rcmas_data[1:38] <- sjlabelled::set_label(rcmas_data[1:38], label = matrix(unlist(v2dat_scored_labels[c(1, 291:327)], use.names = FALSE)))
-        rcmas_data['grade'] <- sjlabelled::set_label(rcmas_data['grade'], label = matrix(unlist(parent_v4dat$dict['grade'], use.names = FALSE)))
+        rcmas_data['grade'] <- sjlabelled::set_label(rcmas_data['grade'], label = matrix(unlist(parent_v4dat[['dict']]['grade'], use.names = FALSE)))
 
         rcmas_scored <- score_rcmas(rcmas_data = rcmas_data, parID = 'id')
     } else {
@@ -279,11 +279,11 @@ util_fbs_merge_v2 <- function(child_file_pattern, parent_file_pattern, parentV4_
 
     # indexing differs by 1 if grade is included for RCMAS
     if (isTRUE(load_qv4_parent)){
-        v2dat_scored <- merge(v2dat_scored, parent_v4dat$data[c(1, 5)], by = 'id', all.x = TRUE, all.y = FALSE)
+        v2dat_scored <- merge(v2dat_scored, parent_v4dat[['data']][c(1, 5)], by = 'id', all.x = TRUE, all.y = FALSE)
 
         v2dat_scored <- v2dat_scored[c(1:2, 448, 3:327, 438:447, 328:437)]
 
-        v2dat_scored_labels <- c(v2dat_scored_labels[1:2], parent_v4dat$dict['grade'], v2dat_scored_labels[3:327], rcmas_scored_labels[2:11], v2dat_scored_labels[328:437])
+        v2dat_scored_labels <- c(v2dat_scored_labels[1:2], parent_v4dat[['dict']]['grade'], v2dat_scored_labels[3:327], rcmas_scored_labels[2:11], v2dat_scored_labels[328:437])
     } else {
         v2dat_scored <- v2dat_scored[c(1:327, 438:447, 328:437)]
 
@@ -328,7 +328,10 @@ util_fbs_merge_v2 <- function(child_file_pattern, parent_file_pattern, parentV4_
     v2dat_scored_labels <- c(v2dat_scored_labels, v2_kcal_labels[2:8])
 
     ## add portion size label
-    v2dat_scored['meal_ps'] <- ifelse(is.na(v2dat_scored[['noplate_mac_cheese_g']]), NA, ifelse(v2dat_scored[['noplate_mac_cheese_g']] < 280, 'PS1', ifelse(v2dat_scored[['noplate_mac_cheese_g']] < 360, 'PS2', ifelse(v2dat_scored[['noplate_mac_cheese_g']] < 440, 'PS3', 'PS4'))))
+    v2dat_scored['meal_ps'] <- ifelse(is.na(v2dat_scored[['noplate_mac_cheese_g']]), NA, ifelse(v2dat_scored[['noplate_mac_cheese_g']] < 280, 0, ifelse(v2dat_scored[['noplate_mac_cheese_g']] < 360, 1, ifelse(v2dat_scored[['noplate_mac_cheese_g']] < 440, 2, 3))))
+
+    v2dat_scored[["meal_ps"]] <- sjlabelled::add_labels(v2dat_scored[["meal_ps"]], labels = c(ps1 = 0, ps2 = 1, ps3 = 2, ps4 = 3))
+    class(v2dat_scored[["meal_ps"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     v2dat_scored_labels[['meal_ps']] <- 'Visit 2 Portion Size Meal Condition'
 
@@ -346,7 +349,7 @@ util_fbs_merge_v2 <- function(child_file_pattern, parent_file_pattern, parentV4_
     #### 8. PNA data #####
 
     # only parent has pna data to organize
-    v2dat_pna <- parent_v2dat$pna_data
+    v2dat_pna <- parent_v2dat[['pna_data']]
 
     #### 9. save to list #####
 
@@ -356,9 +359,9 @@ util_fbs_merge_v2 <- function(child_file_pattern, parent_file_pattern, parentV4_
 
     # set labels
     v2dat_scored = sjlabelled::set_label(v2dat_scored, label = matrix(unlist(v2dat_scored_labels, use.names = FALSE)))
-    v2dat_pna = sjlabelled::set_label(v2dat_pna, label = matrix(unlist(parent_v2dat$pna_dict, use.names = FALSE)))
+    v2dat_pna = sjlabelled::set_label(v2dat_pna, label = matrix(unlist(parent_v2dat[['pna_dict']], use.names = FALSE)))
 
-    v2data_list <- list(data = v2dat_scored, dict = v2dat_scored_labels, pna_dat = v2dat_pna, pna_dict = parent_v2dat$pna_dict)
+    v2data_list <- list(data = v2dat_scored, dict = v2dat_scored_labels, pna_data = v2dat_pna, pna_dict = parent_v2dat[['pna_dict']])
 
     return(v2data_list)
 }

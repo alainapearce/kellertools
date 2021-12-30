@@ -92,27 +92,13 @@ util_fbs_parent_v7dat_home <- function(file_pattern, data_path) {
         qv7_parent_dat <- as.data.frame(haven::read_spss(qv7_parent_path))
 
     } else {
-
-        #check if in the main database rather than 'Final_CovidAtHome' database
         if (isTRUE(datapath_arg)) {
-            qv7_parent_path2 <- paste0(data_path, "/Parent_V7_Home_", date_str, ".sav")
+            stop("File does not exist. Check date_str and data_path entered")
         } else {
-            qv7_parent_path2 <- paste0("/Parent_V7_Home_", date_str, ".sav")
-        }
-
-        # check if file exists
-        qv7_parent_exists2 <- file.exists(qv7_parent_path2)
-
-        if (isTRUE(qv7_parent_exists2)) {
-            qv7_parent_dat <- as.data.frame(haven::read_spss(qv7_parent_path2))
-        } else {
-            if (isTRUE(datapath_arg)) {
-                stop("File does not exist. Check date_str and data_path entered")
-            } else {
-                stop("File does not exist. Check date_str and that the data exists in current working directory")
-            }
+            stop("File does not exist. Check date_str and that the data exists in current working directory")
         }
     }
+
 
     #### 3. Clean Data #####
 
@@ -178,9 +164,9 @@ util_fbs_parent_v7dat_home <- function(file_pattern, data_path) {
 
     }
 
-    names(qv7_parent_clean)[c(2, 6:79)] <- c("start_date", "pds_1", "pds_2", "pds_3", "pds_4m", "pds_5m", "pds_6m", "pds_4f",  "pds_5f_a", "pds_5f_b", "pds_5f_c", "pds_5f_d", "pds_6f", "tanner_male", "tanner_female", "paq_m_wakeup", "paq_m_travel_school", "paq_m_traveltime_school", "paq_m_arriveschool", "paq_m_leaveschool", "paq_m_travel_home", "paq_m_traveltime_home", "paq_m_indoor_lowintensity", "paq_m_indoor_highintensity", "paq_m_outdoor_lowintensity", "paq_m_outdoor_highintensity", "paq_m_bedtime", "paq_t_wakeup", "paq_t_travel_school", "paq_t_traveltime_school", "paq_t_arriveschool", "paq_t_leaveschool", "paq_t_travel_home", "paq_t_traveltime_home", "paq_t_indoor_lowintensity", "paq_t_indoor_highintensity", "paq_t_outdoor_lowintensity", "paq_t_outdoor_highintensity", "paq_t_bedtime", "paq_w_wakeup", "paq_w_travel_school", "paq_w_traveltime_school", "paq_w_arriveschool", "paq_w_leaveschool", "paq_w_travel_home", "paq_w_traveltime_home", "paq_w_indoor_lowintensity", "paq_w_indoor_highintensity", "paq_w_outdoor_lowintensity", "paq_w_outdoor_highintensity", "paq_w_bedtime", "paq_th_wakeup", "paq_th_travel_school", "paq_th_traveltime_school", "paq_th_arriveschool", "paq_th_leaveschool", "paq_th_travel_home", "paq_th_traveltime_home", "paq_th_indoor_lowintensity", "paq_th_indoor_highintensity", "paq_th_outdoor_lowintensity",  "paq_th_outdoor_highintensity", "paq_th_bedtime", "paq_f_wakeup", "paq_f_travel_school", "paq_f_traveltime_school", "paq_f_arriveschool", "paq_f_leaveschool", "paq_f_travel_home", "paq_f_traveltime_home", "paq_f_indoor_lowintensity", "paq_f_indoor_highintensity", "paq_f_outdoor_lowintensity", "paq_f_outdoor_highintensity", "paq_f_bedtime")
+    names(qv7_parent_clean)[c(2, 6:79)] <- c("start_date", "pds_1", "pds_2", "pds_3", "pds_4m", "pds_5m", "pds_6m", "pds_4f",  "pds_5fa", "pds_5fb", "pds_5fc", "pds_5fd", "pds_6f", "tanner_male", "tanner_female", "paq_m_wakeup", "paq_m_travel_school", "paq_m_traveltime_school", "paq_m_arriveschool", "paq_m_leaveschool", "paq_m_travel_home", "paq_m_traveltime_home", "paq_m_indoor_lowintensity", "paq_m_indoor_highintensity", "paq_m_outdoor_lowintensity", "paq_m_outdoor_highintensity", "paq_m_bedtime", "paq_t_wakeup", "paq_t_travel_school", "paq_t_traveltime_school", "paq_t_arriveschool", "paq_t_leaveschool", "paq_t_travel_home", "paq_t_traveltime_home", "paq_t_indoor_lowintensity", "paq_t_indoor_highintensity", "paq_t_outdoor_lowintensity", "paq_t_outdoor_highintensity", "paq_t_bedtime", "paq_w_wakeup", "paq_w_travel_school", "paq_w_traveltime_school", "paq_w_arriveschool", "paq_w_leaveschool", "paq_w_travel_home", "paq_w_traveltime_home", "paq_w_indoor_lowintensity", "paq_w_indoor_highintensity", "paq_w_outdoor_lowintensity", "paq_w_outdoor_highintensity", "paq_w_bedtime", "paq_th_wakeup", "paq_th_travel_school", "paq_th_traveltime_school", "paq_th_arriveschool", "paq_th_leaveschool", "paq_th_travel_home", "paq_th_traveltime_home", "paq_th_indoor_lowintensity", "paq_th_indoor_highintensity", "paq_th_outdoor_lowintensity",  "paq_th_outdoor_highintensity", "paq_th_bedtime", "paq_f_wakeup", "paq_f_travel_school", "paq_f_traveltime_school", "paq_f_arriveschool", "paq_f_leaveschool", "paq_f_travel_home", "paq_f_traveltime_home", "paq_f_indoor_lowintensity", "paq_f_indoor_highintensity", "paq_f_outdoor_lowintensity", "paq_f_outdoor_highintensity", "paq_f_bedtime")
 
-    names(qv7_parent_clean)[98:138] <- c("parent_respondant", "parent_dob", "sr_dad_height_ft", "sr_dad_height_in", "sr_dad_weight_lb", "sr_mom_height_ft", "sr_mom_height_in", "sr_mom_weight_lb", "household_n_mom", "household_n_dad", "household_n_stepmom", "household_n_stepdad", "household_n_brother", "household_n_sister", "household_n_stepbrother", "household_n_stepsister", "household_n_grandmom", "household_n_grandad", "household_n_aunt", "household_n_uncle", "household_n_cousin", "household_n_other", "n_parental_separations", "n_fostercare_placements", "living_with_partner", "maritalstatus", "maritalstatus_other", "income", "parent_ed", "parent_ed_other", "partner_ed", "partner_ed_other", "parent_employed", "parent_retired", "parent_wk_workhr", "partner_employed", "partner_retired", "partner_wk_workhr", "mom_weightgain_10lb", "allowance", "allowance_amount")
+    names(qv7_parent_clean)[98:138] <- c("parent_respondent", "parent_dob", "sr_dad_height_ft", "sr_dad_height_in", "sr_dad_weight_lb", "sr_mom_height_ft", "sr_mom_height_in", "sr_mom_weight_lb", "household_n_mom", "household_n_dad", "household_n_stepmom", "household_n_stepdad", "household_n_brother", "household_n_sister", "household_n_stepbrother", "household_n_stepsister", "household_n_grandmom", "household_n_grandad", "household_n_aunt", "household_n_uncle", "household_n_cousin", "household_n_other", "n_parental_separations", "n_fostercare_placements", "living_with_partner", "maritalstatus", "maritalstatus_other", "income", "parent_ed", "parent_ed_other", "partner_ed", "partner_ed_other", "parent_employed", "parent_retired", "parent_wk_workhr", "partner_employed", "partner_retired", "partner_wk_workhr", "mom_weightgain_10lb", "allowance", "allowance_amount")
 
     names(qv7_parent_clean)[149:228] <- c("feedschild", "feedschild_other", "buysfood", "buysfood_other", "feq_eatout", "freq_familydinner", "freq_homelunch", "family_foodcond", "snap", "wic", "tanf", "medicaid", "liheap", "partial_lunch_assistance", "full_lunch_assistance", "other_program", "other_program_freetxt", "foodpantry_use", "freq_foodpantry", "foodbudget_mo", "prefered_grocerystore", "rank_packagedbread", "rank_bakerybread", "rank_saltysnack", "rank_sweetsnack", "rank_cheese", "rank_milk", "rank_yogurt", "rank_butter", "rank_eggs", "rank_otherdairy", "rank_coffeetea", "rank_carbonated_drink", "rank_fruitjuice_drink", "rank_sports_drink", "rank_alcohol_drink", "rank_redmeat", "rank_poultry", "rank_seafood", "rank_pasta_rice", "rank_soup", "rank_nuts_seeds", "rank_nutjelly_spread", "rank_breakfast_cereal", "rank_breakfast_replacement", "rank_meal_replacement", "rank_freshprep_foods", "rank_fresh_veg", "rank_fresh_fruit", "rank_can_veg", "rank_can_fruit",  "rank_frozen_veg", "rank_frozen_fruit", "rank_frozen_dinner", "rank_frozen_breakfast", "rank_frozen_desert", "rank_candygum", "rank_bakingsupplies", "rank_condiments", "rank_dips_spreads", "rank_salad_dressings", "rank_spice_seasoning",  "rank_cooking_oil", "grow_fruits", "grow_veg", "grow_jellyspreads", "grow_nuts_seeds", "grow_milk", "grow_cheese", "grow_butter", "grow_eggs", "grow_redmeat", "grow_poultry", "encourage_plateclean_vas", "child_plateclean_vas",  "percieved_child_kcal", "pcent_parent_portionchoice", "pcent_partner_portionchoice", "pcent_child_portionchoice",  "pcent_other_portionchoice")
 
@@ -252,8 +238,7 @@ util_fbs_parent_v7dat_home <- function(file_pattern, data_path) {
 
     #### 6) fix 99's and other poor categories ####
 
-    ## check for labels/99 option: 1) if 99's exist, make a 'prefere not to answer' (pna) variable to go in pna
-    ## database, 2) replace 99's with NA and make variable numeric
+    ## check for labels/99 option: 1) if 99's exist, make a 'prefere not to answer' (pna) variable to go in pna database, 2) replace 99's with NA and make variable numeric
 
     ## make pna database
     qv7_parent_pna <- data.frame(id = qv7_parent_clean[["id"]])
@@ -434,7 +419,10 @@ util_fbs_parent_v7dat_home <- function(file_pattern, data_path) {
 
     ## 6c) continuous variables with 99's data ####
 
-    level99_issue_contvars <- names(qv7_parent_clean)[c(106:121, 153:154, 167)]
+    level99_issue_contvars <- names(qv7_parent_clean)[c(5, 14, 16, 106:121, 153:154, 167)]
+
+    #update 1 label
+    qv7_parent_clean_labels[['pds_5fd']] <- paste0(qv7_parent_clean_labels[['pds_5fd']], 'in weeks')
 
     for (v in 1:length(level99_issue_contvars)) {
         # get variable name
@@ -622,7 +610,13 @@ util_fbs_parent_v7dat_home <- function(file_pattern, data_path) {
 
     ## 11b) add attributes to pna data
     n_pna_cols <- length(names(qv7_parent_pna))
+
     qv7_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv7_parent_pna[2:n_pna_cols], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+
+    for (v in 2:ncol(qv7_parent_pna)){
+        class(qv7_parent_pna[[v]]) <- c("haven_labelled", "vctrs_vctr", "double")
+    }
+
 
     ## 11c) put data in order of participant ID for ease
     qv7_parent_clean <- qv7_parent_clean[order(qv7_parent_clean[["id"]]), ]

@@ -74,7 +74,7 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
     #### 3. Merge Child Raw Data #####
 
     # merge child home and lab into single database
-    child_covidmerge_v1dat <- merge(child_lab_v1dat$data, child_home_v1dat$data[c(1, 7:95)], by = 'id', all = TRUE)
+    child_covidmerge_v1dat <- merge(child_lab_v1dat[['data']], child_home_v1dat[['data']][c(1, 7:95)], by = 'id', all = TRUE)
 
     # re-order so matches child_v1dat
     child_covidmerge_v1dat <- child_covidmerge_v1dat[c(1:160, 163:251, 161:162)]
@@ -87,13 +87,13 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
     child_covidmerge_v1dat <- child_covidmerge_v1dat[c(1:243, 252:254, 244:251)]
 
     # merge all child into single database
-    all_child_v1dat <- rbind.data.frame(child_v1dat$data, child_covidmerge_v1dat)
+    all_child_v1dat <- rbind.data.frame(child_v1dat[['data']], child_covidmerge_v1dat)
 
 
     #### 4. Merge Parent Raw Data #####
 
     # add 'p_' to pss data to mark parent
-    parent_pss_vars <- names(parent_v1dat$data)[c(251:406)]
+    parent_pss_vars <- names(parent_v1dat[['data']])[c(251:406)]
 
     for (v in 1:length(parent_pss_vars)) {
         var_name <- parent_pss_vars[v]
@@ -101,27 +101,27 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
         parent_pss_vars[v] <- paste0('p_', var_name)
     }
 
-    names(parent_v1dat$data)[c(251:406)] <- parent_pss_vars
-    names(parent_v1dat$dict)[c(251:406)] <- parent_pss_vars
+    names(parent_v1dat[['data']])[c(251:406)] <- parent_pss_vars
+    names(parent_v1dat[['dict']])[c(251:406)] <- parent_pss_vars
 
     # update labels with 'parent report'
 
-    for (v in 1:ncol(parent_v1dat$data)) {
-        var_name <- names(parent_v1dat$data)[v]
+    for (v in 1:ncol(parent_v1dat[['data']])) {
+        var_name <- names(parent_v1dat[['data']])[v]
 
         # remove existing label
-        if (grepl("parent-reported", parent_v1dat$dict[[var_name]], fixed = TRUE)) {
-            parent_v1dat$dict[[var_name]] <- gsub("parent-reported", "", parent_v1dat$dict[[var_name]])
+        if (grepl("parent-reported", parent_v1dat[['dict']][[var_name]], fixed = TRUE)) {
+            parent_v1dat[['dict']][[var_name]] <- gsub("parent-reported", "", parent_v1dat[['dict']][[var_name]])
         }
 
         # add universal label
-        parent_v1dat$dict[[var_name]] <- paste0('Parent Reported: ', parent_v1dat$dict[[var_name]])
+        parent_v1dat[['dict']][[var_name]] <- paste0('Parent Reported: ', parent_v1dat[['dict']][[var_name]])
     }
 
-    v1dat <- merge(all_child_v1dat, parent_v1dat$data[c(1, 5:408)], by = 'id', all = TRUE)
+    v1dat <- merge(all_child_v1dat, parent_v1dat[['data']][c(1, 5:408)], by = 'id', all = TRUE)
 
     # merge labels/dictionary
-    v1dat_labels <- c(child_v1dat$dict, parent_v1dat$dict[5:408])
+    v1dat_labels <- c(child_v1dat[['dict']], parent_v1dat[['dict']][5:408])
 
     #### 5. Organize V1 data and score #####
 
@@ -134,7 +134,7 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
     # ensure labels are up to date
     v1dat_org = sjlabelled::set_label(v1dat_org, label = matrix(unlist(v1dat_labels, use.names = FALSE)))
 
-    ## score puberty data
+    ## score puberty data ####
     pds_scored <- score_pds(pds_data = v1dat_org[c(1, 6, 18:29)], respondent = 'parent', male = 0, female = 1, parID = 'id')
 
     # get labels from scored data and simplify
@@ -149,7 +149,7 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
 
     v1dat_scored_labels <- c(v1dat_labels[1:29], pds_scored_labels[3:4], v1dat_labels[30:658])
 
-    ## score PAQ data and parent-reported sleep per day of the week
+    ## score PAQ data and parent-reported sleep per day of the week ####
     paq_scored <- score_paq(paq_data = v1dat_org[c(1, 115:194)], study = 'fbs', sleep = TRUE, parID = 'id')
 
     # get labels from scored data and simplify
@@ -269,7 +269,7 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
     #### 8. PNA data #####
 
     # only parent has pna data to organize
-    v1dat_pna <- parent_v1dat$pna_data
+    v1dat_pna <- parent_v1dat[['pna_data']]
 
     #### 9. save to list #####
 
@@ -279,9 +279,9 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
 
     # set labels
     v1dat_scored = sjlabelled::set_label(v1dat_scored, label = matrix(unlist(v1dat_scored_labels, use.names = FALSE)))
-    v1dat_pna = sjlabelled::set_label(v1dat_pna, label = matrix(unlist(parent_v1dat$pna_dict, use.names = FALSE)))
+    v1dat_pna = sjlabelled::set_label(v1dat_pna, label = matrix(unlist(parent_v1dat[['pna_dict']], use.names = FALSE)))
 
-    v1data_list <- list(data = v1dat_scored, dict = v1dat_scored_labels, pna_dat = v1dat_pna, pna_dict = parent_v1dat$pna_dict)
+    v1data_list <- list(data = v1dat_scored, dict = v1dat_scored_labels, pna_data = v1dat_pna, pna_dict = parent_v1dat[['pna_dict']])
 
     return(v1data_list)
 }

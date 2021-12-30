@@ -123,6 +123,10 @@ util_fbs_child_v4dat <- function(file_pattern, data_path) {
     qv4_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv4_child_clean[["start_date"]]))
     qv4_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
+    ## freddy fullness as numeric
+    qv4_child_clean[c(5:6, 12:15, 18)] <- sapply(qv4_child_clean[c(5:6, 12:15, 18)], FUN = as.numeric)
+
+
     # 6) re-calculate manual variables ####
 
     ## re-calculate all intake values
@@ -238,6 +242,14 @@ util_fbs_child_v4dat <- function(file_pattern, data_path) {
     }
 
     # 9) Format for export ####
+
+    ## 9a) add attributes to pna data
+    qv4_child_pna[2:ncol(qv4_child_pna)] <- as.data.frame(lapply(qv4_child_pna[2:ncol(qv4_child_pna)], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+
+    for (v in 2:ncol(qv4_child_pna)){
+        class(qv4_child_pna[[v]]) <- c("haven_labelled", "vctrs_vctr", "double")
+    }
+
     # put data in order of participant ID for ease
     qv4_child_clean <- qv4_child_clean[order(qv4_child_clean[["id"]]), ]
 

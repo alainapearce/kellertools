@@ -91,26 +91,10 @@ util_fbs_child_v2dat_home <- function(file_pattern, data_path) {
 
     } else {
 
-        #check if in the main database rather than 'Final_CovidAtHome' database
         if (isTRUE(datapath_arg)) {
-            qv2_child_path2 <- paste0(data_path, "/Child_V2_Home_", date_str, ".sav")
+            stop("File does not exist. Check date_str and data_path entered")
         } else {
-            qv2_child_path2 <- paste0("Child_V2_Home", date_str, ".sav")
-        }
-
-        # check if file exists
-        qv2_child_exists2 <- file.exists(qv2_child_path2)
-
-        # load data if it exists
-        if (isTRUE(qv2_child_exists2)) {
-            qv2_child_dat <- as.data.frame(haven::read_spss(qv2_child_path2))
-
-        } else {
-            if (isTRUE(datapath_arg)) {
-                stop("File does not exist. Check date_str and data_path entered")
-            } else {
-                stop("File does not exist. Check date_str and that the data exists in current working directory")
-            }
+            stop("File does not exist. Check date_str and that the data exists in current working directory")
         }
     }
 
@@ -163,14 +147,14 @@ util_fbs_child_v2dat_home <- function(file_pattern, data_path) {
         var_name <- as.character(kfq_names[var])
 
         qv2_child_clean[[var_name]] <- sjlabelled::set_labels(qv2_child_clean[[var_name]], labels = c(`Never eat this` = 0,
-            `Less than once in 7 days` = 1, `1-2 times in 7 days` = 2, `3-5 times in 7 days` = 3, `6-7 times in 7 days` = 4,
-            `More than 7 times in 7 days` = 5))
+                                                                                                      `Less than once in 7 days` = 1, `1-2 times in 7 days` = 2, `3-5 times in 7 days` = 3, `6-7 times in 7 days` = 4,
+                                                                                                      `More than 7 times in 7 days` = 5))
 
         set_attr <- attributes(qv2_child_clean[[var_name]])
 
         qv2_child_clean[[var_name]] <- ifelse(is.na(qv2_child_clean[[var_name]]), NA, ifelse(qv2_child_clean[[var_name]] ==
-            1, 0, ifelse(qv2_child_clean[[var_name]] == 2, 1, ifelse(qv2_child_clean[[var_name]] == 3, 2, ifelse(qv2_child_clean[[var_name]] ==
-            4, 3, ifelse(qv2_child_clean[[var_name]] == 5, 4, 5))))))
+                                                                                                 1, 0, ifelse(qv2_child_clean[[var_name]] == 2, 1, ifelse(qv2_child_clean[[var_name]] == 3, 2, ifelse(qv2_child_clean[[var_name]] ==
+                                                                                                                                                                                                          4, 3, ifelse(qv2_child_clean[[var_name]] == 5, 4, 5))))))
 
         attributes(qv2_child_clean[[var_name]]) <- set_attr
 
@@ -185,7 +169,7 @@ util_fbs_child_v2dat_home <- function(file_pattern, data_path) {
     for (var in 1:length(tesqe_names)) {
         var_name <- as.character(tesqe_names[var])
         qv2_child_clean[[var_name]] <- sjlabelled::set_labels(qv2_child_clean[[var_name]], labels = c(Never = 1, Rarely = 2,
-            Sometimes = 3, Regularly = 4, Often = 5, `Dont know` = -99))
+                                                                                                      Sometimes = 3, Regularly = 4, Often = 5, `Dont know` = -99))
 
         set_attr <- attributes(qv2_child_clean[[var_name]])
 

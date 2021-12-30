@@ -73,7 +73,10 @@ score_audit <- function(audit_data, parID) {
     audit_vars <- c("audit1", "audit2", "audit3", "audit4", "audit5", "audit6", "audit7", "audit7", "audit8", "audit9", "audit10")
     audit_score_dat[["audit_total"]] <- rowSums(audit_data[audit_vars])
 
-    audit_score_dat[["audit_cat"]] <- ifelse(is.na(audit_score_dat[["audit_total"]]), NA, ifelse(audit_score_dat[["audit_total"]] >=8, 'Likely Harmful Consumption', 'Not Harmful Consumption'))
+    audit_score_dat[["audit_cat"]] <- ifelse(is.na(audit_score_dat[["audit_total"]]), NA, ifelse(audit_score_dat[["audit_total"]] >=8, 1, 0))
+
+    audit_score_dat[["audit_cat"]] <- sjlabelled::add_labels(audit_score_dat[["audit_total"]], labels = c(`Not Harmful Consumption` = 0, `Likely Harmful Consumption` = 1))
+    class(audit_score_dat[["audit_cat"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     ## add labels to data
     audit_score_dat_labels[["audit_total"]] <- "AUDIT Total Score"

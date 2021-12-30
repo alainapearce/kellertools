@@ -223,7 +223,9 @@ util_fbs_parent_v2dat <- function(file_pattern, data_path) {
         attributes(qv2_parent_clean[[pvar]]) <- pvar_attr
     }
 
-    #### 7) reformatting dates/times #### 7a) dates (start, dobs) ####
+    #### 7) reformatting dates/times ####
+
+    ##7a) dates (start, dobs)
     qv2_parent_clean[["start_date"]] <- lubridate::ymd(as.Date(qv2_parent_clean[["start_date"]]))
     qv2_parent_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
@@ -243,9 +245,7 @@ util_fbs_parent_v2dat <- function(file_pattern, data_path) {
         set_attr <- attributes(qv2_parent_clean[[var_name]])
 
         # re-set values to match new level values
-        qv2_parent_clean[[var_name]] <- ifelse(is.na(qv2_parent_clean[[var_name]]), NA, ifelse(qv2_parent_clean[[var_name]] ==
-            0, 1, ifelse(qv2_parent_clean[[var_name]] == 1, 2, ifelse(qv2_parent_clean[[var_name]] == 5, 4, ifelse(qv2_parent_clean[[var_name]] ==
-            7, 5, qv2_parent_clean[[var_name]])))))
+        qv2_parent_clean[[var_name]] <- ifelse(is.na(qv2_parent_clean[[var_name]]), NA, ifelse(qv2_parent_clean[[var_name]] == 0, 1, ifelse(qv2_parent_clean[[var_name]] == 1, 2, ifelse(qv2_parent_clean[[var_name]] == 5, 4, ifelse(qv2_parent_clean[[var_name]] == 7, 5, qv2_parent_clean[[var_name]])))))
 
         # reset attributes
         attributes(qv2_parent_clean[[var_name]]) <- set_attr
@@ -261,8 +261,7 @@ util_fbs_parent_v2dat <- function(file_pattern, data_path) {
         var_name <- cfq_vars[var]
 
         # reset all labels
-        qv2_parent_clean[[var_name]] <- sjlabelled::set_labels(qv2_parent_clean[[var_name]], labels = c(Unconcerned = 1,
-            `Slightly Concerned` = 2, Neutral = 3, `Slightly Concerned` = 4, Concerned = 5))
+        qv2_parent_clean[[var_name]] <- sjlabelled::set_labels(qv2_parent_clean[[var_name]], labels = c(Unconcerned = 1, `Slightly Concerned` = 2, Neutral = 3, `Slightly Concerned` = 4, Concerned = 5))
 
         # save attributes
         set_attr <- attributes(qv2_parent_clean[[var_name]])
@@ -281,15 +280,13 @@ util_fbs_parent_v2dat <- function(file_pattern, data_path) {
         var_name <- ffb_vars[var]
 
         # reset all labels
-        qv2_parent_clean[[var_name]] <- sjlabelled::set_labels(qv2_parent_clean[[var_name]], labels = c(`Never True` = 0,
-            `Rarely True` = 1, Sometimes = 2, `Often True` = 3, `Always True` = 4))
+        qv2_parent_clean[[var_name]] <- sjlabelled::set_labels(qv2_parent_clean[[var_name]], labels = c(`Never True` = 0, `Rarely True` = 1, Sometimes = 2, `Often True` = 3, `Always True` = 4))
 
         # save attributes
         set_attr <- attributes(qv2_parent_clean[[var_name]])
 
         # subtract 1 from each data value to match new level values
-        qv2_parent_clean[[var_name]] <- ifelse(is.na(qv2_parent_clean[[var_name]]), NA, qv2_parent_clean[[var_name]] -
-            1)
+        qv2_parent_clean[[var_name]] <- ifelse(is.na(qv2_parent_clean[[var_name]]), NA, qv2_parent_clean[[var_name]] - 1)
 
         # reset attributes
         attributes(qv2_parent_clean[[var_name]]) <- set_attr
@@ -306,16 +303,13 @@ util_fbs_parent_v2dat <- function(file_pattern, data_path) {
         var_name <- cbq_vars[var]
 
         # reset all labels
-        qv2_parent_clean[[var_name]] <- sjlabelled::set_labels(qv2_parent_clean[[var_name]], labels = c(`Extremely Untrue` = 1,
-            `Quite Untrue` = 2, `Sightly Untrue` = 3, `Neither True nor False` = 4, `Slightly True` = 5, `Quite True` = 6,
-            `Extremely True` = 7, `NA or Don't want to answer` = -99))
+        qv2_parent_clean[[var_name]] <- sjlabelled::set_labels(qv2_parent_clean[[var_name]], labels = c(`Extremely Untrue` = 1, `Quite Untrue` = 2, `Sightly Untrue` = 3, `Neither True nor False` = 4, `Slightly True` = 5, `Quite True` = 6, `Extremely True` = 7, `NA or Don't want to answer` = -99))
 
         # save attributes
         set_attr <- attributes(qv2_parent_clean[[var_name]])
 
         # subtract 1 from each data value to match new level values
-        qv2_parent_clean[[var_name]] <- ifelse(is.na(qv2_parent_clean[[var_name]]), NA, ifelse(qv2_parent_clean[[var_name]] ==
-            99, -99, qv2_parent_clean[[var_name]]))
+        qv2_parent_clean[[var_name]] <- ifelse(is.na(qv2_parent_clean[[var_name]]), NA, ifelse(qv2_parent_clean[[var_name]] ==  99, -99, qv2_parent_clean[[var_name]]))
 
         # reset attributes
         attributes(qv2_parent_clean[[var_name]]) <- set_attr
@@ -327,9 +321,12 @@ util_fbs_parent_v2dat <- function(file_pattern, data_path) {
     #### 9) Format for export ####
 
     ## 9a) add attributes to pna data
-    n_pna_cols <- length(names(qv2_parent_pna))
-    qv2_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv2_parent_pna[2:n_pna_cols], function(x) sjlabelled::add_labels(x,
-        labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+    qv2_parent_pna[2:ncol(qv2_parent_pna)] <- as.data.frame(lapply(qv2_parent_pna[2:ncol(qv2_parent_pna)], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+
+    for (v in 2:ncol(qv2_parent_pna)){
+        class(qv2_parent_pna[[v]]) <- c("haven_labelled", "vctrs_vctr", "double")
+    }
+
 
     ## 9b) put data in order of participant ID for ease
     qv2_parent_clean <- qv2_parent_clean[order(qv2_parent_clean[["id"]]), ]

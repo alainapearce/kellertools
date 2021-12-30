@@ -14,10 +14,11 @@
 #' To process the raw data, the raw databases from Qualtrics MUST follow the naming convention: Child_V1_YYYY-MM-DD.sav, Child_V1_Home_YYY-MM-DD.sav, Child_V1_Lab_YYY-MM-DD.sav, and Parent_V1_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered and the directory organization does not follow the structure laid out in the DataManual.
 #'
 #' @param databases (optional) list of strings to indicate which databases to process. If not entered, all databases will be generated. Options include: 1) 'demo' for Demographic, 2) 'anthro' for Anthropometrics, 3) 'intake' for Intake, 4) 'food_qs' for food-related questionnaires, 5) 'psych_qs' for cognitive and psych related data, 6) 'dd' for Delay Discounting, 7) 'intero' for Interoception data, 8) 'notes' for Notes, and 9) 'pna' for Prefer Not to Answer
+#' @param model_DD Indicate if delay discounting data should be modeled. This will take an addition 3-5 minutes of processing time. Default = FALSE. The Delay Discounting database will only be generate if set to TRUE.
 #' @param write_dat indicate whether to write databases. Default is TRUE.
 #' @param write_path (optional) a string with the path indicating where to save the generated databases if write_dat is TRUE (default option). If no path is given, databases will be written to working directory.
+#' @param return_data indicate whether to return databases to the environment. Default is FALSE.
 #' @inheritParams util_fbs_parent_v1dat
-#' @param model_DD Indicate if delay discounting data should be modeled. This will take an addition 3-5 minutes of processing time. Default = FALSE. The Delay Discounting database will only be generate if set to TRUE.
 #' @param child_file_pattern (optional) This is only needed if file naming deviates from the standard naming: e.g., Child_V#_*sav'. Only enter the string indicating a respondent (e.g., 'Child').
 #' @param parent_file_pattern (optional) This is only needed if file naming deviates from the standard naming: e.g., Parent_V#_*sav'. Only enter the string indicating a respondent (e.g., 'Child').
 #' @param visit_file_pattern (optional) This is only needed if file naming deviates from the standard naming for visits: e.g., V# . Only enter the string indicating a visit (e.g., 'V' for 'V1' or 'Visit_' for 'Visit_1').
@@ -45,11 +46,11 @@
 #'
 #' @export
 
-fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, model_DD = FALSE, child_file_pattern, parent_file_pattern, visit_file_pattern) {
+fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_path, data_path, return_data = FALSE, child_file_pattern, parent_file_pattern, visit_file_pattern) {
 
     #### 1. Set up/initial checks #####
 
-    # check if date_str exists and is a string
+    # check the file patterns
 
     c_filepat_arg <- methods::hasArg(child_file_pattern)
 
@@ -201,6 +202,9 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
 
     #### 3. Make Databases #####
 
+    #empty list
+    database_list <- list()
+
     #get cross-database variables
     common_demo_data <- v1_data[['data']][c(1:13, 20:21, 60:64, 94:97, 123:124)]
     common_demo_labels <- v1_data[['dict']][c(1:13, 20:21, 60:64, 94:97, 123:124)]
@@ -265,15 +269,26 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
         # ensure labels are up to date
         demographic_data = sjlabelled::set_label(demo_v1v4v5v7_data, label = matrix(unlist(demographic_labels, use.names = FALSE)))
 
+        # add to list
+        database_list <- list(database_list, demo_data = demographic_data, demo_dict = demographic_labels)
+
+        # write out
         if (isTRUE(write_dat)){
 
             #data dictionary
             demo_dict <- labelled::generate_dictionary(demographic_data, details = TRUE)
             demo_dict$label <- matrix(unlist(demographic_labels, use.names = FALSE))
-            if (isTRUE(writepath_arg)){
-                write_sav(demographic_data, path = write_path)
-            } else {
+            names(demo_dict)[1] <- 'column'
 
+            #interprets the value_labels as list so need to make everything a character
+            demo_dict_write <- sapply(demo_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
+
+            if (isTRUE(writepath_arg)){
+                haven::write_sav(demographic_data, path = paste0(write_path, 'Demographics.sav'))
+                write.csv(demo_dict_write, file = paste0(write_path, 'Demographics_Dictionnary.csv'), row.names = FALSE)
+            } else {
+                haven::write_sav(demographic_data, path = 'Demographics.sav')
+                write.csv(demo_dict_write, file = 'Demographics_Dictionnary.csv', row.names = FALSE)
             }
         }
     }
@@ -293,8 +308,8 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
         names(v2_anthro_labels)[2] <- 'v2_date'
 
         #visit 7
-        v7_anthro_data <- v7_data[['data']][c(1:2, 121:285)]
-        v7_anthro_labels <- v7_data[['dict']][c(1:2, 121:285)]
+        v7_anthro_data <- v7_data[['data']][c(1:2, 121:288)]
+        v7_anthro_labels <- v7_data[['dict']][c(1:2, 121:288)]
 
         names(v7_anthro_data)[2] <- 'v7_date'
         names(v7_anthro_labels)[2] <- 'v7_date'
@@ -323,10 +338,33 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
         anthro_demov1v2v7_data <- merge(anthro_demov1v2_data, v7_anthro_data, by = 'id', all = TRUE)
 
         #get labels
-        anthrographic_labels <- c(common_demo_labels[1:20], v1_anthro_labels[2:length(v1_anthro_labels)], v2_anthro_labels[2:length(v2_anthro_labels)], v7_anthro_labels[2:length(v7_anthro_labels)])
+        anthroprometric_labels <- c(common_demo_labels[1:20], v1_anthro_labels[2:length(v1_anthro_labels)], v2_anthro_labels[2:length(v2_anthro_labels)], v7_anthro_labels[2:length(v7_anthro_labels)])
 
         # ensure labels are up to date
-        anthrographic_data = sjlabelled::set_label(anthro_demov1v2v7_data, label = matrix(unlist(anthrographic_labels, use.names = FALSE)))
+        anthroprometric_data = sjlabelled::set_label(anthro_demov1v2v7_data, label = matrix(unlist(anthroprometric_labels, use.names = FALSE)))
+
+        # add to list
+        database_list <- list(database_list, anthro_data = anthroprometric_data, anthro_dict = anthroprometric_labels)
+
+        # write out
+        if (isTRUE(write_dat)){
+
+            #data dictionary
+            antho_dict <- labelled::generate_dictionary(anthroprometric_data, details = TRUE)
+            antho_dict$label <- matrix(unlist(anthroprometric_labels, use.names = FALSE))
+            names(antho_dict)[1] <- 'column'
+
+            #interprets the value_labels as list so need to make everything a character
+            antho_dict_write <- sapply(antho_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
+
+            if (isTRUE(writepath_arg)){
+                haven::write_sav(anthroprometric_data, path = paste0(write_path, 'Anthroprometrics.sav'))
+                write.csv(antho_dict_write, file = paste0(write_path, 'Anthroprometrics_Dictionnary.csv'), row.names = FALSE)
+            } else {
+                haven::write_sav(anthographic_data, path = 'Anthroprometrics.sav')
+                write.csv(antho_dict_write, file = 'Anthroprometrics_Dictionnary.csv', row.names = FALSE)
+            }
+        }
 
     }
 
@@ -431,8 +469,8 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
         names(v5_intake_labels) <- names(v5_intake_data)
 
         #visit 7
-        v7_intake_data <- v7_data[['data']][c(1:2, 286:458)]
-        v7_intake_labels <- v7_data[['dict']][c(1:2, 286:458)]
+        v7_intake_data <- v7_data[['data']][c(1:2, 289:461)]
+        v7_intake_labels <- v7_data[['dict']][c(1:2, 289:461)]
 
         names(v7_intake_data)[2] <- 'v7_date'
         names(v7_intake_labels)[2] <- 'v7_date'
@@ -485,14 +523,13 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
                 v4_var_name <- paste0('v4_', ps_var)
                 v5_var_name <- paste0('v5_', ps_var)
 
-                #portion size string
-                ps_str <- paste0('PS', ps)
-
                 #get new variable added to dataset
+                ps_value <- ps -1
+
                 if (ps_var == 'date'){
-                    ps_var_dat <- ifelse(intake_data[['v2_meal_ps']] == ps_str, as.character(intake_data[[v2_var_name]]), ifelse(intake_data[['v3_meal_ps']] == ps_str, as.character(intake_data[[v3_var_name]]), ifelse(intake_data[['v4_meal_ps']] == ps_str, as.character(intake_data[[v4_var_name]]), ifelse(intake_data[['v5_meal_ps']] == ps_str, as.character(intake_data[[v5_var_name]]), NA))))
+                    ps_var_dat <- ifelse(intake_data[['v2_meal_ps']] == ps_value, as.character(intake_data[[v2_var_name]]), ifelse(intake_data[['v3_meal_ps']] == ps_value, as.character(intake_data[[v3_var_name]]), ifelse(intake_data[['v4_meal_ps']] == ps_value, as.character(intake_data[[v4_var_name]]), ifelse(intake_data[['v5_meal_ps']] == ps_value, as.character(intake_data[[v5_var_name]]), NA))))
                 } else {
-                    ps_var_dat <- ifelse(intake_data[['v2_meal_ps']] == ps_str, intake_data[[v2_var_name]], ifelse(intake_data[['v3_meal_ps']] == ps_str, intake_data[[v3_var_name]], ifelse(intake_data[['v4_meal_ps']] == ps_str, intake_data[[v4_var_name]], ifelse(intake_data[['v5_meal_ps']] == ps_str, intake_data[[v5_var_name]], NA))))
+                    ps_var_dat <- ifelse(intake_data[['v2_meal_ps']] == ps_value, intake_data[[v2_var_name]], ifelse(intake_data[['v3_meal_ps']] == ps_value, intake_data[[v3_var_name]], ifelse(intake_data[['v4_meal_ps']] == ps_value, intake_data[[v4_var_name]], ifelse(intake_data[['v5_meal_ps']] == ps_value, intake_data[[v5_var_name]], NA))))
                 }
             }
 
@@ -537,6 +574,29 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
         #update and match labels
         names(intake_labels) <- names(intake_data)
         intake_data = sjlabelled::set_label(intake_data, label = matrix(unlist(intake_labels, use.names = FALSE)))
+
+        # add to list
+        database_list <- list(database_list, intake_data = intake_data, intake_dict = intake_labels)
+
+        # write out
+        if (isTRUE(write_dat)){
+
+            #data dictionary
+            intake_dict <- labelled::generate_dictionary(intake_data, details = TRUE)
+            intake_dict$label <- matrix(unlist(intake_labels, use.names = FALSE))
+            names(intake_dict)[1] <- 'column'
+
+            #interprets the value_labels as list so need to make everything a character
+            intake_dict_write <- sapply(intake_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
+
+            if (isTRUE(writepath_arg)){
+                haven::write_sav(intake_data, path = paste0(write_path, 'IntakeData.sav'))
+                write.csv(intake_dict_write, file = paste0(write_path, 'IntakeData_Dictionnary.csv'), row.names = FALSE)
+            } else {
+                haven::write_sav(intake_data, path = 'IntakeData.sav')
+                write.csv(intake_dict_write, file = 'IntakeData_Dictionnary.csv', row.names = FALSE)
+            }
+        }
     }
 
     ## 3d) Eating Behavior/Food Intake Questionnaires ####
@@ -582,8 +642,8 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
         names(v6_foodqs_labels)[2] <- 'v6_date'
 
         #visit 7
-        v7_foodqs_data <- v7_data[['data']][c(1:2, 459:774)]
-        v7_foodqs_labels <- v7_data[['dict']][c(1:2, 459:774)]
+        v7_foodqs_data <- v7_data[['data']][c(1:2, 462:777)]
+        v7_foodqs_labels <- v7_data[['dict']][c(1:2, 462:777)]
 
         names(v7_foodqs_data)[2] <- 'v7_date'
         names(v7_foodqs_labels)[2] <- 'v7_date'
@@ -620,6 +680,29 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
 
         # ensure labels are up to date
         foodqs_data = sjlabelled::set_label(foodqs_demov1v2v3v4v5v6v7_data, label = matrix(unlist(foodqs_labels, use.names = FALSE)))
+
+        # add to list
+        database_list <- list(database_list, foodqs_data = foodqs_data, foodqs_dict = foodqs_labels)
+
+        #write out
+        if (isTRUE(write_dat)){
+
+            #data dictionary
+            foodqs_dict <- labelled::generate_dictionary(foodqs_data, details = TRUE)
+            foodqs_dict$label <- matrix(unlist(foodqs_labels, use.names = FALSE))
+            names(foodqs_dict)[1] <- 'column'
+
+            #interprets the value_labels as list so need to make everything a character
+            foodqs_dict_write <- sapply(foodqs_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
+
+            if (isTRUE(writepath_arg)){
+                haven::write_sav(foodqs_data, path = paste0(write_path, 'EatingBehaviorQs.sav'))
+                write.csv(foodqs_dict_write, file = paste0(write_path, 'EatingBehaviorQs_Dictionnary.csv'), row.names = FALSE)
+            } else {
+                haven::write_sav(foodqs_data, path = 'EatingBehaviorQs.sav')
+                write.csv(foodqs_dict_write, file = 'EatingBehaviorQs_Dictionnary.csv', row.names = FALSE)
+            }
+        }
     }
 
     ## 3e) Cognitive and Psychosocial Questionnaires/Measures ####
@@ -647,8 +730,8 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
         names(v4_psychqs_labels)[2] <- 'v4_date'
 
         #visit 7
-        v7_psychqs_data <- v7_data[['data']][c(1:2, 775:885)]
-        v7_psychqs_labels <- v7_data[['dict']][c(1:2, 775:885)]
+        v7_psychqs_data <- v7_data[['data']][c(1:2, 778:888)]
+        v7_psychqs_labels <- v7_data[['dict']][c(1:2, 778:888)]
 
         names(v7_psychqs_data)[2] <- 'v7_date'
         names(v7_psychqs_labels)[2] <- 'v7_date'
@@ -680,14 +763,37 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
 
         # ensure labels are up to date
         psychqs_data = sjlabelled::set_label(psychqs_demov2v3v4v7_data, label = matrix(unlist(psychqs_labels, use.names = FALSE)))
+
+        # add to list
+        database_list <- list(database_list, psychqs_data = psychqs_data, psychqs_dict = psychqs_labels)
+
+        #write out
+        if (isTRUE(write_dat)){
+
+            #data dictionary
+            psychqs_dict <- labelled::generate_dictionary(psychqs_data, details = TRUE)
+            psychqs_dict$label <- matrix(unlist(psychqs_labels, use.names = FALSE))
+            names(psychqs_dict)[1] <- 'column'
+
+            #interprets the value_labels as list so need to make everything a character
+            psychqs_dict_write <- sapply(psychqs_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
+
+            if (isTRUE(writepath_arg)){
+                haven::write_sav(psychqs_data, path = paste0(write_path, 'CogPsychSocialQs.sav'))
+                write.csv(psychqs_dict_write, file = paste0(write_path, 'CogPsychSocialQs_Dictionnary.csv'), row.names = FALSE)
+            } else {
+                haven::write_sav(psychqs_data, path = 'CogPsychSocialQs.sav')
+                write.csv(psychqs_dict_write, file = 'CogPsychSocialQs.csv', row.names = FALSE)
+            }
+        }
     }
 
     ## 3f) Delay Discounting ####
     if (isTRUE(model_DD)){
 
         #visit 3
-        v3_dd_data <- v3_data[['data']][c(1:2, 249:225)]
-        v3_dd_labels <- v3_data[['dict']][c(1:2, 249:225)]
+        v3_dd_data <- v3_data[['data']][c(1:2, 249:325)]
+        v3_dd_labels <- v3_data[['dict']][c(1:2, 249:325)]
 
         names(v3_dd_data)[2] <- 'v3_date'
         names(v3_dd_labels)[2] <- 'v3_date'
@@ -700,6 +806,29 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
 
         # ensure labels are up to date
         dd_data = sjlabelled::set_label(dd_demov3_data, label = matrix(unlist(dd_labels, use.names = FALSE)))
+
+        # add to list
+        database_list <- list(database_list, dd_data = dd_data, dd_dict = dd_labels)
+
+        #write out
+        if (isTRUE(write_dat)){
+
+            #data dictionary
+            dd_dict <- labelled::generate_dictionary(dd_data, details = TRUE)
+            dd_dict$label <- matrix(unlist(dd_labels, use.names = FALSE))
+            names(dd_dict)[1] <- 'column'
+
+            #interprets the value_labels as list so need to make everything a character
+            dd_dict_write <- sapply(dd_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
+
+            if (isTRUE(writepath_arg)){
+                haven::write_sav(dd_data, path = paste0(write_path, 'DelayDiscounting.sav'))
+                write.csv(dd_dict_write, file = paste0(write_path, 'DelayDiscounting_Dictionnary.csv'), row.names = FALSE)
+            } else {
+                haven::write_sav(dd_data, path = 'DelayDiscounting.sav')
+                write.csv(dd_dict_write, file = 'DelayDiscounting.csv', row.names = FALSE)
+            }
+        }
     }
 
     ## 3g) Interoception ####
@@ -720,6 +849,29 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
 
         # ensure labels are up to date
         intero_data = sjlabelled::set_label(intero_demov5_data, label = matrix(unlist(intero_labels, use.names = FALSE)))
+
+        # add to list
+        database_list <- list(database_list, intero_data = intero_data, intero_dict = intero_labels)
+
+        #write out
+        if (isTRUE(write_dat)){
+
+            #data dictionary
+            intero_dict <- labelled::generate_dictionary(intero_data, details = TRUE)
+            intero_dict$label <- matrix(unlist(intero_labels, use.names = FALSE))
+            names(intero_dict)[1] <- 'column'
+
+            #interprets the value_labels as list so need to make everything a character
+            intero_dict_write <- sapply(intero_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
+
+            if (isTRUE(writepath_arg)){
+                haven::write_sav(intero_data, path = paste0(write_path, 'Interoception.sav'))
+                write.csv(intero_dict_write, file = paste0(write_path, 'Interoception_Dictionnary.csv'), row.names = FALSE)
+            } else {
+                haven::write_sav(intero_data, path = 'Interoception.sav')
+                write.csv(intero_dict_write, file = 'Interoception.csv', row.names = FALSE)
+            }
+        }
     }
 
     ## 3h) Notes ####
@@ -850,8 +1002,8 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
         names(v6_notes_labels) <- names(v6_notes_data)
 
         #visit 7
-        v7_notes_data <- v7_data[['data']][c(1:2, 886:901)]
-        v7_notes_labels <- v7_data[['dict']][c(1:2, 886:901)]
+        v7_notes_data <- v7_data[['data']][c(1:2, 889:904)]
+        v7_notes_labels <- v7_data[['dict']][c(1:2, 889:904)]
 
         names(v7_notes_data)[2] <- 'v7_date'
         names(v7_notes_labels)[2] <- 'v7_date'
@@ -888,26 +1040,178 @@ fbs_databases <- function(databases, write_dat = TRUE, write_path, data_path, mo
 
         # ensure labels are up to date
         notes_data = sjlabelled::set_label(notes_demov1v23v4v5v6v7_data, label = matrix(unlist(notes_labels, use.names = FALSE)))
+
+        # add to list
+        database_list <- list(database_list, notes_data = notes_data, notes_dict = notes_labels)
+
+        #write out
+        if (isTRUE(write_dat)){
+
+            #data dictionary
+            notes_dict <- labelled::generate_dictionary(notes_data, details = TRUE)
+            notes_dict$label <- matrix(unlist(notes_labels, use.names = FALSE))
+            names(notes_dict)[1] <- 'column'
+
+            #interprets the value_labels as list so need to make everything a character
+            notes_dict_write <- sapply(notes_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
+
+            if (isTRUE(writepath_arg)){
+                haven::write_sav(notes_data, path = paste0(write_path, 'VisitNotes.sav'))
+                write.csv(notes_dict_write, file = paste0(write_path, 'VisitNotes_Dictionnary.csv'), row.names = FALSE)
+            } else {
+                haven::write_sav(notes_data, path = 'VisitNotes.sav')
+                write.csv(notes_dict_write, file = 'VisitNotes.csv', row.names = FALSE)
+            }
+        }
     }
 
+    ## 3i) PNA data ####
+    if (isFALSE(databases_arg) | 'pna' %in% database_list){
 
-    #### 9. PNA data #####
+        #visit 1
+        v1_pna_data <- v1_data[['pna_data']]
+        v1_pna_labels <- v1_data[['pna_dict']]
 
-    # only parent has pna data to organize
-    v1dat_pna <- parent_v1dat$pna_data
+        #re-name variables with 'v1_' and add 'Visit 1 - ' to labels
+        for (v in 2:ncol(v1_pna_data)){
+            #names
+            var_name <- names(v1_pna_data)[v]
+            v1_name <- paste0('v1_', var_name)
+            names(v1_pna_data)[v] <- v1_name
 
-    #### 10. save to list #####
+            #labels
+            v1_pna_labels[[var_name]] <- paste0('Visit 1 - ', v1_pna_labels[[var_name]])
+        }
 
-    # put data in order of participant ID for ease
-    v1dat_scored <- v1dat_scored[order(v1dat_scored[["id"]]), ]
-    v1dat_pna <- v1dat_pna[order(v1dat_pna[["id"]]), ]
+        names(v1_pna_labels) <- names(v1_pna_data)
 
-    # set labels
-    v1dat_scored = sjlabelled::set_label(v1dat_scored, label = matrix(unlist(v1dat_scored_labels, use.names = FALSE)))
-    v1dat_pna = sjlabelled::set_label(v1dat_pna, label = matrix(unlist(parent_v1dat$pna_dict, use.names = FALSE)))
+        #visit 2
+        v2_pna_data <- v2_data[['pna_data']]
+        v2_pna_labels <- v2_data[['pna_dict']]
 
-    v1data_list <- list(data = v1dat_scored, dict = v1dat_scored_labels, pna_dat = v1dat_pna, pna_dict = parent_v1dat$pna_dict)
+        #re-name variables with 'v2_' and add 'Visit 2 - ' to labels
+        for (v in 2:ncol(v2_pna_data)){
+            #names
+            var_name <- names(v2_pna_data)[v]
+            v2_name <- paste0('v2_', var_name)
+            names(v2_pna_data)[v] <- v2_name
 
-    return(v1data_list)
+            #labels
+            v2_pna_labels[[var_name]] <- paste0('Visit 2 - ', v2_pna_labels[[var_name]])
+        }
+
+        names(v2_pna_labels) <- names(v2_pna_data)
+
+        #visit 3
+        v3_pna_data <- v3_data[['pna_data']]
+        v3_pna_labels <- v3_data[['pna_dict']]
+
+        #re-name variables with 'v3_' and add 'Visit 3 - ' to labels
+        for (v in 2:ncol(v3_pna_data)){
+            #names
+            var_name <- names(v3_pna_data)[v]
+            v3_name <- paste0('v3_', var_name)
+            names(v3_pna_data)[v] <- v3_name
+
+            #labels
+            v3_pna_labels[[var_name]] <- paste0('Visit 3 - ', v3_pna_labels[[var_name]])
+        }
+
+        names(v3_pna_labels) <- names(v3_pna_data)
+
+        #visit 4
+        v4_pna_data <- v4_data[['pna_data']]
+        v4_pna_labels <- v4_data[['pna_dict']]
+
+        #re-name variables with 'v4_' and add 'Visit 4 - ' to labels
+        for (v in 2:ncol(v4_pna_data)){
+            #names
+            var_name <- names(v4_pna_data)[v]
+            v4_name <- paste0('v4_', var_name)
+            names(v4_pna_data)[v] <- v4_name
+
+            #labels
+            v4_pna_labels[[var_name]] <- paste0('Visit 4 - ', v4_pna_labels[[var_name]])
+        }
+
+        names(v4_pna_labels) <- names(v4_pna_data)
+
+        #visit 5
+        v5_pna_data <- v5_data[['pna_data']]
+        v5_pna_labels <- v5_data[['pna_dict']]
+
+        #re-name variables with 'v5_' and add 'Visit 5 - ' to labels
+        for (v in 2:ncol(v5_pna_data)){
+            #names
+            var_name <- names(v5_pna_data)[v]
+            v5_name <- paste0('v5_', var_name)
+            names(v5_pna_data)[v] <- v5_name
+
+            #labels
+            v5_pna_labels[[var_name]] <- paste0('Visit 5 - ', v5_pna_labels[[var_name]])
+        }
+
+        names(v5_pna_labels) <- names(v5_pna_data)
+
+        #visit 7
+        v7_pna_data <- v7_data[['pna_data']]
+        v7_pna_labels <- v7_data[['pna_dict']]
+
+        #re-name variables with 'v7_' and add 'Visit 7 - ' to labels
+        for (v in 2:ncol(v7_pna_data)){
+            #names
+            var_name <- names(v7_pna_data)[v]
+            v7_name <- paste0('v7_', var_name)
+            names(v7_pna_data)[v] <- v7_name
+
+            #labels
+            v7_pna_labels[[var_name]] <- paste0('Visit 7 - ', v7_pna_labels[[var_name]])
+        }
+
+        #make names match
+        names(v7_pna_labels) <- names(v7_pna_data)
+
+        ## merge databases - set all = TRUE so get all participants in visits 1-7
+        pna_v1v2_data <- merge(v1_pna_data, v2_pna_data, by = 'id', all = TRUE)
+        pna_v1v2v3_data <- merge(pna_v1v2_data, v3_pna_data, by = 'id', all = TRUE)
+        pna_v1v2v3v4_data <- merge(pna_v1v2v3_data, v4_pna_data, by = 'id', all = TRUE)
+        pna_v1v2v3v4v5_data <- merge(pna_v1v2v3v4_data, v5_pna_data, by = 'id', all = TRUE)
+        pna_v1v2v3v4v5v7_data <- merge(pna_v1v2v3v4v5_data, v7_pna_data, by = 'id', all = TRUE)
+
+        #get labels
+        pna_labels <- c(v1_pna_labels, v2_pna_labels[2:length(v2_pna_labels)], v3_pna_labels[2:length(v3_pna_labels)], v4_pna_labels[2:length(v4_pna_labels)], v5_pna_labels[2:length(v5_pna_labels)], v7_pna_labels[2:length(v7_pna_labels)])
+
+        # ensure labels are up to date
+        pna_data = sjlabelled::set_label(pna_v1v2v3v4v5v7_data, label = matrix(unlist(pna_labels, use.names = FALSE)))
+
+        # add to list
+        database_list <- list(database_list, pna_data = pna_data, pna_dict = pna_labels)
+
+        #write out
+        if (isTRUE(write_dat)){
+
+            #data dictionary
+            pna_dict <- labelled::generate_dictionary(pna_data, details = TRUE)
+            pna_dict$label <- matrix(unlist(pna_labels, use.names = FALSE))
+            names(pna_dict)[1] <- 'column'
+
+            #interprets the value_labels as list so need to make everything a character
+            pna_dict_write <- sapply(pna_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
+
+            if (isTRUE(writepath_arg)){
+                haven::write_sav(pna_data, path = paste0(write_path, 'PNA.sav'))
+                write.csv(pna_dict_write, file = paste0(write_path, 'PNA_Dictionnary.csv'), row.names = FALSE)
+            } else {
+                haven::write_sav(pna_data, path = 'PNA.sav')
+                write.csv(pna_dict_write, file = 'PNA_Dictionnary.csv', row.names = FALSE)
+            }
+        }
+    }
+
+    #### 10. Return List #####
+    if(isTRUE(return_data)){
+        return(database_list)
+    }
+
 }
 

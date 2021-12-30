@@ -132,6 +132,9 @@ util_fbs_child_v1dat <- function(file_pattern, data_path) {
     qv1_child_clean[["dob"]] <- as.Date(qv1_child_clean[["dob"]], format = "%m/%d/%Y")
     qv1_child_clean_labels[["dob"]] <- "date of birth converted to format yyyy-mm-dd in R"
 
+    ## freddy fullness as numeric
+    qv1_child_clean[c(14:18, 41)] <- sapply(qv1_child_clean[c(14:18, 41)], FUN = as.numeric)
+
     # 6) re-calculate manual variables ####
 
     # avg child height, update label

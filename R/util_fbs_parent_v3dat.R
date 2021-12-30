@@ -274,17 +274,20 @@ util_fbs_parent_v3dat <- function(file_pattern, data_path) {
 
     }
 
-    #### 7) reformatting dates/times #### 7a) dates (start, dobs) ####
+    #### 7) reformatting dates/times ####
+
+    ##7a) dates (start, dobs)
     qv3_parent_clean[["start_date"]] <- lubridate::ymd(as.Date(qv3_parent_clean[["start_date"]]))
     qv3_parent_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
     #### 8) Format for export ####
 
     ## 8a) add attributes to pna data
-    n_pna_cols <- length(names(qv3_parent_pna))
-    qv3_parent_pna[2:n_pna_cols] <- as.data.frame(lapply(qv3_parent_pna[2:n_pna_cols],
-        function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0,
-            `Prefer not to answer` = 1))))
+    qv3_parent_pna[2:ncol(qv3_parent_pna)] <- as.data.frame(lapply(qv3_parent_pna[2:ncol(qv3_parent_pna)], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+
+    for (v in 2:ncol(qv3_parent_pna)){
+        class(qv3_parent_pna[[v]]) <- c("haven_labelled", "vctrs_vctr", "double")
+    }
 
     ## 8b) put data in order of participant ID for ease
     qv3_parent_clean <- qv3_parent_clean[order(qv3_parent_clean[["id"]]), ]

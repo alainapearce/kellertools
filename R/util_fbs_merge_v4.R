@@ -77,48 +77,48 @@ util_fbs_merge_v4 <- function(child_file_pattern, parent_file_pattern, data_path
     # merge child home and lab into single database
 
     ## weird merging issue related to labeled data - brute force fix so both have same ID's (NAs inserted for other vars)
-    for (r in 1:nrow(child_lab_v4dat$data)){
-        if (!(child_lab_v4dat$data[r, 'id'] %in% child_home_v4dat$data[, 'id'])){
-            new_row <- nrow(child_home_v4dat$data) + 1
-            child_home_v4dat$data[new_row, 'id'] <- child_lab_v4dat$data[r, 'id']
+    for (r in 1:nrow(child_lab_v4dat[['data']])){
+        if (!(child_lab_v4dat[['data']][r, 'id'] %in% child_home_v4dat[['data']][, 'id'])){
+            new_row <- nrow(child_home_v4dat[['data']]) + 1
+            child_home_v4dat[['data']][new_row, 'id'] <- child_lab_v4dat[['data']][r, 'id']
         }
     }
 
-    for (r in 1:nrow(child_home_v4dat$data)){
-        if (!(child_home_v4dat$data[r, 'id'] %in% child_lab_v4dat$data[, 'id'])){
-            new_row <- nrow(child_lab_v4dat$data) + 1
-            child_lab_v4dat$data[new_row, 'id'] <- child_home_v4dat$data[r, 'id']
+    for (r in 1:nrow(child_home_v4dat[['data']])){
+        if (!(child_home_v4dat[['data']][r, 'id'] %in% child_lab_v4dat[['data']][, 'id'])){
+            new_row <- nrow(child_lab_v4dat[['data']]) + 1
+            child_lab_v4dat[['data']][new_row, 'id'] <- child_home_v4dat[['data']][r, 'id']
         }
     }
 
-    child_covidmerge_v4dat <- merge(child_lab_v4dat$data, child_home_v4dat$data[c(1, 3:21)], by = 'id', all = TRUE)
+    child_covidmerge_v4dat <- merge(child_lab_v4dat[['data']], child_home_v4dat[['data']][c(1, 3:21)], by = 'id', all = TRUE)
 
     # re-order so matches child_v4dat
     child_covidmerge_v4dat <- child_covidmerge_v4dat[c(1:43, 47:65, 44:46)]
 
     # merge all child into single database
-    all_child_v4dat <- rbind.data.frame(child_v4dat$data, child_covidmerge_v4dat)
+    all_child_v4dat <- rbind.data.frame(child_v4dat[['data']], child_covidmerge_v4dat)
 
     #### 4. Merge Parent Raw Data #####
 
     # update labels with 'parent report'
 
-    for (v in 1:ncol(parent_v4dat$data)) {
-        var_name <- names(parent_v4dat$data)[v]
+    for (v in 1:ncol(parent_v4dat[['data']])) {
+        var_name <- names(parent_v4dat[['data']])[v]
 
         # remove existing label
-        if (grepl("parent-reported", parent_v4dat$dict[[var_name]], fixed = TRUE)) {
-            parent_v4dat$dict[[var_name]] <- gsub("parent-reported", "", parent_v4dat$dict[[var_name]])
+        if (grepl("parent-reported", parent_v4dat[['dict']][[var_name]], fixed = TRUE)) {
+            parent_v4dat[['dict']][[var_name]] <- gsub("parent-reported", "", parent_v4dat[['dict']][[var_name]])
         }
 
         # add universal label
-        parent_v4dat$dict[[var_name]] <- paste0('Parent Reported: ', parent_v4dat$dict[[var_name]])
+        parent_v4dat[['dict']][[var_name]] <- paste0('Parent Reported: ', parent_v4dat[['dict']][[var_name]])
     }
 
-    v4dat <- merge(all_child_v4dat[c(1:3, 5:65)], parent_v4dat$data[c(1, 3:152)], by = 'id', all = TRUE)
+    v4dat <- merge(all_child_v4dat[c(1:3, 5:65)], parent_v4dat[['data']][c(1, 3:152)], by = 'id', all = TRUE)
 
     # merge labels/dictionary
-    v4dat_labels <- c(child_v4dat$dict[c(1:3, 5:65)], parent_v4dat$dict[3:152])
+    v4dat_labels <- c(child_v4dat[['dict']][c(1:3, 5:65)], parent_v4dat[['dict']][3:152])
 
     #### 5. Organize V4 data ####
 
@@ -256,7 +256,10 @@ util_fbs_merge_v4 <- function(child_file_pattern, parent_file_pattern, data_path
     v4dat_scored_labels <- c(v4dat_scored_labels, v4_kcal_labels[2:8])
 
     ## add portion size label
-    v4dat_scored['meal_ps'] <- ifelse(is.na(v4dat_scored[['noplate_mac_cheese_g']]), NA, ifelse(v4dat_scored[['noplate_mac_cheese_g']] < 280, 'PS1', ifelse(v4dat_scored[['noplate_mac_cheese_g']] < 360, 'PS2', ifelse(v4dat_scored[['noplate_mac_cheese_g']] < 440, 'PS3', 'PS4'))))
+    v4dat_scored['meal_ps'] <- ifelse(is.na(v4dat_scored[['noplate_mac_cheese_g']]), NA, ifelse(v4dat_scored[['noplate_mac_cheese_g']] < 280, 0, ifelse(v4dat_scored[['noplate_mac_cheese_g']] < 360, 1, ifelse(v4dat_scored[['noplate_mac_cheese_g']] < 440, 2, 3))))
+
+    v4dat_scored[["meal_ps"]] <- sjlabelled::add_labels(v4dat_scored[["meal_ps"]], labels = c(ps1 = 0, ps2 = 1, ps3 = 2, ps4 = 3))
+    class(v4dat_scored[["meal_ps"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     v4dat_scored_labels[['meal_ps']] <- 'Visit 4 Portion Size Meal Condition'
 
@@ -270,21 +273,21 @@ util_fbs_merge_v4 <- function(child_file_pattern, parent_file_pattern, data_path
     # child pna data
 
     #find names in common and unique
-    common_names <- intersect(names(child_v4dat$pna_data), names(child_home_v4dat$pna_data))
-    child_v4dat_uniq_names <- c('id', names(child_v4dat$pna_data)[!(names(child_v4dat$pna_data) %in% common_names)])
-    child_home_v4dat_uniq_names <- c('id', names(child_home_v4dat$pna_data)[!(names(child_home_v4dat$pna_data) %in% common_names)])
+    common_names <- intersect(names(child_v4dat[['pna_data']]), names(child_home_v4dat[['pna_data']]))
+    child_v4dat_uniq_names <- c('id', names(child_v4dat[['pna_data']])[!(names(child_v4dat[['pna_data']]) %in% common_names)])
+    child_home_v4dat_uniq_names <- c('id', names(child_home_v4dat[['pna_data']])[!(names(child_home_v4dat[['pna_data']]) %in% common_names)])
 
     # initial merge with common names
-    child_v4dat_pna_m1 <- rbind.data.frame(child_v4dat$pna_data[common_names], child_home_v4dat$pna_data[common_names])
+    child_v4dat_pna_m1 <- rbind.data.frame(child_v4dat[['pna_data']][common_names], child_home_v4dat[['pna_data']][common_names])
 
     # full merge with unique names
     if (length(child_v4dat_uniq_names) > 1 & length(child_home_v4dat_uniq_names) > 1){
-        child_v4dat_m2 <- merge(child_v4dat_pna_m1, child_v4dat$pna_data[child_v4dat_uniq_names], by = 'id', all = TRUE)
-        child_v4dat_pna <- merge(child_v4dat_m2, child_home_v4dat$pna_data[child_home_v4dat_uniq_names], by = 'id', all = TRUE)
+        child_v4dat_m2 <- merge(child_v4dat_pna_m1, child_v4dat[['pna_data']][child_v4dat_uniq_names], by = 'id', all = TRUE)
+        child_v4dat_pna <- merge(child_v4dat_m2, child_home_v4dat[['pna_data']][child_home_v4dat_uniq_names], by = 'id', all = TRUE)
     } else if (length(child_v4dat_uniq_names) > 1) {
-        child_v4dat_pna <- merge(child_v4dat_pna_m1, child_v4dat$pna_data[child_v4dat_uniq_names], by = 'id', all = TRUE)
+        child_v4dat_pna <- merge(child_v4dat_pna_m1, child_v4dat[['pna_data']][child_v4dat_uniq_names], by = 'id', all = TRUE)
     } else if (length(child_home_v4dat_uniq_names) > 1){
-        child_v4dat_pna <- merge(child_v4dat_m1, child_home_v4dat$pna_data[child_home_v4dat_uniq_names], by = 'id', all = TRUE)
+        child_v4dat_pna <- merge(child_v4dat_m1, child_home_v4dat[['pna_data']][child_home_v4dat_uniq_names], by = 'id', all = TRUE)
     } else {
         child_v4dat_pna <- child_v4dat_m1
     }
@@ -296,29 +299,29 @@ util_fbs_merge_v4 <- function(child_file_pattern, parent_file_pattern, data_path
     for (v in 1:length(names(child_v4dat_pna))){
         var_name = names(child_v4dat_pna)[v]
 
-        if (var_name %in% names(child_v4dat$pna_data)){
-            child_v4dat_pna_labels[[var_name]] <- child_v4dat$pna_dict[[var_name]]
-        } else if (var_name %in% names(child_home_v4dat$pna_data)){
-            child_v4dat_pna_labels[[var_name]] <- child_home_v4dat$pna_dict[[var_name]]
+        if (var_name %in% names(child_v4dat[['pna_data']])){
+            child_v4dat_pna_labels[[var_name]] <- child_v4dat[['pna_dict']][[var_name]]
+        } else if (var_name %in% names(child_home_v4dat[['pna_data']])){
+            child_v4dat_pna_labels[[var_name]] <- child_home_v4dat[['pna_dict']][[var_name]]
         }
     }
 
     # parent pna data
-    for (v in 1:ncol(parent_v4dat$pna_data)) {
-        var_name <- names(parent_v4dat$pna_data)[v]
+    for (v in 1:ncol(parent_v4dat[['pna_data']])) {
+        var_name <- names(parent_v4dat[['pna_data']])[v]
 
         # remove existing label
-        if (grepl("parent-reported", parent_v4dat$pna_dict[[var_name]], fixed = TRUE)) {
-            parent_v4dat$pna_dict[[var_name]] <- gsub("parent-reported", "", parent_v4dat$pna_dict[[var_name]])
+        if (grepl("parent-reported", parent_v4dat[['pna_dict']][[var_name]], fixed = TRUE)) {
+            parent_v4dat[['pna_dict']][[var_name]] <- gsub("parent-reported", "", parent_v4dat[['pna_dict']][[var_name]])
         }
 
         # add universal label
-        parent_v4dat$pna_dict[[var_name]] <- paste0('Parent Reported: ', parent_v4dat$pna_dict[[var_name]])
+        parent_v4dat[['pna_dict']][[var_name]] <- paste0('Parent Reported: ', parent_v4dat[['pna_dict']][[var_name]])
     }
 
-    v4dat_pna <- merge(child_v4dat_pna, parent_v4dat$pna_data, by = 'id', all = TRUE)
+    v4dat_pna <- merge(child_v4dat_pna, parent_v4dat[['pna_data']], by = 'id', all = TRUE)
 
-    v4dat_pna_labels <- c(child_v4dat_pna_labels, parent_v4dat$pna_dict[2:length(parent_v4dat$pna_dict)])
+    v4dat_pna_labels <- c(child_v4dat_pna_labels, parent_v4dat[['pna_dict']][2:length(parent_v4dat[['pna_dict']])])
 
     #### 9. save to list #####
 
@@ -330,7 +333,7 @@ util_fbs_merge_v4 <- function(child_file_pattern, parent_file_pattern, data_path
     v4dat_scored = sjlabelled::set_label(v4dat_scored, label = matrix(unlist(v4dat_scored_labels, use.names = FALSE)))
     v4dat_pna = sjlabelled::set_label(v4dat_pna, label = matrix(unlist(v4dat_pna_labels, use.names = FALSE)))
 
-    v4data_list <- list(data = v4dat_scored, dict = v4dat_scored_labels, pna_dat = v4dat_pna, pna_dict = v4dat_pna_labels)
+    v4data_list <- list(data = v4dat_scored, dict = v4dat_scored_labels, pna_data = v4dat_pna, pna_dict = v4dat_pna_labels)
 
     return(v4data_list)
 }

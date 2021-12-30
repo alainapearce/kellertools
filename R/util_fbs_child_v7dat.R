@@ -158,6 +158,10 @@ util_fbs_child_v7dat <- function(file_pattern, data_path) {
     qv7_child_clean[["dob"]] <- as.Date(qv7_child_clean[["dob"]], format = "%m/%d/%Y")
     qv7_child_clean_labels[["dob"]] <- "date of birth converted to format yyyy-mm-dd in R"
 
+    #make freaddy fullness numeric
+    qv7_child_clean[c(27:31, 54, 171:174)] <- sapply(qv7_child_clean[c(27:31, 54, 171:174)], FUN = as.numeric)
+
+
     # 6) re-calculate manual variables ####
 
     # avg child height, update label
@@ -249,6 +253,37 @@ util_fbs_child_v7dat <- function(file_pattern, data_path) {
 
     pna_label <- "Note: prefer not to answer (pna) marked NA - see pna database for which were pna rather than missing NA"
 
+    ## Fix continuous variables ####
+    level99_issue_contvars <- names(qv7_child_clean)[c(24, 26)]
+
+    #update 1 label
+    qv7_child_clean_labels[['pds_5fd']] <- paste0(qv7_child_clean_labels[['pds_5fd']], 'in weeks')
+
+    for (v in 1:length(level99_issue_contvars)) {
+        # get variable name
+        pvar <- level99_issue_contvars[v]
+
+        # if has '99' value, create new pna variable marking pna == 1
+        if (is.element(99, qv7_child_clean[[pvar]])) {
+            pna_dat <- ifelse(is.na(qv7_child_clean[[pvar]]), 0, ifelse(qv7_child_clean[[pvar]] == 99, 1, 0))
+
+            new_pna <- length(names(qv1_parent_pna)) + 1
+            qv1_parent_pna[[new_pna]] <- pna_dat
+
+            names(qv1_parent_pna)[new_pna] <- paste0(pvar, "_pna")
+
+            # add label to pna database
+            qv1_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar, ": ", qv7_child_clean_labels[[pvar]])
+
+            # update true data label (only want to pna label if needed)
+            qv7_child_clean_labels[[pvar]] <- paste0(qv7_child_clean_labels[[pvar]], " -- ", pna_label)
+        }
+
+        # convert 99 to NA and make numeric variable labels only update if had 99 - done in if statement above
+        qv7_child_clean[[pvar]] <- ifelse(qv7_child_clean[[pvar]] == 99, NA, as.numeric(qv7_child_clean[[pvar]]))
+    }
+
+
     ## Fix 99/skip in LOC, ctc, cwc. Note, only ctc items 1-8 have skip levels
     level99_issue_catvars <- names(qv7_child_clean)[c(178:208, 217:221)]
 
@@ -285,6 +320,9 @@ util_fbs_child_v7dat <- function(file_pattern, data_path) {
         # replace attributes
         attributes(qv7_child_clean[[pvar]]) <- pvar_attr
     }
+
+    # make loc2a-loc2c numeric
+    qv7_child_clean[179:181] <- sapply(qv7_child_clean[179:181], FUN = as.numeric)
 
     # re-level ctc questions so that 99 - skip is changed to -99
     ctc_names <- names(qv7_child_clean)[201:216]
@@ -346,7 +384,14 @@ util_fbs_child_v7dat <- function(file_pattern, data_path) {
 
     #### 9) Format for export ####
 
-    #put data in order of participant ID for ease
+    ## 9a) add attributes to pna data
+    qv7_child_pna[2:ncol(qv7_child_pna)] <- as.data.frame(lapply(qv7_child_pna[2:ncol(qv7_child_pna)], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+
+    for (v in 2:ncol(qv7_child_pna)){
+        class(qv7_child_pna[[v]]) <- c("haven_labelled", "vctrs_vctr", "double")
+    }
+
+    ## 9b) put data in order of participant ID for ease ####
     qv7_child_clean <- qv7_child_clean[order(qv7_child_clean[["id"]]), ]
 
     qv7_child_pna <- qv7_child_pna[order(qv7_child_pna[["id"]]), ]

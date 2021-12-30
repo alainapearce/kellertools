@@ -93,6 +93,8 @@ score_hfssm <- function(hfssm_data, parID) {
     hfssm_score_dat[["hfssm_adult_cat"]] <- ifelse(hfssm_score_dat[["hfssm_adult"]] >= 6, 3, ifelse(hfssm_score_dat[["hfssm_adult"]] >=3, 2, ifelse(hfssm_score_dat[["hfssm_adult"]] > 0, 1, 0)))
 
     hfssm_score_dat[["hfssm_adult_cat"]] <- sjlabelled::add_labels(hfssm_score_dat[["hfssm_adult_cat"]], labels = c(`Very Low Food Security` = 3, `Low Food Security` = 2, `Marginal Food Security` = 1, `High Food Security` = 0))
+    class(hfssm_score_dat[["hfssm_adult_cat"]]) <- c("haven_labelled", "vctrs_vctr", "double")
+
 
     ## add labels to data
     hfssm_score_dat_labels[["hfssm_adult"]] <- "HFSSM Adult Food Security Scale Score"
@@ -105,6 +107,7 @@ score_hfssm <- function(hfssm_data, parID) {
     hfssm_score_dat[["hfssm_6item_cat"]] <- ifelse(hfssm_score_dat[["hfssm_6item"]] >= 5, 2, ifelse(hfssm_score_dat[["hfssm_6item"]] >=2, 1, 0))
 
     hfssm_score_dat[["hfssm_6item_cat"]] <- sjlabelled::add_labels(hfssm_score_dat[["hfssm_6item_cat"]], labels = c(`Very Low Food Security` = 2, `Low Food Security` = 1, `High or Marginal Food Security` = 0))
+    class(hfssm_score_dat[["hfssm_6item_cat"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     ## add labels to data
     hfssm_score_dat_labels[["hfssm_6item"]] <- "HFSSM Six-Item Food Security Scale Score"
@@ -115,6 +118,7 @@ score_hfssm <- function(hfssm_data, parID) {
     hfssm_score_dat[["hfssm_child"]] <- rowSums(hfssm_data[child_vars], na.rm = TRUE)
 
     hfssm_score_dat[["hfssm_child_cat"]] <- ifelse(hfssm_score_dat[["hfssm_child"]] >= 5, 2, ifelse(hfssm_score_dat[["hfssm_child"]] >=2, 1, 0))
+    class(hfssm_score_dat[["hfssm_child_cat"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     hfssm_score_dat[["hfssm_child_cat"]] <- sjlabelled::add_labels(hfssm_score_dat[["hfssm_child_cat"]], labels = c(`Very Low Food Security` = 2, `Low Food Security` = 1, `High or Marginal Food Security` = 0))
 
@@ -128,19 +132,13 @@ score_hfssm <- function(hfssm_data, parID) {
     hfssm_score_dat[["hfssm_household_cat"]] <- ifelse(hfssm_score_dat[["hfssm_household"]] >= 8, 3, ifelse(hfssm_score_dat[["hfssm_household"]] >=3, 2, ifelse(hfssm_score_dat[["hfssm_household"]] > 0, 1, 0)))
 
     hfssm_score_dat[["hfssm_household_cat"]] <- sjlabelled::add_labels(hfssm_score_dat[["hfssm_household_cat"]], labels = c(`Very Low Food Security` = 3, `Low Food Security` = 2, `Marginal Food Security` = 1, `High Food Security` = 0))
+    class(hfssm_score_dat[["hfssm_household_cat"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     ## add labels to data
     hfssm_score_dat_labels[["hfssm_household"]] <- "HFSSM Household Food Security Scale Score"
     hfssm_score_dat_labels[["hfssm_household_cat"]] <- "HFSSM Household Food Security Category"
 
     #### 3. Clean Export/Scored Data #####
-
-    ## round data
-    if (isTRUE(ID_arg)){
-        hfssm_score_dat[2:5] <- round(hfssm_score_dat[2:5], digits = 3)
-    } else {
-        hfssm_score_dat[1:4] <- round(hfssm_score_dat[1:4], digits = 3)
-    }
 
     ## make sure the variable labels match in the dataset
     hfssm_score_dat = sjlabelled::set_label(hfssm_score_dat, label = matrix(unlist(hfssm_score_dat_labels,

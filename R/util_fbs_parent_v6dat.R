@@ -203,7 +203,18 @@ util_fbs_parent_v6dat <- function(file_pattern, data_path) {
     qv6_parent_clean[["start_date"]] <- lubridate::ymd(as.Date(qv6_parent_clean[["start_date"]]))
     qv6_parent_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
-    #### 8) Format for export #### put data in order of participant ID for ease
+    #### 8) Format for export ####
+
+    #add attributes to pna data
+    if (ncol(qv6_parent_pna) > 2){
+        qv6_parent_pna[2:ncol(qv6_parent_pna)] <- as.data.frame(lapply(qv6_parent_pna[2:ncol(qv6_parent_pna)], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
+
+        for (v in 2:ncol(qv6_parent_pna)){
+            class(qv6_parent_pna[[v]]) <- c("haven_labelled", "vctrs_vctr", "double")
+        }
+    }
+
+    ##put data in order of participant ID for ease
     qv6_parent_clean <- qv6_parent_clean[order(qv6_parent_clean[["id"]]), ]
     qv6_parent_pna <- qv6_parent_pna[order(qv6_parent_pna[["id"]]), ]
 

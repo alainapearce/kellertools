@@ -71,22 +71,22 @@ util_fbs_merge_v6 <- function(child_file_pattern, parent_file_pattern, data_path
 
     # update labels with 'parent report'
 
-    for (v in 1:ncol(parent_v6dat$data)) {
-        var_name <- names(parent_v6dat$data)[v]
+    for (v in 1:ncol(parent_v6dat[['data']])) {
+        var_name <- names(parent_v6dat[['data']])[v]
 
         # remove existing label
-        if (grepl("parent-reported", parent_v6dat$dict[[var_name]], fixed = TRUE)) {
-            parent_v6dat$dict[[var_name]] <- gsub("parent-reported", "", parent_v6dat$dict[[var_name]])
+        if (grepl("parent-reported", parent_v6dat[['dict']][[var_name]], fixed = TRUE)) {
+            parent_v6dat[['dict']][[var_name]] <- gsub("parent-reported", "", parent_v6dat[['dict']][[var_name]])
         }
 
         # add universal label
-        parent_v6dat$dict[[var_name]] <- paste0('Parent Reported: ', parent_v6dat$dict[[var_name]])
+        parent_v6dat[['dict']][[var_name]] <- paste0('Parent Reported: ', parent_v6dat[['dict']][[var_name]])
     }
 
-    v6dat <- merge(child_v6dat$data, parent_v6dat$data[c(1, 3:18)], by = 'id', all = TRUE)
+    v6dat <- merge(child_v6dat[['data']], parent_v6dat[['data']][c(1, 3:18)], by = 'id', all = TRUE)
 
     # merge labels/dictionary
-    v6dat_labels <- c(child_v6dat$dict, parent_v6dat$dict[3:18])
+    v6dat_labels <- c(child_v6dat[['dict']], parent_v6dat[['dict']][3:18])
 
     # ensure labels are up to date
     v6dat = sjlabelled::set_label(v6dat, label = matrix(unlist(v6dat_labels, use.names = FALSE)))
