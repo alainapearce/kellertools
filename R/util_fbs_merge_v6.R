@@ -63,8 +63,8 @@ util_fbs_merge_v6 <- function(child_file_pattern, parent_file_pattern, data_path
         child_v6dat <- util_fbs_child_v6dat(child_file_pattern, data_path)
         parent_v6dat <- util_fbs_parent_v6dat(parent_file_pattern, data_path)
     } else {
-        child_v6dat <- util_fbs_child_v6dat(child_date_str)
-        parent_v6dat <- util_fbs_parent_v6dat(parent_date_str)
+        child_v6dat <- util_fbs_child_v6dat(child_file_pattern)
+        parent_v6dat <- util_fbs_parent_v6dat(parent_file_pattern)
     }
 
     #### 3. Merge Child and Parent Raw Data #####

@@ -100,22 +100,19 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     # check databases argument
     databases_arg <- methods::hasArg(databases)
 
-    if (isTRUE(model_DD)){
-        database_list <- c('demo', 'anthro', 'intake', 'food_qs', 'psych_qs', 'dd', 'intero', 'notes', 'pna')
-    } else {
-        database_list <- c('demo', 'anthro', 'intake', 'food_qs', 'psych_qs', 'intero', 'notes', 'pna')
-    }
+    database_options <- c('demo', 'anthro', 'intake', 'food_qs', 'psych_qs', 'dd', 'intero', 'notes', 'pna')
 
     if (isTRUE(databases_arg)) {
 
-        databases_string <- sapply(database_list, FUN = is.character)
+        databases_string <- sapply(databases, FUN = is.character)
+        ndatabases <- length(databases)
 
-        if (sum(databases_string) != ndatabases){
+        if (sum(databases_string) != ndatabases) {
             stop("Not all items listed in databases are strings. All databases must be entered as strings and matach the following options: 'demo', 'anthro', 'intake', 'food_qs', 'psych_qs', 'dd', 'intero', 'notes', 'pna'.")
         }
 
-        #check if entered databases match database_list
-        if (sum(databases %in% database_list) != ndatabases){
+        #check if entered databases match database_options
+        if (sum(databases %in% database_options) != ndatabases){
             stop("Not all items listed in databases match available options. Options include: 'demo', 'anthro', 'intake', 'food_qs', 'psych_qs', 'dd', 'intero', 'notes', 'pna'.")
         }
     }
@@ -142,7 +139,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
 
     ## Visit 2 - need for Anthroprometrics, food/eating behavior, and cog/psych databases
     # requires the V4 parent database so check both v2_datestr_arg and v4_datestr_arg
-    if (isFALSE(databases_arg) | 'anthro' %in% database_list | 'food_qs' %in% database_list | 'psych_qs' %in% database_list){
+    if (isFALSE(databases_arg) | 'anthro' %in% databases | 'food_qs' %in% databases | 'psych_qs' %in% databases | 'intake' %in% databases){
 
         if (isTRUE(datapath_arg)){
             v2_data <- util_fbs_merge_v2(child_file_pattern = paste0(child_fp, '_', visit_fp, '2'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '2'), parentV4_file_pattern = paste0(parent_fp, '_', visit_fp, '4'), data_path = data_path)
@@ -152,11 +149,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## Visit 3 data - need for the food/eating behavior, cog/psych, and delay discounting databases
-    if (isFALSE(databases_arg) | 'food_qs' %in% database_list | 'psych_qs' %in% database_list | 'dd' %in% database_list){
-
-        if (isTRUE(databases_arg) & 'dd' %in% database_list){
-            model_DD <- TRUE
-        }
+    if (isFALSE(databases_arg) | 'food_qs' %in% databases | 'psych_qs' %in% databases | 'dd' %in% databases | 'intake' %in% databases){
 
         if (isTRUE(datapath_arg)){
             v3_data <- util_fbs_merge_v3(child_file_pattern = paste0(child_fp, '_', visit_fp, '3'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '3'), data_path = data_path, model_DD = model_DD)
@@ -166,7 +159,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## Visit 4 data - need for the demographics, food/eating behavior, and cog/psych databases
-    if (isFALSE(databases_arg) | 'demo' %in% database_list | 'food_qs' %in% database_list | 'psych_qs' %in% database_list){
+    if (isFALSE(databases_arg) | 'demo' %in% databases | 'food_qs' %in% databases | 'psych_qs' %in% databases | 'intake' %in% databases){
         if (isTRUE(datapath_arg)){
             v4_data <- util_fbs_merge_v4(child_file_pattern = paste0(child_fp, '_', visit_fp, '4'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '4'), data_path = data_path)
         } else {
@@ -175,7 +168,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## Visit 5 data - need for the demographics database
-    if (isFALSE(databases_arg) | 'demo' %in% database_list){
+    if (isFALSE(databases_arg) | 'demo' %in% databases | 'intake' %in% databases){
         if (isTRUE(datapath_arg)){
             v5_data <- util_fbs_merge_v5(child_file_pattern = paste0(child_fp, '_', visit_fp, '5'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '5'), data_path = data_path)
         } else {
@@ -184,14 +177,16 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## Visit 6 data - need for the fMRI database
-    if (isTRUE(datapath_arg)){
-        v6_data <- util_fbs_merge_v6(child_file_pattern = paste0(child_fp, '_', visit_fp, '6'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '6'), data_path = data_path)
-    } else {
-        v6_data <- util_fbs_merge_v6(child_file_pattern = paste0(child_fp, '_', visit_fp, '6'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '6'))
+    if (isFALSE(databases) | 'food_qs' %in% databases){
+        if (isTRUE(datapath_arg) | 'food_qs' %in% databases){
+            v6_data <- util_fbs_merge_v6(child_file_pattern = paste0(child_fp, '_', visit_fp, '6'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '6'), data_path = data_path)
+        } else {
+            v6_data <- util_fbs_merge_v6(child_file_pattern = paste0(child_fp, '_', visit_fp, '6'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '6'))
+        }
     }
 
     ## Visit 7 data - need for the demographics, anthroprometrics, food/eating behavior, and cog/psych databases
-    if (isFALSE(databases_arg) | 'demo' %in% database_list | 'anthro' %in% database_list | 'food_qs' %in% database_list | 'psych_qs' %in% database_list){
+    if (isFALSE(databases_arg) | 'demo' %in% databases | 'anthro' %in% databases | 'food_qs' %in% databases | 'psych_qs' %in% databases | 'intake' %in% databases){
         if (isTRUE(datapath_arg)){
             v7_data <- util_fbs_merge_v7(child_file_pattern = paste0(child_fp, '_', visit_fp, '7'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '7'), data_path = data_path)
         } else {
@@ -203,7 +198,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     #### 3. Make Databases #####
 
     #empty list
-    database_list <- list()
+    database_return <- list()
 
     #get cross-database variables
     common_demo_data <- v1_data[['data']][c(1:13, 20:21, 60:64, 94:97, 123:124)]
@@ -213,7 +208,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     names(common_demo_labels)[2] <- 'v1_date'
 
     ## 3b) Demographics ####
-    if (isFALSE(databases_arg) | 'demo' %in% database_list){
+    if (isFALSE(databases_arg) | 'demo' %in% databases){
 
         #visit 1
         v1_demo_data <- v1_data[['data']][c(1:13, 20:21, 60:61, 63, 94:97, 123:124, 14:19, 22:59, 65:87)]
@@ -270,7 +265,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         demographic_data = sjlabelled::set_label(demo_v1v4v5v7_data, label = matrix(unlist(demographic_labels, use.names = FALSE)))
 
         # add to list
-        database_list <- list(database_list, demo_data = demographic_data, demo_dict = demographic_labels)
+        database_return <- c(database_return, lsit(demo_data = demographic_data, demo_dict = demographic_labels))
 
         # write out
         if (isTRUE(write_dat)){
@@ -294,7 +289,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## 3b) Anthropometrics ####
-    if (isFALSE(databases_arg) | 'anthro' %in% database_list){
+    if (isFALSE(databases_arg) | 'anthro' %in% databases){
 
         #visit 1
         v1_anthro_data <- v1_data[['data']][c(1, 88:226)]
@@ -344,7 +339,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         anthroprometric_data = sjlabelled::set_label(anthro_demov1v2v7_data, label = matrix(unlist(anthroprometric_labels, use.names = FALSE)))
 
         # add to list
-        database_list <- list(database_list, anthro_data = anthroprometric_data, anthro_dict = anthroprometric_labels)
+        database_return <- c(database_return, list(anthro_data = anthroprometric_data, anthro_dict = anthroprometric_labels))
 
         # write out
         if (isTRUE(write_dat)){
@@ -369,7 +364,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## 3c) Intake ####
-    if (isFALSE(databases_arg) | 'intake' %in% database_list){
+    if (isFALSE(databases_arg) | 'intake' %in% databases){
 
         #visit 1
         v1_intake_data <- v1_data[['data']][c(1, 227:395)]
@@ -496,10 +491,10 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         intake_demov1v2_data <- merge(intake_demov1_data, v2_intake_data, by = 'id', all.x = FALSE, all.y = TRUE)
 
         ## other merges - set all = TRUE so get all participants in visits 2-7
-        intake_demov1v2v3_data <- merge(intake_demov1v2_data, v3_intake_data, by = 'id', all.x = FALSE, all.y = TRUE)
-        intake_demov1v2v3v4_data <- merge(intake_demov1v2v3_data, v4_intake_data, by = 'id', all.x = FALSE, all.y = TRUE)
-        intake_demov1v2v3v4v5_data <- merge(intake_demov1v2v3v4_data, v5_intake_data, by = 'id', all.x = FALSE, all.y = TRUE)
-        intake_demov1v23v4v5v7_data <- merge(intake_demov1v2v3v4v5_data, v7_intake_data, by = 'id', all.x = FALSE, all.y = TRUE)
+        intake_demov1v2v3_data <- merge(intake_demov1v2_data, v3_intake_data, by = 'id', all = TRUE)
+        intake_demov1v2v3v4_data <- merge(intake_demov1v2v3_data, v4_intake_data, by = 'id', all = TRUE)
+        intake_demov1v2v3v4v5_data <- merge(intake_demov1v2v3v4_data, v5_intake_data, by = 'id', all = TRUE)
+        intake_demov1v23v4v5v7_data <- merge(intake_demov1v2v3v4v5_data, v7_intake_data, by = 'id', all = TRUE)
 
         #get labels
         intake_labels <- c(common_demo_labels, v1_intake_labels[2:length(v1_intake_labels)], v2_intake_labels[2:length(v2_intake_labels)], v3_intake_labels[2:length(v3_intake_labels)], v4_intake_labels[2:length(v4_intake_labels)], v5_intake_labels[2:length(v5_intake_labels)], v7_intake_labels[2:length(v7_intake_labels)])
@@ -576,7 +571,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         intake_data = sjlabelled::set_label(intake_data, label = matrix(unlist(intake_labels, use.names = FALSE)))
 
         # add to list
-        database_list <- list(database_list, intake_data = intake_data, intake_dict = intake_labels)
+        database_return <- c(database_return, list(intake_data = intake_data, intake_dict = intake_labels))
 
         # write out
         if (isTRUE(write_dat)){
@@ -600,7 +595,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## 3d) Eating Behavior/Food Intake Questionnaires ####
-    if (isFALSE(databases_arg) | 'food_q' %in% database_list){
+    if (isFALSE(databases_arg) | 'food_q' %in% databases){
 
         #visit 1
         v1_foodqs_data <- v1_data[['data']][c(1, 396:711)]
@@ -669,11 +664,11 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         foodqs_demov1v2_data <- merge(foodqs_demov1_data, v2_foodqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
 
         ## other merges - set all = TRUE so get all participants in visits 2-7
-        foodqs_demov1v2v3_data <- merge(foodqs_demov1v2_data, v3_foodqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
-        foodqs_demov1v2v3v4_data <- merge(foodqs_demov1v2v3_data, v4_foodqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
-        foodqs_demov1v2v3v4v5_data <- merge(foodqs_demov1v2v3v4_data, v5_foodqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
-        foodqs_demov1v2v3v4v5v6_data <- merge(foodqs_demov1v2v3v4v5_data, v6_foodqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
-        foodqs_demov1v2v3v4v5v6v7_data <- merge(foodqs_demov1v2v3v4v5v6_data, v7_foodqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
+        foodqs_demov1v2v3_data <- merge(foodqs_demov1v2_data, v3_foodqs_data, by = 'id', all = TRUE)
+        foodqs_demov1v2v3v4_data <- merge(foodqs_demov1v2v3_data, v4_foodqs_data, by = 'id', all = TRUE)
+        foodqs_demov1v2v3v4v5_data <- merge(foodqs_demov1v2v3v4_data, v5_foodqs_data, by = 'id', all = TRUE)
+        foodqs_demov1v2v3v4v5v6_data <- merge(foodqs_demov1v2v3v4v5_data, v6_foodqs_data, by = 'id', all = TRUE)
+        foodqs_demov1v2v3v4v5v6v7_data <- merge(foodqs_demov1v2v3v4v5v6_data, v7_foodqs_data, by = 'id', all = TRUE)
 
         #get labels
         foodqs_labels <- c(common_demo_labels, v1_foodqs_labels[2:length(v1_foodqs_labels)], v2_foodqs_labels[2:length(v2_foodqs_labels)], v3_foodqs_labels[2:length(v3_foodqs_labels)], v4_foodqs_labels[2:length(v4_foodqs_labels)], v5_foodqs_labels[2:length(v5_foodqs_labels)], v6_foodqs_labels[2:length(v6_foodqs_labels)], v7_foodqs_labels[2:length(v7_foodqs_labels)])
@@ -682,7 +677,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         foodqs_data = sjlabelled::set_label(foodqs_demov1v2v3v4v5v6v7_data, label = matrix(unlist(foodqs_labels, use.names = FALSE)))
 
         # add to list
-        database_list <- list(database_list, foodqs_data = foodqs_data, foodqs_dict = foodqs_labels)
+        database_return <- c(database_return, list(foodqs_data = foodqs_data, foodqs_dict = foodqs_labels))
 
         #write out
         if (isTRUE(write_dat)){
@@ -706,7 +701,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## 3e) Cognitive and Psychosocial Questionnaires/Measures ####
-    if (isFALSE(databases_arg) | 'psych_q' %in% database_list){
+    if (isFALSE(databases_arg) | 'psych_q' %in% databases){
 
         #visit 2
         v2_psychqs_data <- v2_data[['data']][c(1:2, 300:458)]
@@ -754,9 +749,9 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         psychqs_demov2_data <- merge(common_demo_data, v2_psychqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
 
         ## other merges - set all = TRUE so get all participants in visits 2-7
-        psychqs_demov2v3_data <- merge(psychqs_demov2_data, v3_psychqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
-        psychqs_demov2v3v4_data <- merge(psychqs_demov2v3_data, v4_psychqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
-        psychqs_demov2v3v4v7_data <- merge(psychqs_demov2v3v4_data, v7_psychqs_data, by = 'id', all.x = FALSE, all.y = TRUE)
+        psychqs_demov2v3_data <- merge(psychqs_demov2_data, v3_psychqs_data, by = 'id', all = TRUE)
+        psychqs_demov2v3v4_data <- merge(psychqs_demov2v3_data, v4_psychqs_data, by = 'id', all = TRUE)
+        psychqs_demov2v3v4v7_data <- merge(psychqs_demov2v3v4_data, v7_psychqs_data, by = 'id', all = TRUE)
 
         #get labels
         psychqs_labels <- c(common_demo_labels, v2_psychqs_labels[2:length(v2_psychqs_labels)], v3_psychqs_labels[2:length(v3_psychqs_labels)], v4_psychqs_labels[2:length(v4_psychqs_labels)], v7_psychqs_labels[2:length(v7_psychqs_labels)])
@@ -765,7 +760,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         psychqs_data = sjlabelled::set_label(psychqs_demov2v3v4v7_data, label = matrix(unlist(psychqs_labels, use.names = FALSE)))
 
         # add to list
-        database_list <- list(database_list, psychqs_data = psychqs_data, psychqs_dict = psychqs_labels)
+        database_return <- list(database_return, c(psychqs_data = psychqs_data, psychqs_dict = psychqs_labels))
 
         #write out
         if (isTRUE(write_dat)){
@@ -789,7 +784,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## 3f) Delay Discounting ####
-    if (isTRUE(model_DD)){
+    if (isFALSE(databases_arg) | 'dd' %in% databases ){
 
         #visit 3
         v3_dd_data <- v3_data[['data']][c(1:2, 249:325)]
@@ -808,7 +803,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         dd_data = sjlabelled::set_label(dd_demov3_data, label = matrix(unlist(dd_labels, use.names = FALSE)))
 
         # add to list
-        database_list <- list(database_list, dd_data = dd_data, dd_dict = dd_labels)
+        database_return <- c(database_return, list(dd_data = dd_data, dd_dict = dd_labels))
 
         #write out
         if (isTRUE(write_dat)){
@@ -832,7 +827,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## 3g) Interoception ####
-    if (isFALSE(databases_arg) | 'intero' %in% database_list){
+    if (isFALSE(databases_arg) | 'intero' %in% databases){
 
         #visit 3
         v5_intero_data <- v5_data[['data']][c(1:2, 105:191)]
@@ -851,7 +846,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         intero_data = sjlabelled::set_label(intero_demov5_data, label = matrix(unlist(intero_labels, use.names = FALSE)))
 
         # add to list
-        database_list <- list(database_list, intero_data = intero_data, intero_dict = intero_labels)
+        database_return <- c(database_return, c(intero_data = intero_data, intero_dict = intero_labels))
 
         #write out
         if (isTRUE(write_dat)){
@@ -875,7 +870,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## 3h) Notes ####
-    if (isFALSE(databases_arg) | 'intero' %in% database_list){
+    if (isFALSE(databases_arg) | 'intero' %in% databases){
 
         #visit 1
         v1_notes_data <- v1_data[['data']][c(1, 712:715)]
@@ -1026,14 +1021,14 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         notes_demov1_data <- merge(common_demo_data, v1_notes_data, by = 'id', all = TRUE)
 
         ## merge databases - set all.x = FALSE so only get the participants with data at later visits/have not been screened out
-        notes_demov1v2_data <- merge(notes_demov1_data, v2_notes_data, by = 'id', all.x = FALSE, all.y = TRUE)
+        notes_demov1v2_data <- merge(notes_demov1_data, v2_notes_data, by = 'id', all = TRUE)
 
         ## other merges - set all = TRUE so get all participants in visits 2-7
-        notes_demov1v2v3_data <- merge(notes_demov1v2_data, v3_notes_data, by = 'id', all.x = FALSE, all.y = TRUE)
-        notes_demov1v2v3v4_data <- merge(notes_demov1v2v3_data, v4_notes_data, by = 'id', all.x = FALSE, all.y = TRUE)
-        notes_demov1v2v3v4v5_data <- merge(notes_demov1v2v3v4_data, v5_notes_data, by = 'id', all.x = FALSE, all.y = TRUE)
-        notes_demov1v2v3v4v5v6_data <- merge(notes_demov1v2v3v4v5_data, v6_notes_data, by = 'id', all.x = FALSE, all.y = TRUE)
-        notes_demov1v23v4v5v6v7_data <- merge(notes_demov1v2v3v4v5v6_data, v7_notes_data, by = 'id', all.x = FALSE, all.y = TRUE)
+        notes_demov1v2v3_data <- merge(notes_demov1v2_data, v3_notes_data, by = 'id', all = TRUE)
+        notes_demov1v2v3v4_data <- merge(notes_demov1v2v3_data, v4_notes_data, by = 'id', all = TRUE)
+        notes_demov1v2v3v4v5_data <- merge(notes_demov1v2v3v4_data, v5_notes_data, by = 'id', all = TRUE)
+        notes_demov1v2v3v4v5v6_data <- merge(notes_demov1v2v3v4v5_data, v6_notes_data, by = 'id', all = TRUE)
+        notes_demov1v23v4v5v6v7_data <- merge(notes_demov1v2v3v4v5v6_data, v7_notes_data, by = 'id', all = TRUE)
 
         #get labels
         notes_labels <- c(common_demo_labels, v1_notes_labels[2:length(v1_notes_labels)], v2_notes_labels[2:length(v2_notes_labels)], v3_notes_labels[2:length(v3_notes_labels)], v4_notes_labels[2:length(v4_notes_labels)], v5_notes_labels[2:length(v5_notes_labels)], v6_notes_labels[2:length(v6_notes_labels)], v7_notes_labels[2:length(v7_notes_labels)])
@@ -1042,7 +1037,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         notes_data = sjlabelled::set_label(notes_demov1v23v4v5v6v7_data, label = matrix(unlist(notes_labels, use.names = FALSE)))
 
         # add to list
-        database_list <- list(database_list, notes_data = notes_data, notes_dict = notes_labels)
+        database_return <- c(database_return, lsit(notes_data = notes_data, notes_dict = notes_labels))
 
         #write out
         if (isTRUE(write_dat)){
@@ -1066,7 +1061,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## 3i) PNA data ####
-    if (isFALSE(databases_arg) | 'pna' %in% database_list){
+    if (isFALSE(databases_arg) | 'pna' %in% databases){
 
         #visit 1
         v1_pna_data <- v1_data[['pna_data']]
@@ -1185,7 +1180,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         pna_data = sjlabelled::set_label(pna_v1v2v3v4v5v7_data, label = matrix(unlist(pna_labels, use.names = FALSE)))
 
         # add to list
-        database_list <- list(database_list, pna_data = pna_data, pna_dict = pna_labels)
+        database_return <- c(database_return, c(pna_data = pna_data, pna_dict = pna_labels))
 
         #write out
         if (isTRUE(write_dat)){
@@ -1210,7 +1205,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
 
     #### 10. Return List #####
     if(isTRUE(return_data)){
-        return(database_list)
+        return(database_return)
     }
 
 }
