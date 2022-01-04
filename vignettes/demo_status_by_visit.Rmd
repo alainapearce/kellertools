@@ -33,42 +33,24 @@ library(kableExtra)
 <!-- need to split chunks. Each chunk should have a single purpose so that you can control what is displayed in the pdf of the vignette.  -->
 <!-- pretty sure you can't have spaces in your cunck labels when you convert to pdf -->
 
-```{r load data}
+```{r load_data}
 
 #this path is specific to your laptop - we should try to create some fake/simulated data that we can rely on for examples
 data_path = '/Users/baf44/OneDrive - The Pennsylvania State University/b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'
 
 #will probably want to do individually for each table so get the data needed for each part separately - may need to change some of these to the user-interface wrappers once they are done
+
+# Load data
 data_v1 <- util_fbs_merge_v1(child_file_pattern = 'Child_V1', parent_file_pattern = 'Parent_V1', data_path = data_path)
-data_v2 <- util_fbs_merge_v2(child_file_pattern = 'Child_V2', parent_file_pattern = 'Parent_V2', parentV4_file_pattern = 'Parent_V4', data_path = data_path)
-data_v3 <- util_fbs_merge_v3(child_file_pattern = 'Child_V3', parent_file_pattern = 'Parent_V3', data_path = data_path, model_DD = FALSE)
-data_v4 <- util_fbs_merge_v4(child_file_pattern = 'Child_V4', parent_file_pattern = 'Parent_V4', data_path = data_path)
-data_v5 <- util_fbs_merge_v5(child_file_pattern = 'Child_V5', parent_file_pattern = 'Parent_V5', data_path = data_path)
-data_v6 <- util_fbs_merge_v6(child_file_pattern = 'Child_V6', parent_file_pattern = 'Parent_V6', data_path = data_path)
-data_v7 <- util_fbs_merge_v7(child_file_pattern = 'Child_V7', parent_file_pattern = 'Parent_V7', data_path = data_path)
+
 ```
 
-```{r V1 table}
-# select variable - do for each table separately with a narative in markdown outside the chunck
+# Table 1a: Demographic Characteristics by Risk Status (all V1)
+<!-- Add narrative for Table 1 prep -->
+```{r Table1_prep}
 
-# also, changed to base R indexing - the tidyverse is updated very frequently so relying on their pipes for long-standing examples will lead to the examples breaking down the line. Base R does not change indexing rules.
-v1_subset <- data_v1[['data']][c('sex', 'risk_cat', 'age_yr','bmi_screenout','man_recode_risk','sex')]
-data_v1_subset$elligible <- ifelse((Table1_vars$bmi_screenout == 1 | (Table1_vars$man_recode_risk == "Neither")), "No", "Yes")
-
-
-Table1_vars <- data_v1 <- data_v1[['data']][c('sex', 'risk_cat', 'age_yr','bmi_screenout','man_recode_risk')]
-
-data_v1_subset$elligible <- ifelse((Table1_vars$bmi_screenout == 1 | (Table1_vars$man_recode_risk != "High Risk" && "Low Risk")), "No", "Yes")
-
-
-Table1_vars <- data_v1_subset[c('bmi_screenout', 'man_recode_risk','elligible')]
-
-data_v1_subset$elligible <- ifelse((Table1_vars$bmi_screenout == 1 | (Table1_vars$man_recode_risk == "Neither")), "No", "Yes")
-Table2_vars <- data_v1[['data']][c('bmi_screenout', 'risk_cat')]
-
-
-# Make overall eligibility variable
-Table1_vars$elligible <- ifelse((Table1_vars$bmi_screenout == 1 | (Table1_vars$man_recode_risk == "Neither")), "No", "Yes")
+# select variables
+Table1_vars <- data_v1[['data']][c('age_yr', 'sex', 'risk_cat','bmi_screenout','man_recode_risk')]
 
 # convert 'haven_labelled' datatypes - your loop didn't change/update the 'Table1_vars', only the df in the dfList so that tables were not able to be created. This is where it is important that it is run fully independently/with cleared environment to ensure it works. By making your loop a function, you can apply it directly to your tables and return the changes. As we move forward, it may be a good idea to make these types of functions part of the package since they aren't super common in datasets typically needed with R.
 
@@ -85,9 +67,14 @@ convertHaven <- function(df){
 }
 
 Table1_vars <- convertHaven(Table1_vars)
-Table2_vars <- convertHaven(Table2_vars)
 
+
+```
+ 
+<!-- Add narrative for Table 1  -->
+```{r Table1}
 # make Table 1
+
 Table1 <- 
   tbl_summary(
     Table1_vars,
@@ -96,68 +83,178 @@ Table1 <-
     statistic = list(all_continuous() ~ "{mean} ({sd})",
                      all_categorical() ~ "{n} ({p}%)"),
     label = list(age_yr ~ "Age (years)",
-                 sex ~ "Sex")
+                 sex ~ "Sex",
+                 man_recode_risk ~ "Risk (manually coded)",
+                 bmi_screenout ~ "Child BMI screenout")
   ) %>%
   # update the column header
-  modify_header(label = "**Variable**") %>%
+  modify_header(label = "**Risk (computed)**") %>%
   bold_labels() 
 
-Table1
-
-
-Table2 <- 
-  tbl_summary(
-    Table2_vars,
-    # split table by group
-    by = bmi_screenout,
-    statistic = list(all_continuous() ~ "{mean} ({sd})",
-                     all_categorical() ~ "{n} ({p}%)"),
-    label = list(risk_cat ~ "Risk category")
-  ) %>%
-  # update the column header
-  modify_header(label = "**Child BMI screenout**") %>%
-  bold_labels() 
-
-Table2
 ```
  
 <!-- below is the code needed to display the table nicely in pdf format, though it should work for htlm also. tables cannot just simply be called in a chunk -- need to have instructions for formatting output -->
-``` {r Table1_disp, restults = 'asis'}
+<!-- Add narrative for Table 1 display -->
+``` {r Table1_disp, results = 'asis'}
 as_kable_extra(Table1, caption = 'Demographic Characteristics by Risk Status', format = "latex", booktabs = TRUE, longtable = FALSE) %>%
   kableExtra::kable_styling(latex_options = "hold_position",  full_width = FALSE)
 ```
 
+# Table 1b: Demographic Characteristics by Risk Status (elligible after V1)
+
+# Table 2: V1 elligibility breakdown
+<!-- Add narrative for Table 2 prep -->
+```{r Table2_Prep}
+
+#this path is specific to your laptop - we should try to create some fake/simulated data that we can rely on for examples
+data_path = '/Users/baf44/OneDrive - The Pennsylvania State University/b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'
+
+# Load data
+data_v1 <- util_fbs_merge_v1(child_file_pattern = 'Child_V1', parent_file_pattern = 'Parent_V1', data_path = data_path)
+
+# select variables
+Table2_vars <- data_v1[['data']][c('bmi_screenout','man_recode_risk')]
+
+# make eligibility variable based on parent and child weight status
+Table2_vars$elligible <- ifelse((Table2_vars$bmi_screenout == 0 & (Table2_vars$man_recode_risk == "Low Risk" | Table2_vars$man_recode_risk == "High Risk")), "Yes", "No")
+
+Table2_vars <- convertHaven(Table2_vars)
+
+```
+
+<!-- Add narrative for Table 2  -->
 ```{r Table2}
-# make Table 2
-## 
+
 Table2 <- 
   tbl_summary(
     Table2_vars,
-    by = bmi_screenout, # split table by group
-    label = bmi_screenout ~ "Child BMI screenout"
+    # split table by eligibility
+    by = elligible,
+    statistic = list(all_continuous() ~ "{mean} ({sd})",
+                     all_categorical() ~ "{n} ({p}%)"),
+    label = list(bmi_screenout ~ "Child BMI screenout",
+                 man_recode_risk ~ "Risk status")
   ) %>%
-  modify_header(label = "**Variable**") %>% # update the column header
+  # update the column header
+  modify_header(label = "**Elligible after V1**") %>%
   bold_labels() 
 ```
 
-<!-- the display of the table needs to be in it's own chunk and the results will have to be set to 'asis' -->
-
-```{r Table2_disp}
-as_kable_extra(Table2, caption = 'Child BMI Exclusion by Risk Status', format = "latex", booktabs = TRUE, longtable = FALSE) %>%
+<!-- Add narrative for Table 2 display -->
+```{r Table2_disp, results = 'asis'}
+as_kable_extra(Table2, caption = 'ADD CAPTION', format = "latex", booktabs = TRUE, longtable = FALSE) %>%
   kableExtra::kable_styling(latex_options = "hold_position",  full_width = FALSE)
 ```
 
-
-<!-- need to update belwo so not using tidyverse indexing -->
-```{r visit status table}
+# Table 3: Demographics by visit
+<!-- Add narrative for Table 3 prep -->
+```{r Table3_Prep}
 library(dplyr)
 
-V1 <- data_v1[["data"]] %>% select(id, start_date)
-V2 <- data_v2[["data"]] %>% select(id, start_date)
-V3 <- data_v3[["data"]] %>% select(id, start_date)
-V4 <- data_v4[["data"]] %>% select(id, start_date)
-V5 <- data_v5[["data"]] %>% select(id, start_date)
-V6 <- data_v6[["data"]] %>% select(id, start_date)
+#this path is specific to your laptop - we should try to create some fake/simulated data that we can rely on for examples
+data_path = '/Users/baf44/OneDrive - The Pennsylvania State University/b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'
+
+# Load data
+data_v1 <- util_fbs_merge_v1(child_file_pattern = 'Child_V1', parent_file_pattern = 'Parent_V1', data_path = data_path)
+data_v2 <- util_fbs_merge_v2(child_file_pattern = 'Child_V2', parent_file_pattern = 'Parent_V2', parentV4_file_pattern = 'Parent_V4', data_path = data_path)
+data_v3 <- util_fbs_merge_v3(child_file_pattern = 'Child_V3', parent_file_pattern = 'Parent_V3', data_path = data_path, model_DD = FALSE)
+data_v4 <- util_fbs_merge_v4(child_file_pattern = 'Child_V4', parent_file_pattern = 'Parent_V4', data_path = data_path)
+data_v5 <- util_fbs_merge_v5(child_file_pattern = 'Child_V5', parent_file_pattern = 'Parent_V5', data_path = data_path)
+data_v6 <- util_fbs_merge_v6(child_file_pattern = 'Child_V6', parent_file_pattern = 'Parent_V6', data_path = data_path)
+data_v7 <- util_fbs_merge_v7(child_file_pattern = 'Child_V7', parent_file_pattern = 'Parent_V7', data_path = data_path)
+
+#' Extract id, start_date, visit number from list[["data"]]
+#' @param list a list with data saved in a dataframe 'data' (e.g., output of running util_fbs_merge scripts)
+#' @return a dataframe with ids, startdates, and visit number
+#' @examples 
+#' #if output of merge script saved as 'data_v3': E.g.) data_v3 <- util_fbs_merge_v3(child_file_pattern = 'Child_V3', parent_file_pattern = 'Parent_V3', data_path = data_path)
+#' extractIDs(data_v3)
+
+extractIDs <- function(list){
+  # save name of list as a string
+  dataframe_name <- deparse(substitute(list))
+  
+  # get visit number 
+  visit_num <- substr(dataframe_name, 7, 7) 
+  
+  # Extract ID and assign to list_name
+  dataframe_name <- list[["data"]][c('id','start_date')]
+  
+  # Add visit column
+  dataframe_name$visit <- visit_num
+  
+  return(dataframe_name)
+}
 
 
+#' Add demo data (risk_cat, sex, age) to a dataframe by matching IDs with a reference dataframe
+#' @param df dataframe with 'id' column 
+#' @param reference_df dataframe 'id' and demographic variables (sex, risk_cat, dob)
+#' @return dataframe with id, sex, risk_cat, and age_yr columns 
+
+addDemo <- function(df, reference_df){
+  for (row in 1:nrow(df)) {
+    row_id = df$id[row]
+    
+    # Add risk status
+    df$risk_cat[row] <- reference_df$risk_cat[reference_df$id == 
+                          row_id]
+    # Add sex
+    df$sex[row] <- reference_df$sex[reference_df$id == row_id]
+    
+    # Calculate age at visit 
+    df$age_yr[row] <- round(lubridate::`%--%`(reference_df$dob[reference_df$id == row_id], 
+                          df$start_date[row])/lubridate::years(1), digits = 2)
+
+    }
+  
+  return(df)
+}
+
+# Extract IDs and demo variables from V1 database
+V1 <- data_v1[["data"]][c('id', 'risk_cat','sex', 'dob', 'age_yr')]
+V1$visit <- "1"
+
+# Extract IDs from V2-V7 databases and add visit column (use extractIDs())
+V2 <- extractIDs(data_v2)
+V3 <- extractIDs(data_v3)
+V4 <- extractIDs(data_v4)
+V5 <- extractIDs(data_v5)
+V6 <- extractIDs(data_v6)
+V7 <- extractIDs(data_v7)
+
+# Add demo data to V2-V7 dataframes by referencing V1
+nonV1_list <- list(V2, V3, V4, V5, V6, V7)
+nonV1_list <- lapply(nonV1_list, addDemo, reference_df = V1)
+
+# Combine visit dataframes
+V1_7 <- bind_rows(V1, nonV1_list)
+
+# Convert 'haven_labelled' datatypes 
+V1_7 <- convertHaven(V1_7)
+
+# Select variables to include in table
+V1_7 <- subset(V1_7, select = c(risk_cat, sex, age_yr, visit))
+
+```
+
+<!-- Add narrative for Table 3  -->
+```{r Table3}
+# make Table 3
+Table3 <- 
+  tbl_summary(
+    V1_7,
+    by = visit, # split table by group
+    label = list(sex ~ "Sex",
+                 risk_cat ~ "Risk status",
+                 age_yr ~ "Age (years)")
+  ) %>%
+  modify_header(label = "**Visit**") %>% # update the column header
+  bold_labels() 
+```
+
+<!-- Add narrative for Table 3 display -->
+```{r Table3_disp,  results = 'asis'}
+as_kable_extra(Table3, caption = 'Demographics by Visit', format = "latex", booktabs = TRUE, longtable = FALSE) %>%
+  kableExtra::kable_styling(latex_options = "hold_position",  full_width = FALSE)
 ```
