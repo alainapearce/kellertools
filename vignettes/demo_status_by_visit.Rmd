@@ -53,11 +53,19 @@ data_v7 <- util_fbs_merge_v7(child_file_pattern = 'Child_V7', parent_file_patter
 
 # also, changed to base R indexing - the tidyverse is updated very frequently so relying on their pipes for long-standing examples will lead to the examples breaking down the line. Base R does not change indexing rules.
 v1_subset <- data_v1[['data']][c('sex', 'risk_cat', 'age_yr','bmi_screenout','man_recode_risk','sex')]
+data_v1_subset$elligible <- ifelse((Table1_vars$bmi_screenout == 1 | (Table1_vars$man_recode_risk == "Neither")), "No", "Yes")
 
-v1_subset$elligible <- ifelse((v1_subset$bmi_screenout == 0 & (v1_subset$man_recode_risk == "Low Risk" | v1_subset$man_recode_risk == "High Risk")), "Yes", "No")
 
-Table1_vars <- v1_subset[c('sex', 'risk_cat', 'age_yr','bmi_screenout','man_recode_risk')]
-Table2_vars <- v1_subset[c('bmi_screenout', 'man_recode_risk','elligible')]
+Table1_vars <- data_v1 <- data_v1[['data']][c('sex', 'risk_cat', 'age_yr','bmi_screenout','man_recode_risk')]
+
+data_v1_subset$elligible <- ifelse((Table1_vars$bmi_screenout == 1 | (Table1_vars$man_recode_risk != "High Risk" && "Low Risk")), "No", "Yes")
+
+
+Table1_vars <- data_v1_subset[c('bmi_screenout', 'man_recode_risk','elligible')]
+
+data_v1_subset$elligible <- ifelse((Table1_vars$bmi_screenout == 1 | (Table1_vars$man_recode_risk == "Neither")), "No", "Yes")
+Table2_vars <- data_v1[['data']][c('bmi_screenout', 'risk_cat')]
+
 
 # Make overall eligibility variable
 Table1_vars$elligible <- ifelse((Table1_vars$bmi_screenout == 1 | (Table1_vars$man_recode_risk == "Neither")), "No", "Yes")
@@ -101,14 +109,13 @@ Table2 <-
   tbl_summary(
     Table2_vars,
     # split table by group
-    by = elligible,
+    by = bmi_screenout,
     statistic = list(all_continuous() ~ "{mean} ({sd})",
                      all_categorical() ~ "{n} ({p}%)"),
-    label = list(bmi_screenout ~ "child BMI screenout",
-                 man_recode_risk ~ "risk status")
+    label = list(risk_cat ~ "Risk category")
   ) %>%
   # update the column header
-  modify_header(label = "**Elligible after V1**") %>%
+  modify_header(label = "**Child BMI screenout**") %>%
   bold_labels() 
 
 Table2
@@ -141,79 +148,16 @@ as_kable_extra(Table2, caption = 'Child BMI Exclusion by Risk Status', format = 
 ```
 
 
+<!-- need to update belwo so not using tidyverse indexing -->
 ```{r visit status table}
 library(dplyr)
 
-addDemo <- function(df, reference_df){
-  for (row in 1:nrow(df)) {
-    row_id = df$id[row]
-    df$man_recode_risk[row] <- reference_df$man_recode_risk[reference_df$id == row_id]
-    df$sex[row] <- reference_df$sex[reference_df$id == row_id]
-    }
-  
-  return(df)
-}
-
-extractID <- function(data_v2){
-  # get name of dataset
-  list_name <- deparse(substitute(data_v2))
-  
-  # Extract ID
-  list_name <- data_v2[["data"]][c('id')]
-
-  
-  return(df)
-}
-
-nonV1_datalist <- list(data_v2, data_v3, data_v4, data_v5, data_v6, data_v7)
-nonV1_data <- lapply(nonV1_datalist, addDemo)
+V1 <- data_v1[["data"]] %>% select(id, start_date)
+V2 <- data_v2[["data"]] %>% select(id, start_date)
+V3 <- data_v3[["data"]] %>% select(id, start_date)
+V4 <- data_v4[["data"]] %>% select(id, start_date)
+V5 <- data_v5[["data"]] %>% select(id, start_date)
+V6 <- data_v6[["data"]] %>% select(id, start_date)
 
 
-# Extract IDs from individual visit databases and create visit column
-V1 <- data_v1[["data"]][c('id', 'man_recode_risk','sex')]
-V1$visit <- "1"
-
-V2 <- data_v2[["data"]][c('id')]
-V2$visit <- "2"
-
-V3 <- data_v3[["data"]][c('id')]
-V3$visit <- "3"
-
-V4 <- data_v4[["data"]][c('id')]
-V4$visit <- "4"
-
-V5 <- data_v5[["data"]][c('id')]
-V5$visit <- "5"
-
-V6 <- data_v6[["data"]][c('id')]
-V6$visit <- "6"
-
-V7 <- data_v7[["data"]][c('id')]
-V7$visit <- "7"
-
-# Add risk status, sex, age to V2-V7 dataframes by referencing V1
-nonV1_list <- list(V2, V3, V4, V5, V6, V7)
-nonV1_list <- lapply(nonV1_list, addDemo, reference_df = V1)
-
-# Combine visit dataframes
-V1_7 <- bind_rows(V1, nonV1_list)
-
-# Convert 'haven_labelled' datatypes 
-V1_7 <- convertHaven(V1_7)
-
-# Remove ID column 
-V1_7 <- subset(V1_7, select = -c(id))
-
-# Create table
-Table3 <- 
-  tbl_summary(
-    V1_7,
-    by = visit, # split table by group
-    label = list(sex ~ "Sex",
-                 man_recode_risk ~ "Risk status")
-  ) %>%
-  modify_header(label = "**Visit**") %>% # update the column header
-  bold_labels() 
-
-Table3
 ```
