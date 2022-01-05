@@ -79,7 +79,7 @@ score_risk <- function(risk_data, respondent, parID) {
 
     #### 2. Set Up Data #####
 
-    risk_score_dat <- data.frame(hw_measured = rep(NA, nrow(risk_data)), measured_parent = rep(NA, nrow(risk_data)), risk_cat = rep(NA, nrow(risk_data)))
+    risk_score_dat <- data.frame(hw_measured = rep(NA, nrow(risk_data)), measured_parent = rep(NA, nrow(risk_data)), risk_status_mom = rep(NA, nrow(risk_data)), risk_status_both = rep(NA, nrow(risk_data)))
 
     if (isTRUE(ID_arg)) {
         risk_score_dat <- data.frame(risk_data[[parID]], risk_score_dat)
@@ -104,13 +104,24 @@ score_risk <- function(risk_data, respondent, parID) {
 
     risk_score_dat_labels[['measured_parent']] <- 'Parent with measured BMI at Visit 1'
 
-    # risk status
-    risk_score_dat[['risk_cat']] <- ifelse(risk_score_dat[['hw_measured']] == 0, ifelse(is.na(risk_data[['sr_mom_bmi']]) | is.na(risk_data[['sr_dad_bmi']]), NA, ifelse(risk_data[['sr_mom_bmi']] >= 29 & risk_data[['sr_dad_bmi']] >= 24, 1, ifelse(risk_data[['sr_mom_bmi']] < 26 & risk_data[['sr_dad_bmi']] < 26, 0, 2))), ifelse(risk_data[[respondent]] == 'mom',  ifelse(risk_data[['parent_bmi']] >= 29 & risk_data[['sr_dad_bmi']] >= 24, 1,  ifelse(risk_data[['parent_bmi']] < 26 & risk_data[['sr_dad_bmi']] < 26, 0, 2)),  ifelse(risk_data[['sr_mom_bmi']] >= 29 & risk_data[['parent_bmi']] >= 24, 1,  ifelse(risk_data[['sr_mom_bmi']] < 26 & risk_data[['parent_bmi']] < 26, 0, 2))))
+    # risk status - Mom only
+    risk_score_dat[['risk_status_mom']] <- ifelse(risk_score_dat[['hw_measured']] == 0, ifelse(is.na(risk_data[['sr_mom_bmi']]), NA, ifelse(risk_data[['sr_mom_bmi']] >= 29, 1, ifelse(risk_data[['sr_mom_bmi']] < 26, 0, 2))), ifelse(risk_data[[respondent]] == 'mom', ifelse(risk_data[['parent_bmi']] >= 29, 1, ifelse(risk_data[['parent_bmi']] < 26, 0, 2)), ifelse(risk_data[['sr_mom_bmi']] >= 29, 1, ifelse(risk_data[['sr_mom_bmi']] < 26, 0, 2))))
 
-    risk_score_dat[['risk_cat']] <- sjlabelled::set_labels(risk_score_dat[['risk_cat']], labels = c(`Low Risk` = 0, `High Risk` = 1, Neither = 2))
-    class(risk_score_dat[["risk_cat"]]) <- c("haven_labelled", "vctrs_vctr", "double")
+    risk_score_dat[['risk_status_mom']] <- sjlabelled::set_labels(risk_score_dat[['risk_status_mom']], labels = c(`Low Risk` = 0, `High Risk` = 1, Neither = 2))
+    class(risk_score_dat[["risk_status_mom"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
-    risk_score_dat_labels[['risk_cat']] <- "Child risk category"
+    risk_score_dat_labels[['risk_status_mom']] <- "Child risk categor: Low risk: Mom BMI < 26, High Risk: Mom BMI >= 29"
+
+    # risk status - Both
+    risk_score_dat[['risk_status_both']] <- ifelse(risk_score_dat[['hw_measured']] == 0, ifelse(is.na(risk_data[['sr_mom_bmi']]) | is.na(risk_data[['sr_dad_bmi']]), NA, ifelse(risk_data[['sr_mom_bmi']] >= 30 & risk_data[['sr_dad_bmi']] >= 25, 1, ifelse(risk_data[['sr_mom_bmi']] < 25 & risk_data[['sr_dad_bmi']] < 25, 0, 2))), ifelse(risk_data[[respondent]] == 'mom', ifelse(risk_data[['parent_bmi']] >= 30 & risk_data[['sr_dad_bmi']] >= 25, 1, ifelse(risk_data[['parent_bmi']] < 25 & risk_data[['sr_dad_bmi']] < 25, 0, 2)), ifelse(risk_data[['sr_mom_bmi']] >= 30 & risk_data[['parent_bmi']] >= 25, 1, ifelse(risk_data[['sr_mom_bmi']] < 25 & risk_data[['parent_bmi']] < 25, 0, 2))))
+
+    # special case of no Mom so base only on dad
+    risk_score_dat[['risk_status_both']] <- ifelse(risk_score_dat[['hw_measured']] == 0, ifelse(is.na(risk_data[['sr_mom_bmi']]), ifelse(risk_data[['sr_mom_bmi']] < 25, 0, 1), risk_score_dat[['risk_status_both']]), ifelse(risk_data[[respondent]] == 'dad', ifelse(is.na(risk_data[['sr_mom_bmi']]), ifelse(risk_data[['parent_bmi']] < 25, 0, 1), risk_score_dat[['risk_status_both']]), risk_score_dat[['risk_status_both']]))
+
+    risk_score_dat[['risk_status_both']] <- sjlabelled::set_labels(risk_score_dat[['risk_status_both']], labels = c(`Low Risk` = 0, `High Risk` = 1, Neither = 2))
+    class(risk_score_dat[["risk_status_both"]]) <- c("haven_labelled", "vctrs_vctr", "double")
+
+    risk_score_dat_labels[['risk_status_both']] <- "Child risk category: Low Risk: Mom and Dad BMI < 25, High Risk: Mom BMI >=30 and Dad rounded BMI >= 25"
 
     #### 3. Clean Export/Scored Data #####
 

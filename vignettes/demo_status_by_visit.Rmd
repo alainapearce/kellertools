@@ -50,6 +50,7 @@ data_v1 <- util_fbs_merge_v1(child_file_pattern = 'Child_V1', parent_file_patter
 ```{r Table1_prep}
 
 # select variables
+## CHANGE RISK VARIABLES TO risk_status_mom / risk_status_both
 Table1_vars <- data_v1[['data']][c('age_yr', 'sex', 'risk_cat','bmi_screenout','man_recode_risk')]
 
 # convert 'haven_labelled' datatypes - your loop didn't change/update the 'Table1_vars', only the df in the dfList so that tables were not able to be created. This is where it is important that it is run fully independently/with cleared environment to ensure it works. By making your loop a function, you can apply it directly to your tables and return the changes. As we move forward, it may be a good idea to make these types of functions part of the package since they aren't super common in datasets typically needed with R.
@@ -74,6 +75,7 @@ Table1_vars <- convertHaven(Table1_vars)
 <!-- Add narrative for Table 1  -->
 ```{r Table1}
 # make Table 1
+## CHANGE RISK VARIABLE TO risk_status_mom
 
 Table1 <- 
   tbl_summary(
@@ -106,6 +108,8 @@ as_kable_extra(Table1, caption = 'Demographic Characteristics by Risk Status', f
 <!-- Add narrative for Table 2 prep -->
 ```{r Table2_Prep}
 
+## CHANGE RISK VARIABLE TO risk_status_mom
+
 #this path is specific to your laptop - we should try to create some fake/simulated data that we can rely on for examples
 data_path = '/Users/baf44/OneDrive - The Pennsylvania State University/b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'
 
@@ -124,6 +128,8 @@ Table2_vars <- convertHaven(Table2_vars)
 
 <!-- Add narrative for Table 2  -->
 ```{r Table2}
+
+## CHANGE RISK VARIABLE TO risk_status_mom
 
 Table2 <- 
   tbl_summary(
@@ -210,7 +216,7 @@ addDemo <- function(df, reference_df){
   
   return(df)
 }
-
+## CHANGE RISK VARIABLE TO risk_status_mom
 # Extract IDs and demo variables from V1 database
 V1 <- data_v1[["data"]][c('id', 'risk_cat','sex', 'dob', 'age_yr')]
 V1$visit <- "1"
@@ -240,6 +246,8 @@ V1_7 <- subset(V1_7, select = c(risk_cat, sex, age_yr, visit))
 
 <!-- Add narrative for Table 3  -->
 ```{r Table3}
+
+## CHANGE RISK VARIABLE TO risk_status_mom
 # make Table 3
 Table3 <- 
   tbl_summary(

@@ -313,7 +313,7 @@ util_fbs_merge_v2 <- function(child_file_pattern, parent_file_pattern, parentV4_
 
     #### 7. Food Intake ####
 
-    v2_kcal <- fbs_kcal_intake(v2dat_scored[c(1, 43:67)], meal = 'ps_meal', parID = 'id')
+    v2_kcal <- fbs_kcal_intake(v2dat_scored[c(1, 43:68)], meal = 'ps_meal', parID = 'id')
 
     names(v2_kcal)[7:8] <- c('total_g', 'total_kcal')
 

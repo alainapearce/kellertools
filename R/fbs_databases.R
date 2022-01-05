@@ -115,6 +115,8 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         if (sum(databases %in% database_options) != ndatabases){
             stop("Not all items listed in databases match available options. Options include: 'demo', 'anthro', 'intake', 'food_qs', 'psych_qs', 'dd', 'intero', 'notes', 'pna'.")
         }
+    } else {
+        databases <- NA
     }
 
     # check write_path
@@ -177,8 +179,8 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## Visit 6 data - need for the fMRI database
-    if (isFALSE(databases) | 'food_qs' %in% databases){
-        if (isTRUE(datapath_arg) | 'food_qs' %in% databases){
+    if (isFALSE(databases_arg) | 'food_qs' %in% databases){
+        if (isTRUE(datapath_arg)){
             v6_data <- util_fbs_merge_v6(child_file_pattern = paste0(child_fp, '_', visit_fp, '6'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '6'), data_path = data_path)
         } else {
             v6_data <- util_fbs_merge_v6(child_file_pattern = paste0(child_fp, '_', visit_fp, '6'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '6'))
@@ -201,8 +203,8 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     database_return <- list()
 
     #get cross-database variables
-    common_demo_data <- v1_data[['data']][c(1:13, 20:21, 60:64, 94:97, 123:124)]
-    common_demo_labels <- v1_data[['dict']][c(1:13, 20:21, 60:64, 94:97, 123:124)]
+    common_demo_data <- v1_data[['data']][c(1:13, 20:21, 60:64, 94:97, 122:123)]
+    common_demo_labels <- v1_data[['dict']][c(1:13, 20:21, 60:64, 94:97, 122:123)]
 
     names(common_demo_data)[2] <- 'v1_date'
     names(common_demo_labels)[2] <- 'v1_date'
@@ -211,8 +213,8 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     if (isFALSE(databases_arg) | 'demo' %in% databases){
 
         #visit 1
-        v1_demo_data <- v1_data[['data']][c(1:13, 20:21, 60:61, 63, 94:97, 123:124, 14:19, 22:59, 65:87)]
-        v1_demo_labels <- v1_data[['dict']][c(1:13, 20:21, 60:61, 63, 94:97, 123:124, 14:19, 22:59, 65:87)]
+        v1_demo_data <- v1_data[['data']][c(1:13, 20:21, 60:61, 63, 94:97, 122:123, 14:19, 22:59, 65:87)]
+        v1_demo_labels <- v1_data[['dict']][c(1:13, 20:21, 60:61, 63, 94:97, 122:123, 14:19, 22:59, 65:87)]
 
         names(v1_demo_data)[2] <- 'v1_date'
         names(v1_demo_labels)[2] <- 'v1_date'
@@ -265,7 +267,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         demographic_data = sjlabelled::set_label(demo_v1v4v5v7_data, label = matrix(unlist(demographic_labels, use.names = FALSE)))
 
         # add to list
-        database_return <- c(database_return, lsit(demo_data = demographic_data, demo_dict = demographic_labels))
+        database_return <- c(database_return, list(demo_data = demographic_data, demo_dict = demographic_labels))
 
         # write out
         if (isTRUE(write_dat)){
@@ -1037,7 +1039,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         notes_data = sjlabelled::set_label(notes_demov1v23v4v5v6v7_data, label = matrix(unlist(notes_labels, use.names = FALSE)))
 
         # add to list
-        database_return <- c(database_return, lsit(notes_data = notes_data, notes_dict = notes_labels))
+        database_return <- c(database_return, list(notes_data = notes_data, notes_dict = notes_labels))
 
         #write out
         if (isTRUE(write_dat)){

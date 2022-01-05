@@ -134,7 +134,7 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
     # ensure labels are up to date
     v1dat_org = sjlabelled::set_label(v1dat_org, label = matrix(unlist(v1dat_labels, use.names = FALSE)))
 
-    ## score puberty data ####
+    ## 5a) score puberty data ####
     pds_scored <- score_pds(pds_data = v1dat_org[c(1, 6, 18:29)], respondent = 'parent', male = 0, female = 1, parID = 'id')
 
     # get labels from scored data and simplify
@@ -149,7 +149,7 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
 
     v1dat_scored_labels <- c(v1dat_labels[1:29], pds_scored_labels[3:4], v1dat_labels[30:658])
 
-    ## score PAQ data and parent-reported sleep per day of the week ####
+    ## 5b) score PAQ data and parent-reported sleep per day of the week ####
     paq_scored <- score_paq(paq_data = v1dat_org[c(1, 115:194)], study = 'fbs', sleep = TRUE, parID = 'id')
 
     # get labels from scored data and simplify
@@ -164,19 +164,43 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
 
     v1dat_scored_labels <- c(v1dat_scored_labels[1:196], paq_scored_labels[32:54], v1dat_scored_labels[197:660])
 
-    ## get risk status
+    ## 5c) get risk status ####
     risk_scored <- score_risk(risk_data = v1dat_org[c(1, 4, 100, 113:114)], respondent = 'parent_respondent', parID = 'id')
 
     # set id = 7 to low risk - only has dad measured, no mom
-    risk_scored[risk_scored[['id']] == 7, 'risk_cat'] <- 0
+    risk_scored[risk_scored[['id']] == 7, 'risk_status_mom'] <- 0
 
     # manually exclude ('Neither' cat) for other reasons/based on older criteria
-    risk_scored[risk_scored[['id']] == 12, 'risk_cat'] <- 2
-    risk_scored[risk_scored[['id']] == 14, 'risk_cat'] <- 2
-    risk_scored[risk_scored[['id']] == 44, 'risk_cat'] <- 2
-    risk_scored[risk_scored[['id']] == 66, 'risk_cat'] <- 2
-    risk_scored[risk_scored[['id']] == 88, 'risk_cat'] <- 2
-    risk_scored[risk_scored[['id']] == 29, 'risk_cat'] <- 2
+    risk_scored[risk_scored[['id']] == 8, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 10, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 12, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 13, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 14, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 25, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 27, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 29, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 32, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 42, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 44, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 46, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 61, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 65, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 66, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 67, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 79, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 85, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 88, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 110, 'risk_status_mom'] <- 2
+
+    risk_scored[risk_scored[['id']] == 8, 'risk_status_both'] <- 2
+    risk_scored[risk_scored[['id']] == 12, 'risk_status_both'] <- 2
+    risk_scored[risk_scored[['id']] == 14, 'risk_status_both'] <- 2
+    risk_scored[risk_scored[['id']] == 25, 'risk_status_both'] <- 2
+    risk_scored[risk_scored[['id']] == 44, 'risk_status_both'] <- 2
+    risk_scored[risk_scored[['id']] == 65, 'risk_status_both'] <- 2
+    risk_scored[risk_scored[['id']] == 66, 'risk_status_both'] <- 2
+    risk_scored[risk_scored[['id']] == 88, 'risk_status_both'] <- 2
+    risk_scored[risk_scored[['id']] == 29, 'risk_status_both'] <- 2
 
     # get labels from scored data and simplify
     risk_scored_labels <- sapply(risk_scored, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
@@ -186,19 +210,11 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
 
     # merge and organize
     v1dat_scored <- merge(v1dat_scored, risk_scored, by = 'id', all = TRUE)
-    v1dat_scored <- v1dat_scored[c(1:5, 684:686, 6:683)]
+    v1dat_scored <- v1dat_scored[c(1:5, 684:687, 6:683)]
 
-    v1dat_scored_labels <- c(v1dat_scored_labels[1:5], risk_scored_labels[2:4], v1dat_scored_labels[6:683])
+    v1dat_scored_labels <- c(v1dat_scored_labels[1:5], risk_scored_labels[2:5], v1dat_scored_labels[6:683])
 
     #### 6. Add manual vars to scored data and updated labels ####
-    # create manual re-code to fit lab exceptions
-    v1dat_scored[['lab_recode_risk']] <- v1dat_scored[['risk_cat']]
-
-    v1dat_scored[v1dat_scored[['id']] == 54, 'lab_recode_risk'] <- 2
-    v1dat_scored[v1dat_scored[['id']] == 112, 'lab_recode_risk'] <- 1
-    v1dat_scored[v1dat_scored[['id']] == 113, 'lab_recode_risk'] <- 1
-
-    v1dat_scored_labels[['man_recode_risk']] <- 'Manually re-coded child risk category to match lab assigment'
 
     ## weight status
     v1dat_scored[['weight_status']] <- ifelse(v1dat_scored[['bmi_percentile']] < 5, -99, ifelse(v1dat_scored[['bmi_percentile']] < 85, 0, ifelse(v1dat_scored[['bmi_percentile']] < 95, 1, 2)))
@@ -223,8 +239,8 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
     v1dat_scored_labels[['mom_weight_status']] <- 'Mom weight status using CDC cutoffs'
 
     ## organize data
-    v1dat_scored <- v1dat_scored[c(1:8, 687, 9:95, 688, 96:120, 689:690, 121:686)]
-    v1dat_scored_labels <- v1dat_scored_labels[c(1:8, 687, 9:96, 688, 97:120, 689:690, 121:686)]
+    v1dat_scored <- v1dat_scored[c(1:96, 688, 97:120, 689:690, 121:687)]
+    v1dat_scored_labels <- v1dat_scored_labels[c(1:96, 688, 97:120, 689:690, 121:687)]
 
     #### 7. Food Intake ####
 
