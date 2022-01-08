@@ -75,7 +75,7 @@ score_audit <- function(audit_data, parID) {
 
     audit_score_dat[["audit_cat"]] <- ifelse(is.na(audit_score_dat[["audit_total"]]), NA, ifelse(audit_score_dat[["audit_total"]] >=8, 1, 0))
 
-    audit_score_dat[["audit_cat"]] <- sjlabelled::add_labels(audit_score_dat[["audit_total"]], labels = c(`Not Harmful Consumption` = 0, `Likely Harmful Consumption` = 1))
+    audit_score_dat[["audit_cat"]] <- sjlabelled::add_labels(audit_score_dat[["audit_cat"]], labels = c(`Not Harmful Consumption` = 0, `Likely Harmful Consumption` = 1))
     class(audit_score_dat[["audit_cat"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     ## add labels to data

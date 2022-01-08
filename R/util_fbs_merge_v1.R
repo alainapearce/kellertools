@@ -184,6 +184,7 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
     risk_scored[risk_scored[['id']] == 44, 'risk_status_mom'] <- 2
     risk_scored[risk_scored[['id']] == 46, 'risk_status_mom'] <- 2
     risk_scored[risk_scored[['id']] == 61, 'risk_status_mom'] <- 2
+    risk_scored[risk_scored[['id']] == 62, 'risk_status_mom'] <- 2
     risk_scored[risk_scored[['id']] == 65, 'risk_status_mom'] <- 2
     risk_scored[risk_scored[['id']] == 66, 'risk_status_mom'] <- 2
     risk_scored[risk_scored[['id']] == 67, 'risk_status_mom'] <- 2
@@ -196,11 +197,13 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
     risk_scored[risk_scored[['id']] == 12, 'risk_status_both'] <- 2
     risk_scored[risk_scored[['id']] == 14, 'risk_status_both'] <- 2
     risk_scored[risk_scored[['id']] == 25, 'risk_status_both'] <- 2
+    risk_scored[risk_scored[['id']] == 29, 'risk_status_both'] <- 2
     risk_scored[risk_scored[['id']] == 44, 'risk_status_both'] <- 2
+    risk_scored[risk_scored[['id']] == 62, 'risk_status_both'] <- 2
     risk_scored[risk_scored[['id']] == 65, 'risk_status_both'] <- 2
     risk_scored[risk_scored[['id']] == 66, 'risk_status_both'] <- 2
     risk_scored[risk_scored[['id']] == 88, 'risk_status_both'] <- 2
-    risk_scored[risk_scored[['id']] == 29, 'risk_status_both'] <- 2
+
 
     # get labels from scored data and simplify
     risk_scored_labels <- sapply(risk_scored, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)

@@ -438,8 +438,7 @@ util_fbs_parent_v7dat_home <- function(file_pattern, data_path) {
             names(qv7_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar,
-                                                                    ": ", qv7_parent_clean_labels[[pvar]])
+            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar, ": ", qv7_parent_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
             qv7_parent_clean_labels[[pvar]] <- paste0(qv7_parent_clean_labels[[pvar]], " -- ", pna_label)
@@ -450,7 +449,7 @@ util_fbs_parent_v7dat_home <- function(file_pattern, data_path) {
     }
 
     ## 6d) categorical variables with 99's data ####
-    level99_issue_catvars <- names(qv7_parent_clean)[c(3, 98, 122:123, 125:126, 128, 130:131, 133:134, 136:138, 149, 151, 156:164, 166, 168:169, 212:221, 235, 241, 247, 253, 259, 265, 271, 277, 283, 289, 295, 301, 307, 313, 319, 325, 331, 337, 343, 349, 355, 361, 367, 372:506)]
+    level99_issue_catvars <- names(qv7_parent_clean)[c(3, 98, 122:123, 125:126, 128, 130:131, 133:134, 136:148, 149, 151, 156:164, 166, 168:169, 212:221, 235, 241, 247, 253, 259, 265, 271, 277, 283, 289, 295, 301, 307, 313, 319, 325, 331, 337, 343, 349, 355, 361, 367, 372:506)]
 
     for (v in 1:length(level99_issue_catvars)) {
         # get variable name
@@ -524,7 +523,9 @@ util_fbs_parent_v7dat_home <- function(file_pattern, data_path) {
                                                61, NA, as.numeric(qv7_parent_clean[[pvar]]))
     }
 
-    #### 7) reformatting dates/times #### 7a) dates (start, dobs) ####
+    #### 7) reformatting dates/times ####
+
+    ## 7a) dates (start, dobs) ####
     qv7_parent_clean[["start_date"]] <- lubridate::ymd(as.Date(qv7_parent_clean[["start_date"]]))
     qv7_parent_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 

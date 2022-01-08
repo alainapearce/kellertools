@@ -419,7 +419,7 @@ util_fbs_parent_v7dat <- function(file_pattern, data_path) {
     }
 
     ## 6d) categorical variables with 99's data ####
-    level99_issue_catvars <- names(qv7_parent_clean)[c(3, 98, 129:130, 132:133, 135, 137:138, 140:141, 143:145, 156, 158, 160, 163, 170:171, 173, 175:176, 219:228, 242, 248, 254, 260, 266, 272, 278, 284, 290, 296, 302, 308, 314, 320, 326, 332, 338, 344, 350, 356, 362, 368, 374, 379:513)]
+    level99_issue_catvars <- names(qv7_parent_clean)[c(3, 98, 129:130, 132:133, 135, 137:138, 140:141, 143:155, 156, 158, 160, 163, 170:171, 173, 175:176, 219:228, 242, 248, 254, 260, 266, 272, 278, 284, 290, 296, 302, 308, 314, 320, 326, 332, 338, 344, 350, 356, 362, 368, 374, 379:513)]
 
     for (v in 1:length(level99_issue_catvars)) {
         # get variable name
@@ -494,7 +494,9 @@ util_fbs_parent_v7dat <- function(file_pattern, data_path) {
         qv7_parent_clean[[pvar]] <- ifelse(is.na(qv7_parent_clean[[pvar]]) | qv7_parent_clean[[pvar]] == 99 | qv7_parent_clean[[pvar]] == 61, NA, as.numeric(qv7_parent_clean[[pvar]]))
     }
 
-    #### 7) reformatting dates/times #### 7a) dates (start, dobs) ####
+    #### 7) reformatting dates/times ####
+
+    ## 7a) dates (start, dobs) ####
     qv7_parent_clean[["start_date"]] <- lubridate::ymd(as.Date(qv7_parent_clean[["start_date"]]))
     qv7_parent_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 

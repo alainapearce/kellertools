@@ -209,19 +209,22 @@ score_pds <- function(pds_data, respondent, male = 0, female = 1, parID) {
 
     pds_data_edits[["pds_tanner_cat"]] <- ifelse(is.na(pds_data_edits[["pds_tanner_sum"]]),
         NA, ifelse(pds_data_edits[["sex"]] == 0, ifelse(pds_data_edits[["pds_tanner_sum"]] ==
-            12, "Postpubertal", ifelse(pds_data_edits[["pds_tanner_sum"]] >= 9,
-            "Late Pubertal", ifelse(pds_data_edits[["pds_tanner_sum"]] >= 6, ifelse(pds_data_edits["pds_2"] <
+            12, 5, ifelse(pds_data_edits[["pds_tanner_sum"]] >= 9,
+            4, ifelse(pds_data_edits[["pds_tanner_sum"]] >= 6, ifelse(pds_data_edits["pds_2"] <
                 4 & pds_data_edits["pds_4m"] < 4 & pds_data_edits["pds_5m"] <
-                4, "Mid-Pubertal", "Late Pubertal"), ifelse(pds_data_edits[["pds_tanner_sum"]] >=
+                4, 3, 4), ifelse(pds_data_edits[["pds_tanner_sum"]] >=
                 4, ifelse(pds_data_edits["pds_2"] < 3 & pds_data_edits["pds_4m"] <
-                3 & pds_data_edits["pds_5m"] < 3, "Early Pubertal", "Mid-Pubertal"),
-                "Prepubertal")))), ifelse(pds_data_edits[["pds_5fa"]] == 4, ifelse(pds_data_edits[["pds_tanner_sum"]] ==
-            8, "Postpubertal", ifelse(pds_data_edits[["pds_tanner_sum"]] <= 7,
-            "Late Pubertal", NA)), ifelse(pds_data_edits[["pds_tanner_sum"]] >
-            3, "Mid-Pubertal", ifelse(pds_data_edits[["pds_tanner_sum"]] == 3,
-            "Early Pubertal", ifelse(pds_data_edits[["pds_tanner_sum"]] == 2,
-                "Prepubertal", NA))))))
+                3 & pds_data_edits["pds_5m"] < 3, 2, 3),
+                1)))), ifelse(pds_data_edits[["pds_5fa"]] == 4, ifelse(pds_data_edits[["pds_tanner_sum"]] ==
+            8, 5, ifelse(pds_data_edits[["pds_tanner_sum"]] <= 7,
+            4, NA)), ifelse(pds_data_edits[["pds_tanner_sum"]] >
+            3, 3, ifelse(pds_data_edits[["pds_tanner_sum"]] == 3,
+            2, ifelse(pds_data_edits[["pds_tanner_sum"]] == 2,
+                1, NA))))))
 
+    ## add attributes to for tanner category to data
+    pds_data_edits[["pds_tanner_cat"]] <- sjlabelled::add_labels(pds_data_edits[["pds_tanner_cat"]], labels = c(`Prepubertal` = 1, `Early Puberty` = 2, `Mid-Puberty` = 3, `Late Puberty` = 4,  `Postpubertal` = 5))
+    class(pds_data_edits[["pds_tanner_cat"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     #### 3. Clean Export/Scored Data #####
 
@@ -234,22 +237,14 @@ score_pds <- function(pds_data, respondent, male = 0, female = 1, parID) {
             pds_tanner_cat = pds_data_edits[["pds_tanner_cat"]])
     }
 
-    # set up labels for pds_score_dat
-    pds_score_dat_labels <- lapply(pds_score_dat, function(x) attributes(x)$label)
-
     if (isTRUE(ID_arg)) {
-        pds_score_dat_labels[["id"]] <- "Participant ID"
+        pds_score_dat_labels <- list(id = "Participant ID")
     }
 
     pds_score_dat_labels[["sex"]] <- "Child sex coded as male = 0, female = 1"
     pds_score_dat_labels[["pds_score"]] <- "Pubertal Development Scale score: average of all responses for each sex with menarche yes = 4 points and menarche no = 1 point"
-    pds_score_dat_labels[["pds_tanner"]] <- "Tanner equivaluent category"
+    pds_score_dat_labels[["pds_tanner_cat"]] <- "Tanner equivaluent category"
 
-    ## add attributes to for tanner category to data
-    pds_score_dat[["pds_tanner_cat"]] <- sjlabelled::add_labels(pds_score_dat[["pds_tanner_cat"]], labels = c(`Prepubertal` = 1, `Early Puberty` = 2, `Mid-Puberty` = 3, `Late Puberty` = 4,  `Postpubertal` = 5))
-    pds_score_dat[["pds_tanner_cat"]] <- sjlabelled::as_numeric(pds_score_dat[["pds_tanner_cat"]])
-    pds_score_dat[["pds_tanner_cat"]] <- sjlabelled::set_labels(pds_score_dat[["pds_tanner_cat"]], labels = c(`Prepubertal` = 1, `Early Puberty` = 2, `Mid-Puberty` = 3, `Late Puberty` = 4,  `Postpubertal` = 5))
-    class(pds_score_dat[["pds_tanner_cat"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     ## set names based on respondent
     if (respondent == "child") {

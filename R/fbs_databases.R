@@ -141,7 +141,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
 
     ## Visit 2 - need for Anthroprometrics, food/eating behavior, and cog/psych databases
     # requires the V4 parent database so check both v2_datestr_arg and v4_datestr_arg
-    if (isFALSE(databases_arg) | 'anthro' %in% databases | 'food_qs' %in% databases | 'psych_qs' %in% databases | 'intake' %in% databases){
+    if (isFALSE(databases_arg) | 'anthro' %in% databases | 'food_qs' %in% databases | 'psych_qs' %in% databases | 'intake' %in% databases | 'notes' %in% databases | 'pna' %in% databases){
 
         if (isTRUE(datapath_arg)){
             v2_data <- util_fbs_merge_v2(child_file_pattern = paste0(child_fp, '_', visit_fp, '2'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '2'), parentV4_file_pattern = paste0(parent_fp, '_', visit_fp, '4'), data_path = data_path)
@@ -151,7 +151,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## Visit 3 data - need for the food/eating behavior, cog/psych, and delay discounting databases
-    if (isFALSE(databases_arg) | 'food_qs' %in% databases | 'psych_qs' %in% databases | 'dd' %in% databases | 'intake' %in% databases){
+    if (isFALSE(databases_arg) | 'food_qs' %in% databases | 'psych_qs' %in% databases | 'dd' %in% databases | 'intake' %in% databases | 'notes' %in% databases | 'pna' %in% databases){
 
         if (isTRUE(datapath_arg)){
             v3_data <- util_fbs_merge_v3(child_file_pattern = paste0(child_fp, '_', visit_fp, '3'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '3'), data_path = data_path, model_DD = model_DD)
@@ -161,7 +161,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## Visit 4 data - need for the demographics, food/eating behavior, and cog/psych databases
-    if (isFALSE(databases_arg) | 'demo' %in% databases | 'food_qs' %in% databases | 'psych_qs' %in% databases | 'intake' %in% databases){
+    if (isFALSE(databases_arg) | 'demo' %in% databases | 'food_qs' %in% databases | 'psych_qs' %in% databases | 'intake' %in% databases | 'notes' %in% databases | 'pna' %in% databases){
         if (isTRUE(datapath_arg)){
             v4_data <- util_fbs_merge_v4(child_file_pattern = paste0(child_fp, '_', visit_fp, '4'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '4'), data_path = data_path)
         } else {
@@ -170,7 +170,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## Visit 5 data - need for the demographics database
-    if (isFALSE(databases_arg) | 'demo' %in% databases | 'intake' %in% databases){
+    if (isFALSE(databases_arg) | 'demo' %in% databases | 'intake' %in% databases | 'notes' %in% databases | 'pna' %in% databases){
         if (isTRUE(datapath_arg)){
             v5_data <- util_fbs_merge_v5(child_file_pattern = paste0(child_fp, '_', visit_fp, '5'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '5'), data_path = data_path)
         } else {
@@ -179,7 +179,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## Visit 6 data - need for the fMRI database
-    if (isFALSE(databases_arg) | 'food_qs' %in% databases){
+    if (isFALSE(databases_arg) | 'food_qs' %in% databases | 'notes' %in% databases | 'pna' %in% databases){
         if (isTRUE(datapath_arg)){
             v6_data <- util_fbs_merge_v6(child_file_pattern = paste0(child_fp, '_', visit_fp, '6'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '6'), data_path = data_path)
         } else {
@@ -188,7 +188,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## Visit 7 data - need for the demographics, anthroprometrics, food/eating behavior, and cog/psych databases
-    if (isFALSE(databases_arg) | 'demo' %in% databases | 'anthro' %in% databases | 'food_qs' %in% databases | 'psych_qs' %in% databases | 'intake' %in% databases){
+    if (isFALSE(databases_arg) | 'demo' %in% databases | 'anthro' %in% databases | 'food_qs' %in% databases | 'psych_qs' %in% databases | 'intake' %in% databases | 'notes' %in% databases | 'pna' %in% databases){
         if (isTRUE(datapath_arg)){
             v7_data <- util_fbs_merge_v7(child_file_pattern = paste0(child_fp, '_', visit_fp, '7'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '7'), data_path = data_path)
         } else {
@@ -254,11 +254,43 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         #make names match
         names(v7_demo_labels) <- names(v7_demo_data)
 
-        ## merge databases - set all.x = FALSE so only get the participants with data at later visits/have not been screened out
-        demo_v1v4_data <- merge(v1_demo_data, v4_demo_data, by = 'id', all.x = FALSE, all.y = TRUE)
-        ## other merges - set all = TRUE so get all participants in visits 2-7
+        ## merge databases
+
+        #weird issue - couldn't rbind due to some `labels` to logical issue - brute force fix
+        set_attr_hfssm_hh2 <- attributes(v4_demo_data[['hfssm_hh2']])
+        set_attr_hfssm_hh3 <- attributes(v4_demo_data[['hfssm_hh3']])
+        set_attr_hfssm_hh4 <- attributes(v4_demo_data[['hfssm_hh4']])
+        set_attr_hfssm_ch1 <- attributes(v4_demo_data[['hfssm_ch1']])
+        set_attr_hfssm_ch2 <- attributes(v4_demo_data[['hfssm_ch2']])
+        set_attr_hfssm_ch3 <- attributes(v4_demo_data[['hfssm_ch3']])
+        set_attr_hfssm_ch5a <- attributes(v4_demo_data[['hfssm_ch5a']])
+        set_attr_hfias_category <- attributes(v4_demo_data[['hfias_category']])
+
+        v4_demo_data[c(5:7, 15:17, 20, 50)] <- sapply(v4_demo_data[c(5:7, 15:17, 20, 50)], as.numeric)
+
+
+        demo_v1v4_data <- merge(v1_demo_data, v4_demo_data, by = 'id', all = TRUE)
         demo_v1v4v5_data <- merge(demo_v1v4_data, v5_demo_data, by = 'id', all = TRUE)
         demo_v1v4v5v7_data <- merge(demo_v1v4v5_data, v7_demo_data, by = 'id', all = TRUE)
+
+        #reset labels due to brute force fix
+        attributes(demo_v1v4v5v7_data[['hfssm_hh2']]) <- set_attr_hfssm_hh2
+        attributes(demo_v1v4v5v7_data[['hfssm_hh3']]) <- set_attr_hfssm_hh3
+        attributes(demo_v1v4v5v7_data[['hfssm_hh4']]) <- set_attr_hfssm_hh4
+        attributes(demo_v1v4v5v7_data[['hfssm_ch1']]) <- set_attr_hfssm_ch1
+        attributes(demo_v1v4v5v7_data[['hfssm_ch2']]) <- set_attr_hfssm_ch2
+        attributes(demo_v1v4v5v7_data[['hfssm_ch3']]) <- set_attr_hfssm_ch3
+        attributes(demo_v1v4v5v7_data[['hfssm_ch5a']]) <- set_attr_hfssm_ch5a
+        attributes(demo_v1v4v5v7_data[['hfias_category']]) <- set_attr_hfias_category
+
+        class(demo_v1v4v5v7_data[["hfssm_hh2"]]) <- c("haven_labelled", "vctrs_vctr", "double")
+        class(demo_v1v4v5v7_data[["hfssm_hh3"]]) <- c("haven_labelled", "vctrs_vctr", "double")
+        class(demo_v1v4v5v7_data[["hfssm_hh4"]]) <- c("haven_labelled", "vctrs_vctr", "double")
+        class(demo_v1v4v5v7_data[["hfssm_ch1"]]) <- c("haven_labelled", "vctrs_vctr", "double")
+        class(demo_v1v4v5v7_data[["hfssm_ch2"]]) <- c("haven_labelled", "vctrs_vctr", "double")
+        class(demo_v1v4v5v7_data[["hfssm_ch3"]]) <- c("haven_labelled", "vctrs_vctr", "double")
+        class(demo_v1v4v5v7_data[["hfssm_ch5a"]]) <- c("haven_labelled", "vctrs_vctr", "double")
+        class(demo_v1v4v5v7_data[["hfias_category"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
         #get labels
         demographic_labels <- c(v1_demo_labels, v4_demo_labels[2:length(v4_demo_labels)], v5_demo_labels[2:length(v5_demo_labels)], v7_demo_labels[2:length(v7_demo_labels)])
@@ -281,11 +313,11 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
             demo_dict_write <- sapply(demo_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
 
             if (isTRUE(writepath_arg)){
-                haven::write_sav(demographic_data, path = paste0(write_path, 'Demographics.sav'))
-                write.csv(demo_dict_write, file = paste0(write_path, 'Demographics_Dictionnary.csv'), row.names = FALSE)
+                haven::write_sav(demographic_data, path = paste0(write_path, 'demographics_data.sav'))
+                write.csv(demo_dict_write, file = paste0(write_path, 'dict-demographics_data.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(demographic_data, path = 'Demographics.sav')
-                write.csv(demo_dict_write, file = 'Demographics_Dictionnary.csv', row.names = FALSE)
+                haven::write_sav(demographic_data, path = 'demographics_data.sav')
+                write.csv(demo_dict_write, file = 'dict-demographics_data.csv', row.names = FALSE)
             }
         }
     }
@@ -355,11 +387,11 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
             antho_dict_write <- sapply(antho_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
 
             if (isTRUE(writepath_arg)){
-                haven::write_sav(anthroprometric_data, path = paste0(write_path, 'Anthroprometrics.sav'))
-                write.csv(antho_dict_write, file = paste0(write_path, 'Anthroprometrics_Dictionnary.csv'), row.names = FALSE)
+                haven::write_sav(anthroprometric_data, path = paste0(write_path, 'anthro_data.sav'))
+                write.csv(antho_dict_write, file = paste0(write_path, 'dict-anthro_data.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(anthographic_data, path = 'Anthroprometrics.sav')
-                write.csv(antho_dict_write, file = 'Anthroprometrics_Dictionnary.csv', row.names = FALSE)
+                haven::write_sav(anthographic_data, path = 'anthro_data.sav')
+                write.csv(antho_dict_write, file = 'dict_anthro_data.csv', row.names = FALSE)
             }
         }
 
@@ -587,11 +619,11 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
             intake_dict_write <- sapply(intake_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
 
             if (isTRUE(writepath_arg)){
-                haven::write_sav(intake_data, path = paste0(write_path, 'IntakeData.sav'))
-                write.csv(intake_dict_write, file = paste0(write_path, 'IntakeData_Dictionnary.csv'), row.names = FALSE)
+                haven::write_sav(intake_data, path = paste0(write_path, 'intake_data.sav'))
+                write.csv(intake_dict_write, file = paste0(write_path, 'dict-intake_data.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(intake_data, path = 'IntakeData.sav')
-                write.csv(intake_dict_write, file = 'IntakeData_Dictionnary.csv', row.names = FALSE)
+                haven::write_sav(intake_data, path = 'intake_data.sav')
+                write.csv(intake_dict_write, file = 'dict-intake_data.csv', row.names = FALSE)
             }
         }
     }
@@ -693,11 +725,11 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
             foodqs_dict_write <- sapply(foodqs_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
 
             if (isTRUE(writepath_arg)){
-                haven::write_sav(foodqs_data, path = paste0(write_path, 'EatingBehaviorQs.sav'))
-                write.csv(foodqs_dict_write, file = paste0(write_path, 'EatingBehaviorQs_Dictionnary.csv'), row.names = FALSE)
+                haven::write_sav(foodqs_data, path = paste0(write_path, 'qs_eat_beh.sav'))
+                write.csv(foodqs_dict_write, file = paste0(write_path, 'dict-qs_eat_beh.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(foodqs_data, path = 'EatingBehaviorQs.sav')
-                write.csv(foodqs_dict_write, file = 'EatingBehaviorQs_Dictionnary.csv', row.names = FALSE)
+                haven::write_sav(foodqs_data, path = 'qs_eat_beh.sav')
+                write.csv(foodqs_dict_write, file = 'dict-qs_eat_beh.csv', row.names = FALSE)
             }
         }
     }
@@ -776,11 +808,11 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
             psychqs_dict_write <- sapply(psychqs_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
 
             if (isTRUE(writepath_arg)){
-                haven::write_sav(psychqs_data, path = paste0(write_path, 'CogPsychSocialQs.sav'))
-                write.csv(psychqs_dict_write, file = paste0(write_path, 'CogPsychSocialQs_Dictionnary.csv'), row.names = FALSE)
+                haven::write_sav(psychqs_data, path = paste0(write_path, 'qs_cog_psych_soc.sav'))
+                write.csv(psychqs_dict_write, file = paste0(write_path, 'dict-qs_cog_psych_soc.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(psychqs_data, path = 'CogPsychSocialQs.sav')
-                write.csv(psychqs_dict_write, file = 'CogPsychSocialQs.csv', row.names = FALSE)
+                haven::write_sav(psychqs_data, path = 'qs_cog_psych_soc.sav')
+                write.csv(psychqs_dict_write, file = 'dict-qs_cog_psych_soc.csv', row.names = FALSE)
             }
         }
     }
@@ -819,11 +851,11 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
             dd_dict_write <- sapply(dd_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
 
             if (isTRUE(writepath_arg)){
-                haven::write_sav(dd_data, path = paste0(write_path, 'DelayDiscounting.sav'))
-                write.csv(dd_dict_write, file = paste0(write_path, 'DelayDiscounting_Dictionnary.csv'), row.names = FALSE)
+                haven::write_sav(dd_data, path = paste0(write_path, 'delay_discounting.sav'))
+                write.csv(dd_dict_write, file = paste0(write_path, 'dict-delay_discounting.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(dd_data, path = 'DelayDiscounting.sav')
-                write.csv(dd_dict_write, file = 'DelayDiscounting.csv', row.names = FALSE)
+                haven::write_sav(dd_data, path = 'delay_discounting.sav')
+                write.csv(dd_dict_write, file = 'dict_delay_discounting.csv', row.names = FALSE)
             }
         }
     }
@@ -861,12 +893,12 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
             #interprets the value_labels as list so need to make everything a character
             intero_dict_write <- sapply(intero_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
 
-            if (isTRUE(writepath_arg)){
-                haven::write_sav(intero_data, path = paste0(write_path, 'Interoception.sav'))
-                write.csv(intero_dict_write, file = paste0(write_path, 'Interoception_Dictionnary.csv'), row.names = FALSE)
+                if (isTRUE(writepath_arg)){
+                haven::write_sav(intero_data, path = paste0(write_path, 'intero_data.sav'))
+                write.csv(intero_dict_write, file = paste0(write_path, 'dict-intero_data.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(intero_data, path = 'Interoception.sav')
-                write.csv(intero_dict_write, file = 'Interoception.csv', row.names = FALSE)
+                haven::write_sav(intero_data, path = 'intero_data.sav')
+                write.csv(intero_dict_write, file = 'dict-intero_data.csv', row.names = FALSE)
             }
         }
     }
@@ -1053,11 +1085,11 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
             notes_dict_write <- sapply(notes_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
 
             if (isTRUE(writepath_arg)){
-                haven::write_sav(notes_data, path = paste0(write_path, 'VisitNotes.sav'))
-                write.csv(notes_dict_write, file = paste0(write_path, 'VisitNotes_Dictionnary.csv'), row.names = FALSE)
+                haven::write_sav(notes_data, path = paste0(write_path, 'visit_notes.sav'))
+                write.csv(notes_dict_write, file = paste0(write_path, 'dict-visit_notes.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(notes_data, path = 'VisitNotes.sav')
-                write.csv(notes_dict_write, file = 'VisitNotes.csv', row.names = FALSE)
+                haven::write_sav(notes_data, path = 'visit_notes.sav')
+                write.csv(notes_dict_write, file = 'dict-visit_notes.csv', row.names = FALSE)
             }
         }
     }
@@ -1196,11 +1228,11 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
             pna_dict_write <- sapply(pna_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
 
             if (isTRUE(writepath_arg)){
-                haven::write_sav(pna_data, path = paste0(write_path, 'PNA.sav'))
-                write.csv(pna_dict_write, file = paste0(write_path, 'PNA_Dictionnary.csv'), row.names = FALSE)
+                haven::write_sav(pna_data, path = paste0(write_path, 'pna_notes.sav'))
+                write.csv(pna_dict_write, file = paste0(write_path, 'dict-pna_notes.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(pna_data, path = 'PNA.sav')
-                write.csv(pna_dict_write, file = 'PNA_Dictionnary.csv', row.names = FALSE)
+                haven::write_sav(pna_data, path = 'pna_notes.sav')
+                write.csv(pna_dict_write, file = 'dict-pna_notes.csv', row.names = FALSE)
             }
         }
     }

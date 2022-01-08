@@ -140,11 +140,11 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
             visit1_dict_write <- sapply(visit1_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
 
             if (isTRUE(writepath_arg)){
-                haven::write_sav(visit1_data, path = paste0(write_path, 'Visit1_Data.sav'))
-                write.csv(visit1_dict_write, file = paste0(write_path, 'Visit1_Dictionnary.csv'), row.names = FALSE)
+                haven::write_sav(visit1_data, path = paste0(write_path, 'visit1_data.sav'))
+                write.csv(visit1_dict_write, file = paste0(write_path, 'dict-visit1_data.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(intake_data, path = 'Visit1_Data.sav')
-                write.csv(intake_dict_write, file = 'Visit1_Dictionnary.csv', row.names = FALSE)
+                haven::write_sav(intake_data, path = 'visit1_data.sav')
+                write.csv(intake_dict_write, file = 'dict-visit1_data.csv', row.names = FALSE)
             }
         }
     }
@@ -181,11 +181,11 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
             visit2_dict_write <- sapply(visit2_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
 
             if (isTRUE(writepath_arg)){
-                haven::write_sav(visit2_data, path = paste0(write_path, 'Visit2_Data.sav'))
-                write.csv(visit2_dict_write, file = paste0(write_path, 'Visit2_Dictionnary.csv'), row.names = FALSE)
+                haven::write_sav(visit2_data, path = paste0(write_path, 'visit2_data.sav'))
+                write.csv(visit2_dict_write, file = paste0(write_path, 'dict-visit2_data.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(intake_data, path = 'Visit2_Data.sav')
-                write.csv(intake_dict_write, file = 'Visit2_Dictionnary.csv', row.names = FALSE)
+                haven::write_sav(intake_data, path = 'visit2_data.sav')
+                write.csv(intake_dict_write, file = 'dict-visit2_data.csv', row.names = FALSE)
             }
         }
     }
@@ -221,11 +221,11 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
             visit3_dict_write <- sapply(visit3_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
 
             if (isTRUE(writepath_arg)){
-                haven::write_sav(visit3_data, path = paste0(write_path, 'Visit3_Data.sav'))
-                write.csv(visit3_dict_write, file = paste0(write_path, 'Visit3_Dictionnary.csv'), row.names = FALSE)
+                haven::write_sav(visit3_data, path = paste0(write_path, 'visit3_data.sav'))
+                write.csv(visit3_dict_write, file = paste0(write_path, 'dict-visit3_data.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(intake_data, path = 'Visit3_Data.sav')
-                write.csv(intake_dict_write, file = 'Visit3_Dictionnary.csv', row.names = FALSE)
+                haven::write_sav(intake_data, path = 'visit3_data.sav')
+                write.csv(intake_dict_write, file = 'dict-visit3_data.csv', row.names = FALSE)
             }
         }
     }
@@ -260,11 +260,11 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
             visit4_dict_write <- sapply(visit4_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
 
             if (isTRUE(writepath_arg)){
-                haven::write_sav(visit4_data, path = paste0(write_path, 'Visit4_Data.sav'))
-                write.csv(visit4_dict_write, file = paste0(write_path, 'Visit4_Dictionnary.csv'), row.names = FALSE)
+                haven::write_sav(visit4_data, path = paste0(write_path, 'visit4_data.sav'))
+                write.csv(visit4_dict_write, file = paste0(write_path, 'dict-visit4_data.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(intake_data, path = 'Visit4_Data.sav')
-                write.csv(intake_dict_write, file = 'Visit4_Dictionnary.csv', row.names = FALSE)
+                haven::write_sav(intake_data, path = 'visit4_data.sav')
+                write.csv(intake_dict_write, file = 'dict-visit4_data.csv', row.names = FALSE)
             }
         }
     }
@@ -299,11 +299,11 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
             visit5_dict_write <- sapply(visit5_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
 
             if (isTRUE(writepath_arg)){
-                haven::write_sav(visit5_data, path = paste0(write_path, 'Visit5_Data.sav'))
-                write.csv(visit5_dict_write, file = paste0(write_path, 'Visit5_Dictionnary.csv'), row.names = FALSE)
+                haven::write_sav(visit5_data, path = paste0(write_path, 'visit5_data.sav'))
+                write.csv(visit5_dict_write, file = paste0(write_path, 'dict-visit5_data.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(intake_data, path = 'Visit5_Data.sav')
-                write.csv(intake_dict_write, file = 'Visit5_Dictionnary.csv', row.names = FALSE)
+                haven::write_sav(intake_data, path = 'visit5_data.sav')
+                write.csv(intake_dict_write, file = 'dict-visit5_data.csv', row.names = FALSE)
             }
         }
     }
@@ -338,11 +338,11 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
             visit6_dict_write <- sapply(visit6_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
 
             if (isTRUE(writepath_arg)){
-                haven::write_sav(visit6_data, path = paste0(write_path, 'Visit6_Data.sav'))
-                write.csv(visit6_dict_write, file = paste0(write_path, 'Visit6_Dictionnary.csv'), row.names = FALSE)
+                haven::write_sav(visit6_data, path = paste0(write_path, 'visit6_data.sav'))
+                write.csv(visit6_dict_write, file = paste0(write_path, 'dict-visit6_data.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(intake_data, path = 'Visit6_Data.sav')
-                write.csv(intake_dict_write, file = 'Visit6_Dictionnary.csv', row.names = FALSE)
+                haven::write_sav(intake_data, path = 'visit6_data.sav')
+                write.csv(intake_dict_write, file = 'dict-visit6_data.csv', row.names = FALSE)
             }
         }
     }
@@ -393,11 +393,11 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
             visit7_dict_write <- sapply(visit7_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
 
             if (isTRUE(writepath_arg)){
-                haven::write_sav(visit7_data, path = paste0(write_path, 'Visit7_Data.sav'))
-                write.csv(visit7_dict_write, file = paste0(write_path, 'Visit7_Dictionnary.csv'), row.names = FALSE)
+                haven::write_sav(visit7_data, path = paste0(write_path, 'visit7_data.sav'))
+                write.csv(visit7_dict_write, file = paste0(write_path, 'dict-visit7_data.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(intake_data, path = 'Visit7_Data.sav')
-                write.csv(intake_dict_write, file = 'Visit7_Dictionnary.csv', row.names = FALSE)
+                haven::write_sav(intake_data, path = 'visit7_data.sav')
+                write.csv(intake_dict_write, file = 'dict-visit7_data.csv', row.names = FALSE)
             }
         }
     }
