@@ -26,7 +26,7 @@
 #' \dontrun{
 #' }
 #'
-#' @seealso Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_child_v4dat}} and \code{\link{qualtrics_child_v4dat_home}}
+#' @seealso Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_child_v4dat}} and \code{\link{util_fbs_child_v4dat_home}}
 #'
 #'
 #' @export

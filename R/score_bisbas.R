@@ -29,7 +29,7 @@
 #' \dontrun{
 #' }
 #'
-#' @seealso Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v3dat}}
+#' @seealso Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_parent_v3dat}}
 #'
 #'
 #' @export
@@ -112,11 +112,9 @@ score_bisbas <- function(bisbas_data, parID) {
 
     # BAS
     bisbas_score_dat[["bas"]] <- rowMeans(bisbas_data[c(funseek_vars, drive_vars, reward_vars)])
-    ## add labels to data
-    bisbas_score_dat_labels[["bas"]] <- "BIS/BAS BAS Total Score"
 
     ## add labels to data
-    bisbas_score_dat_labels[["bas_rewardresp"]] <- "BIS/BAS BAS Total Score"
+    bisbas_score_dat_labels[["bas"]] <- "BIS/BAS BAS Total Score"
 
     #### 3. Clean Export/Scored Data #####
 

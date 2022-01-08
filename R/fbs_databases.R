@@ -735,7 +735,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## 3e) Cognitive and Psychosocial Questionnaires/Measures ####
-    if (isFALSE(databases_arg) | 'psych_q' %in% databases){
+    if (isFALSE(databases_arg) | 'psych_qs' %in% databases){
 
         #visit 2
         v2_psychqs_data <- v2_data[['data']][c(1:2, 300:458)]

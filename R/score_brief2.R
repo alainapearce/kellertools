@@ -49,7 +49,7 @@
 #'
 #' }
 #'
-#' @seealso Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v4dat}}. Normed values were be identified using \code{\link{ref_brief2_lookup}} but could also be done through \code{\link{ref_lookup_fm}}
+#' @seealso Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_parent_v4dat}}, \code{\link{util_fbs_parent_v7dat}} and \code{\link{util_fbs_parent_v7dat}}. Normed values were be identified using \code{\link{ref_brief2_lookup}} but could also be done through \code{\link{ref_lookup_fm}}
 #'
 #'
 #' @export
@@ -166,9 +166,9 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     brief_score_dat[["brief2_inhibit_p"]] <- inhib_scores[['p']]
 
     ## add labels to data
-    brief_score_dat_labels[["brief2_inhibit"]] <- "BRIEF2 brief2_inhibit Raw Score"
-    brief_score_dat_labels[["brief2_inhibit_t"]] <- "BRIEF2 brief2_inhibit T-Score"
-    brief_score_dat_labels[["brief2_inhibit_p"]] <- "BRIEF2 brief2_inhibit Percentile"
+    brief_score_dat_labels[["brief2_inhibit"]] <- "BRIEF2 Inhibition Raw Score"
+    brief_score_dat_labels[["brief2_inhibit_t"]] <- "BRIEF2 Inhibition T-Score"
+    brief_score_dat_labels[["brief2_inhibit_p"]] <- "BRIEF2 Inhibition Percentile"
 
     # Self-Monitoring
     brief2_selfmon_vars <- c("brief4", "brief13", "brief20", "brief26")
@@ -395,8 +395,14 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     neg_scores <- as.data.frame(matrix(unlist(neg_scores_list), byrow = TRUE, ncol = 3))
     names(neg_scores) <- c('item', 'p', 'cat')
 
-    brief_score_dat[["brief2_negativity_p"]] <- neg_scores[['p']]
-    brief_score_dat[["brief2_negativity_cat"]] <- as.numeric(neg_scores[['cat']])
+    brief_score_dat[["brief2_negativity_p"]] <- ifelse(is.na(neg_scores[['p']]), NA, ifelse(neg_scores[['p']] == '<=98', 0, ifelse(neg_scores[['p']] == '99', 1, 2)))
+    brief_score_dat[["brief2_negativity_p"]] <- sjlabelled::add_labels(brief_score_dat[["brief2_negativity_p"]], labels = c(`<=98` = 0, `99` = 1, `>99` = 2))
+    class(brief_score_dat[["brief2_negativity_p"]]) <- c("haven_labelled", "vctrs_vctr", "double")
+
+    brief_score_dat[["brief2_negativity_cat"]] <- ifelse(is.na(neg_scores[['cat']]), NA, ifelse(neg_scores[['cat']] == 'Acceptable', 0, ifelse(neg_scores[['cat']] == 'Elevated', 1, 2)))
+    brief_score_dat[["brief2_negativity_cat"]] <- sjlabelled::add_labels(brief_score_dat[["brief2_negativity_cat"]], labels = c(Acceptable = 0, Elevated = 1, `Highly Elevated` = 2))
+    class(brief_score_dat[["brief2_negativity_cat"]]) <- c("haven_labelled", "vctrs_vctr", "double")
+
 
     ## add labels to data
     brief_score_dat_labels[["brief2_negativity"]] <- "BRIEF2 Negativity Check Raw Score"
@@ -415,8 +421,14 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     incon_scores <- as.data.frame(matrix(unlist(incon_scores_list), byrow = TRUE, ncol = 3))
     names(incon_scores) <- c('item', 'p', 'cat')
 
-    brief_score_dat[["brief2_inconsistency_p"]] <- incon_scores[['p']]
-    brief_score_dat[["brief2_inconsistency_cat"]] <- as.numeric(incon_scores[['cat']])
+    brief_score_dat[["brief2_inconsistency_p"]] <- ifelse(is.na(incon_scores[['p']]), NA, ifelse(incon_scores[['p']] == '<=98', 0, ifelse(incon_scores[['p']] == '99', 1, 2)))
+    brief_score_dat[["brief2_inconsistency_p"]] <- sjlabelled::add_labels(brief_score_dat[["brief2_inconsistency_p"]], labels = c(`<=98` = 0, `99` = 1, `>99` = 2))
+    class(brief_score_dat[["brief2_inconsistency_p"]]) <- c("haven_labelled", "vctrs_vctr", "double")
+
+
+    brief_score_dat[["brief2_inconsistency_cat"]] <- ifelse(is.na(incon_scores[['cat']]), NA, ifelse(incon_scores[['cat']] == 'Acceptable', 0, ifelse(incon_scores[['cat']] == 'Questionable', 1, 2)))
+    brief_score_dat[["brief2_inconsistency_cat"]] <- sjlabelled::add_labels(brief_score_dat[["brief2_inconsistency_cat"]], labels = c(Acceptable = 0, Questionable = 1, Inconsistant = 2))
+    class(brief_score_dat[["brief2_inconsistency_cat"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     ## add labels to data
     brief_score_dat_labels[["brief2_inconsistency"]] <- "BRIEF2 Inconsistency Check Raw Score"
@@ -433,8 +445,13 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     infreq_scores <- as.data.frame(matrix(unlist(infreq_scores_list), byrow = TRUE, ncol = 3))
     names(infreq_scores) <- c('item', 'p', 'cat')
 
-    brief_score_dat[["brief2_infrequency_p"]] <- incon_scores[['p']]
-    brief_score_dat[["brief2_infrequency_cat"]] <- as.numeric(incon_scores[['cat']])
+    brief_score_dat[["brief2_infrequency_p"]] <- ifelse(is.na(infreq_scores[['p']]), NA, ifelse(infreq_scores[['p']] == '99', 0, 1))
+    brief_score_dat[["brief2_infrequency_p"]] <- sjlabelled::add_labels(brief_score_dat[["brief2_infrequency_p"]], labels = c(`99` = 0, `>99` = 1))
+    class(brief_score_dat[["brief2_infrequency_p"]]) <- c("haven_labelled", "vctrs_vctr", "double")
+
+    brief_score_dat[["brief2_infrequency_cat"]] <- ifelse(is.na(infreq_scores[['cat']]), NA, ifelse(infreq_scores[['cat']] == 'Acceptable', 0, 1))
+    brief_score_dat[["brief2_infrequency_cat"]] <- sjlabelled::add_labels(brief_score_dat[["brief2_infrequency_cat"]], labels = c(Acceptable = 0, Questionable = 1))
+    class(brief_score_dat[["brief2_infrequency_cat"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     ## add labels to data
     brief_score_dat_labels[["brief2_infrequency"]] <- "BRIEF2 Infrequency Check Raw Score"
@@ -446,8 +463,7 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     #### 3. Clean Export/Scored Data #####
 
     ## make sure the variable labels match in the dataset
-    brief_score_dat = sjlabelled::set_label(brief_score_dat, label = matrix(unlist(brief_score_dat_labels,
-                                                                                   use.names = FALSE)))
+    brief_score_dat = sjlabelled::set_label(brief_score_dat, label = matrix(unlist(brief_score_dat_labels, use.names = FALSE)))
 
     return(brief_score_dat)
 }
