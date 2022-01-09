@@ -202,6 +202,12 @@ util_fbs_child_v6dat <- function(file_pattern, data_path) {
     qv6_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv6_child_clean[["start_date"]]))
     qv6_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
+    # 5a) re-label DG wait variable ####
+    qv6_child_clean[["dg_wait"]] <- ifelse(is.na(qv6_child_clean[["dg_wait"]]) | qv6_child_clean[["dg_wait"]] == 99, NA, ifelse(qv6_child_clean[["dg_wait"]] == 1, 0, ifelse(qv6_child_clean[["dg_wait"]] == 2, 1, ifelse(qv6_child_clean[["dg_wait"]] == 3, 2, ifelse(qv6_child_clean[["dg_wait"]] == 88, 3, NA)))))
+
+    qv6_child_clean[["dg_wait"]] <- sjlabelled::add_labels(qv6_child_clean[["dg_wait"]], labels = c(`Successfully Waited` = 0, `Rang Bell, Did NOT Eat` = 1, `Ate Without Ringing Bell` = 2, `Ate, did NOT understand task` = 3))
+    class(qv6_child_clean[["dg_wait"]]) <- c("haven_labelled", "vctrs_vctr", "double")
+
     # 6) re-calculate manual variables ####
 
     ## re-calculate all intake values

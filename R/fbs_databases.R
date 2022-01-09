@@ -170,7 +170,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## Visit 5 data - need for the demographics database
-    if (isFALSE(databases_arg) | 'demo' %in% databases | 'intake' %in% databases | 'notes' %in% databases | 'pna' %in% databases){
+    if (isFALSE(databases_arg) | 'demo' %in% databases | 'intake' %in% databases | 'food_qs' %in% databases | 'notes' %in% databases | 'pna' %in% databases){
         if (isTRUE(datapath_arg)){
             v5_data <- util_fbs_merge_v5(child_file_pattern = paste0(child_fp, '_', visit_fp, '5'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '5'), data_path = data_path)
         } else {
@@ -629,7 +629,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## 3d) Eating Behavior/Food Intake Questionnaires ####
-    if (isFALSE(databases_arg) | 'food_q' %in% databases){
+    if (isFALSE(databases_arg) | 'food_qs' %in% databases){
 
         #visit 1
         v1_foodqs_data <- v1_data[['data']][c(1, 396:711)]

@@ -80,9 +80,10 @@ score_kfq <- function(kfq_data, parID) {
     kfq_grain_list <- as.list(data.frame(t(kfq_data[kfq_grain_vars])))
 
     ## apply mode to each list element (row)
-    kfq_mode <- sapply(kfq_grain_list, mode)
+    kfq_score_dat[["kfq_grains_modefreq"]] <- sapply(kfq_grain_list, mode)
 
-    kfq_score_dat[["kfq_grains_modefreq"]] <- ifelse(is.na(kfq_mode), NA, ifelse(kfq_mode == 0, 'Never', ifelse(kfq_mode == 1, '<1 time wk', ifelse(kfq_mode == 2, '1-2 times wk', ifelse(kfq_mode == 3, '3-5 times wk', ifelse(kfq_mode == 4, '6-7 times wk', '>7 times wk'))))))
+    kfq_score_dat[["kfq_grains_modefreq"]] <- sjlabelled::add_labels(kfq_score_dat[["kfq_grains_modefreq"]], labels = c(`Never` = 0, `<1 time wk` = 1, `1-2 times wk` = 2, `3-5 times wk` = 3, `6-7 times wk` = 4, `>7 times wk` = 5))
+    class(kfq_score_dat[["kfq_grains_modefreq"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     ## add labels to data
     kfq_score_dat_labels[["kfq_grains"]] <- "KFQ Breads and Grains Total Score"
@@ -97,9 +98,10 @@ score_kfq <- function(kfq_data, parID) {
     kfq_veg_list <- as.list(data.frame(t(kfq_data[kfq_veg_vars])))
 
     ## apply mode to each list element (row)
-    kfq_mode <- sapply(kfq_veg_list, mode)
+    kfq_score_dat[["kfq_veg_modefreq"]] <- sapply(kfq_veg_list, mode)
 
-    kfq_score_dat[["kfq_veg_modefreq"]] <- ifelse(is.na(kfq_mode), NA, ifelse(kfq_mode == 0, 'Never', ifelse(kfq_mode == 1, '<1 time wk', ifelse(kfq_mode == 2, '1-2 times wk', ifelse(kfq_mode == 3, '3-5 times wk', ifelse(kfq_mode == 4, '6-7 times wk', '>7 times wk'))))))
+    kfq_score_dat[["kfq_veg_modefreq"]] <- sjlabelled::add_labels(kfq_score_dat[["kfq_veg_modefreq"]], labels = c(`Never` = 0, `<1 time wk` = 1, `1-2 times wk` = 2, `3-5 times wk` = 3, `6-7 times wk` = 4, `>7 times wk` = 5))
+    class(kfq_score_dat[["kfq_veg_modefreq"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     ## add labels to data
     kfq_score_dat_labels[["kfq_veg"]] <- "KFQ Vegetables Total Score"
@@ -114,9 +116,10 @@ score_kfq <- function(kfq_data, parID) {
     kfq_fruit_list <- as.list(data.frame(t(kfq_data[kfq_fruit_vars])))
 
     ## apply mode to each list element (row)
-    kfq_mode <- sapply(kfq_fruit_list, mode)
+    kfq_score_dat[["kfq_fruit_modefreq"]] <- sapply(kfq_fruit_list, mode)
 
-    kfq_score_dat[["kfq_fruit_modefreq"]] <- ifelse(is.na(kfq_mode), NA, ifelse(kfq_mode == 0, 'Never', ifelse(kfq_mode == 1, '<1 time wk', ifelse(kfq_mode == 2, '1-2 times wk', ifelse(kfq_mode == 3, '3-5 times wk', ifelse(kfq_mode == 4, '6-7 times wk', '>7 times wk'))))))
+    kfq_score_dat[["kfq_fruit_modefreq"]] <- sjlabelled::add_labels(kfq_score_dat[["kfq_fruit_modefreq"]], labels = c(`Never` = 0, `<1 time wk` = 1, `1-2 times wk` = 2, `3-5 times wk` = 3, `6-7 times wk` = 4, `>7 times wk` = 5))
+    class(kfq_score_dat[["kfq_fruit_modefreq"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     ## add labels to data
     kfq_score_dat_labels[["kfq_fruit"]] <- "KFQ Fruits Total Score"
@@ -131,9 +134,10 @@ score_kfq <- function(kfq_data, parID) {
     kfq_dairy_list <- as.list(data.frame(t(kfq_data[kfq_dairy_vars])))
 
     ## apply mode to each list element (row)
-    kfq_mode <- sapply(kfq_dairy_list, mode)
+    kfq_score_dat[["kfq_dairy_modefreq"]] <- sapply(kfq_dairy_list, mode)
 
-    kfq_score_dat[["kfq_dairy_modefreq"]] <- ifelse(is.na(kfq_mode), NA, ifelse(kfq_mode == 0, 'Never', ifelse(kfq_mode == 1, '<1 time wk', ifelse(kfq_mode == 2, '1-2 times wk', ifelse(kfq_mode == 3, '3-5 times wk', ifelse(kfq_mode == 4, '6-7 times wk', '>7 times wk'))))))
+    kfq_score_dat[["kfq_dairy_modefreq"]] <- sjlabelled::add_labels(kfq_score_dat[["kfq_dairy_modefreq"]], labels = c(`Never` = 0, `<1 time wk` = 1, `1-2 times wk` = 2, `3-5 times wk` = 3, `6-7 times wk` = 4, `>7 times wk` = 5))
+    class(kfq_score_dat[["kfq_dairy_modefreq"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     ## add labels to data
     kfq_score_dat_labels[["kfq_dairy"]] <- "KFQ Dairy Total Score"
@@ -148,9 +152,10 @@ score_kfq <- function(kfq_data, parID) {
     kfq_protein_list <- as.list(data.frame(t(kfq_data[kfq_protein_vars])))
 
     ## apply mode to each list element (row)
-    kfq_mode <- sapply(kfq_protein_list, mode)
+    kfq_score_dat[["kfq_protein_modefreq"]] <- sapply(kfq_protein_list, mode)
 
-    kfq_score_dat[["kfq_protein_modefreq"]] <- ifelse(is.na(kfq_mode), NA, ifelse(kfq_mode == 0, 'Never', ifelse(kfq_mode == 1, '<1 time wk', ifelse(kfq_mode == 2, '1-2 times wk', ifelse(kfq_mode == 3, '3-5 times wk', ifelse(kfq_mode == 4, '6-7 times wk', '>7 times wk'))))))
+    kfq_score_dat[["kfq_protein_modefreq"]] <- sjlabelled::add_labels(kfq_score_dat[["kfq_protein_modefreq"]], labels = c(`Never` = 0, `<1 time wk` = 1, `1-2 times wk` = 2, `3-5 times wk` = 3, `6-7 times wk` = 4, `>7 times wk` = 5))
+    class(kfq_score_dat[["kfq_protein_modefreq"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     ## add labels to data
     kfq_score_dat_labels[["kfq_protein"]] <- "KFQ Protein Total Score"
@@ -165,9 +170,10 @@ score_kfq <- function(kfq_data, parID) {
     kfq_bev_list <- as.list(data.frame(t(kfq_data[kfq_bev_vars])))
 
     ## apply mode to each list element (row)
-    kfq_mode <- sapply(kfq_bev_list, mode)
+    kfq_score_dat[["kfq_bev_modefreq"]] <- sapply(kfq_bev_list, mode)
 
-    kfq_score_dat[["kfq_bev_modefreq"]] <- ifelse(is.na(kfq_mode), NA, ifelse(kfq_mode == 0, 'Never', ifelse(kfq_mode == 1, '<1 time wk', ifelse(kfq_mode == 2, '1-2 times wk', ifelse(kfq_mode == 3, '3-5 times wk', ifelse(kfq_mode == 4, '6-7 times wk', '>7 times wk'))))))
+    kfq_score_dat[["kfq_bev_modefreq"]] <- sjlabelled::add_labels(kfq_score_dat[["kfq_bev_modefreq"]], labels = c(`Never` = 0, `<1 time wk` = 1, `1-2 times wk` = 2, `3-5 times wk` = 3, `6-7 times wk` = 4, `>7 times wk` = 5))
+    class(kfq_score_dat[["kfq_bev_modefreq"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     ## add labels to data
     kfq_score_dat_labels[["kfq_bev"]] <- "KFQ Beverages Total Score"
@@ -182,9 +188,10 @@ score_kfq <- function(kfq_data, parID) {
     kfq_snacks_list <- as.list(data.frame(t(kfq_data[kfq_snacks_vars])))
 
     ## apply mode to each list element (row)
-    kfq_mode <- sapply(kfq_snacks_list, mode)
+    kfq_score_dat[["kfq_snack_modefreq"]] <- sapply(kfq_snacks_list, mode)
 
-    kfq_score_dat[["kfq_snack_modefreq"]] <- ifelse(is.na(kfq_mode), NA, ifelse(kfq_mode == 0, 'Never', ifelse(kfq_mode == 1, '<1 time wk', ifelse(kfq_mode == 2, '1-2 times wk', ifelse(kfq_mode == 3, '3-5 times wk', ifelse(kfq_mode == 4, '6-7 times wk', '>7 times wk'))))))
+    kfq_score_dat[["kfq_snack_modefreq"]] <- sjlabelled::add_labels(kfq_score_dat[["kfq_snack_modefreq"]], labels = c(`Never` = 0, `<1 time wk` = 1, `1-2 times wk` = 2, `3-5 times wk` = 3, `6-7 times wk` = 4, `>7 times wk` = 5))
+    class(kfq_score_dat[["kfq_snack_modefreq"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     ## add labels to data
     kfq_score_dat_labels[["kfq_snack"]] <- "KFQ Snacks Total Score"
@@ -199,9 +206,10 @@ score_kfq <- function(kfq_data, parID) {
     kfq_desert_list <- as.list(data.frame(t(kfq_data[kfq_desert_vars])))
 
     ## apply mode to each list element (row)
-    kfq_mode <- sapply(kfq_desert_list, mode)
+    kfq_score_dat[["kfq_desert_modefreq"]] <- sapply(kfq_desert_list, mode)
 
-    kfq_score_dat[["kfq_desert_modefreq"]] <- ifelse(is.na(kfq_mode), NA, ifelse(kfq_mode == 0, 'Never', ifelse(kfq_mode == 1, '<1 time wk', ifelse(kfq_mode == 2, '1-2 times wk', ifelse(kfq_mode == 3, '3-5 times wk', ifelse(kfq_mode == 4, '6-7 times wk', '>7 times wk'))))))
+    kfq_score_dat[["kfq_desert_modefreq"]] <- sjlabelled::add_labels(kfq_score_dat[["kfq_desert_modefreq"]], labels = c(`Never` = 0, `<1 time wk` = 1, `1-2 times wk` = 2, `3-5 times wk` = 3, `6-7 times wk` = 4, `>7 times wk` = 5))
+    class(kfq_score_dat[["kfq_desert_modefreq"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     ## add labels to data
     kfq_score_dat_labels[["kfq_desert"]] <- "KFQ Deserts Total Score"
@@ -216,9 +224,10 @@ score_kfq <- function(kfq_data, parID) {
     kfq_cond_list <- as.list(data.frame(t(kfq_data[kfq_cond_vars])))
 
     ## apply mode to each list element (row)
-    kfq_mode <- sapply(kfq_cond_list, mode)
+    kfq_score_dat[["kfq_cond_modefreq"]] <- sapply(kfq_cond_list, mode)
 
-    kfq_score_dat[["kfq_cond_modefreq"]] <- ifelse(is.na(kfq_mode), NA, ifelse(kfq_mode == 0, 'Never', ifelse(kfq_mode == 1, '<1 time wk', ifelse(kfq_mode == 2, '1-2 times wk', ifelse(kfq_mode == 3, '3-5 times wk', ifelse(kfq_mode == 4, '6-7 times wk', '>7 times wk'))))))
+    kfq_score_dat[["kfq_cond_modefreq"]] <- sjlabelled::add_labels(kfq_score_dat[["kfq_cond_modefreq"]], labels = c(`Never` = 0, `<1 time wk` = 1, `1-2 times wk` = 2, `3-5 times wk` = 3, `6-7 times wk` = 4, `>7 times wk` = 5))
+    class(kfq_score_dat[["kfq_cond_modefreq"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     ## add labels to data
     kfq_score_dat_labels[["kfq_cond"]] <- "KFQ Condiments Total Score"
@@ -227,8 +236,7 @@ score_kfq <- function(kfq_data, parID) {
     #### 3. Clean Export/Scored Data #####
 
     ## make sure the variable labels match in the dataset
-    kfq_score_dat = sjlabelled::set_label(kfq_score_dat, label = matrix(unlist(kfq_score_dat_labels,
-        use.names = FALSE)))
+    kfq_score_dat = sjlabelled::set_label(kfq_score_dat, label = matrix(unlist(kfq_score_dat_labels, use.names = FALSE)))
 
     return(kfq_score_dat)
 }

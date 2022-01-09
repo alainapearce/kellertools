@@ -121,7 +121,7 @@ score_tfeq <- function(tfeq_data, parID) {
     tfeq_score_dat[["tfeq_hunger"]] <- rowSums(tfeq_data[hunger_vars])
 
     ## add labels to data
-    tfeq_score_dat_labels[["tfeq_hunger"]] <- "TFEQ USusceptibility to Hunger Score"
+    tfeq_score_dat_labels[["tfeq_hunger"]] <- "TFEQ Susceptibility to Hunger Score"
 
     #### 3. Clean Export/Scored Data #####
     ## round data

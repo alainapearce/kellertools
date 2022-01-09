@@ -76,7 +76,11 @@ model_dd <- function(dd_data, parID) {
 
     ## Check Exclusion Questions
     dd_score_dat[["dd_checks_score"]] <- rowSums(dd_data[["dd67"]] == 0 & dd_data[c("dd68", "dd69")] == 1)
-    dd_score_dat[["dd_checks_exclude"]] <- ifelse(dd_score_dat[["dd_checks_score"]] > 0, 'exclude', 'good')
+    dd_score_dat[["dd_checks_exclude"]] <- ifelse(dd_score_dat[["dd_checks_score"]] > 0, 1, 0)
+
+    dd_score_dat[["dd_checks_exclude"]] <- sjlabelled::add_labels(dd_score_dat[["dd_checks_exclude"]], labels = c(Include = 0, Exclude = 1))
+    class(dd_score_dat[["dd_checks_exclude"]]) <- c("haven_labelled", "vctrs_vctr", "double")
+
 
     # add to labels
     dd_score_dat_labels[["dd_checks_score"]] <- "DD Exclusion Checks Score (out of 3; higher is worse)"
@@ -138,13 +142,13 @@ model_dd <- function(dd_data, parID) {
     # set those that need to be excluded to NA
     if(isTRUE(ID_arg)){
         #identify ids to be excluded
-        ex_ids <- dd_score_dat[is.na(dd_score_dat[["dd_checks_exclude"]]) | dd_score_dat[["dd_checks_exclude"]] == 'exclude', parID]
+        ex_ids <- dd_score_dat[is.na(dd_score_dat[["dd_checks_exclude"]]) | dd_score_dat[["dd_checks_exclude"]] == 1, parID]
 
         #set values to NA if excluded
         dd_data_long[['values']] <- ifelse(dd_data_long[[parID]] %in% ex_ids, NA, dd_data_long[['values']])
     } else {
         #identify ids to be excluded
-        ex_ids <- dd_score_dat[is.na(dd_score_dat[["dd_checks_exclude"]]) | dd_score_dat[["dd_checks_exclude"]] == 'exclude', 'id']
+        ex_ids <- dd_score_dat[is.na(dd_score_dat[["dd_checks_exclude"]]) | dd_score_dat[["dd_checks_exclude"]] == 1, 'id']
 
         #set values to NA if excluded
         dd_data_long[['values']] <- ifelse(dd_data_long[['id']] %in% ex_ids, NA, dd_data_long[['values']])
@@ -181,6 +185,12 @@ model_dd <- function(dd_data, parID) {
 
     # rename dd vars
     names(dd_score_dat)[4:9] <- c('dd_probmod', 'dd_probmod_bf', 'dd_probmod_prob', 'dd_ed50', 'dd_mb_auc', 'dd_mb_auc_log10')
+
+    #model names to labels
+    dd_score_dat[["dd_probmod"]] <- ifelse(dd_score_dat[["dd_probmod"]] == "mazur", 0, ifelse(dd_score_dat[["dd_probmod"]] == "bleichrodt", 1, ifelse(dd_score_dat[["dd_probmod"]] == "ebertprelec", 2, ifelse(dd_score_dat[["dd_probmod"]] == "exponential", 3, ifelse(dd_score_dat[["dd_probmod"]] == "greenmyerson", 4, ifelse(dd_score_dat[["dd_probmod"]] == "laibson", 5, ifelse(dd_score_dat[["dd_probmod"]] == "rachlin", 6, ifelse(dd_score_dat[["dd_probmod"]] == "rodriguezlogue", 7, 8))))))))
+
+    dd_score_dat[["dd_probmod"]] <- sjlabelled::add_labels(dd_score_dat[["dd_probmod"]], labels = c(mazur = 0, bleichrodt = 1, ebertprelec = 2, exponential = 3, greenmyerson = 4, laibson = 5, rachlin = 6, rodriguezlogue = 7, noise = 8))
+    class(dd_score_dat[["dd_probmod"]]) <- c("haven_labelled", "vctrs_vctr", "double")
 
     # add labels
     dd_score_dat_labels[["dd_probmod"]] <- "DD best-fitting model from approximate Bayesian Model Selection"
