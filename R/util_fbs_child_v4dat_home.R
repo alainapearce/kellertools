@@ -93,9 +93,9 @@ util_fbs_child_v4dat_home <- function(file_pattern, data_path) {
     } else {
 
         if (isTRUE(datapath_arg)) {
-            stop("File does not exist. Check date_str and data_path entered")
+            stop("File does not exist. Check file_pattern and data_path entered")
         } else {
-            stop("File does not exist. Check date_str and that the data exists in current working directory")
+            stop("File does not exist. Check file_pattern and that the data exists in current working directory")
         }
     }
 

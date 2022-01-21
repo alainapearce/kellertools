@@ -13,8 +13,8 @@
 #'
 #' The databases MUST follow the naming convention: Child_V1_YYYY-MM-DD.sav
 #'
-#' @inheritParams util_fbs_child_v1dat
-#' @inheritParams util_fbs_child_v1dat
+#' @inheritParams util_fbs_parent_v1dat
+#' @inheritParams util_fbs_parent_v1dat
 #'
 #'
 #' @return A list containing: 1) data: data.frame with raw, cleaned data from child visit 1 Qualtrics
@@ -59,7 +59,40 @@ util_fbs_child_v1dat <- function(file_pattern, data_path) {
     }
 
     #### 2. Load Data #####
+    # Verified visit dates
+    if (isTRUE(datapath_arg)) {
 
+        #check pattern of directories specified in Data manual
+        visit_dates_path <- list.files(path = data_path, pattern = 'verified_visit_dates', full.names = TRUE)
+
+    } else {
+        visit_dates_path <- list.files(pattern = 'verified_visit_dates', full.names = TRUE)
+    }
+
+    # check number of files found
+    if (length(visit_dates_path) > 1) {
+        stop("More than one file matched 'verified_visit_dates'. If have more than 1 file matching the pattern in the directory, may need to move one.")
+    } else if (length(visit_dates_path) == 0) {
+        stop("No files found for file_pattern 'verified_visit_dates'. Be sure the data_path is correct and that the file exists.")
+    }
+
+    # check if file exists
+    visit_dates_exists <- file.exists(visit_dates_path)
+
+    # load data if it exists
+    if (isTRUE(visit_dates_exists)) {
+        visit_dates <- read.csv(visit_dates_path, header = TRUE)
+
+    } else {
+
+        if (isTRUE(datapath_arg)) {
+            stop("File does not exist. Check data_path entered")
+        } else {
+            stop("File does not exist. Check that the data exists in current working directory")
+        }
+    }
+
+    # Qualtrics data
     if (isTRUE(datapath_arg)) {
         qv1_child_path <- list.files(path = data_path, pattern = file_pattern, full.names = TRUE)
     } else {
@@ -87,9 +120,9 @@ util_fbs_child_v1dat <- function(file_pattern, data_path) {
 
     } else {
         if (isTRUE(datapath_arg)) {
-            stop("File does not exist. Check date_str and data_path entered")
+            stop("File does not exist. Check file_pattern and data_path entered")
         } else {
-            stop("File does not exist. Check date_str and that the data exists in current working directory")
+            stop("File does not exist. Check file_pattern and that the data exists in current working directory")
         }
     }
 
@@ -126,9 +159,26 @@ util_fbs_child_v1dat <- function(file_pattern, data_path) {
 
     # 5) reformatting dates to be appropriate and computer readable YYYY-MM-DD ####
 
+    #format start date
     qv1_child_clean[["start_date"]] <- lubridate::ymd(as.Date(qv1_child_clean[["start_date"]]))
-    qv1_child_clean_labels[["start_date"]] <- "start_date from qualtrics survey meta-data converted to format yyyy-mm-dd in R"
 
+    # dates are fomrated as dd-mstr-yy
+    visit_dates[['RO1_V1_Date']] <- lubridate::ymd(as.Date(visit_dates[['RO1_V1_Date']], format = "%d-%b-%y"))
+
+    # add validated dates
+    names(visit_dates)[1] <- 'id'
+    qv1_child_clean <- merge(qv1_child_clean, visit_dates[c('id', 'RO1_V1_Date')], by = 'id', all.x = TRUE, all.y = FALSE)
+
+    #update start_date
+    qv1_child_clean[["start_date"]] <- ifelse(!is.na(qv1_child_clean[['RO1_V1_Date']]), as.character(qv1_child_clean[['RO1_V1_Date']]), as.character(qv1_child_clean[["start_date"]]))
+
+    #remove RO1_V date column
+    qv1_child_clean <- qv1_child_clean[, names(qv1_child_clean) != "RO1_V1_Date"]
+
+    # add label
+    qv1_child_clean_labels[["start_date"]] <- "date from participant contacts databases ('verified_visit_dates*.csv) converted to format yyyy-mm-dd in R. If no date in database, uses start_date metadata from qualtrics"
+
+    # dob
     qv1_child_clean[["dob"]] <- as.Date(qv1_child_clean[["dob"]], format = "%m/%d/%Y")
     qv1_child_clean_labels[["dob"]] <- "date of birth converted to format yyyy-mm-dd in R"
 

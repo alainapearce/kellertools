@@ -51,7 +51,7 @@ data_v1 <- util_fbs_merge_v1(child_file_pattern = 'Child_V1', parent_file_patter
 
 # select variables
 ## CHANGE RISK VARIABLES TO risk_status_mom / risk_status_both
-Table1_vars <- data_v1[['data']][c('age_yr', 'sex', 'risk_cat','bmi_screenout','man_recode_risk')]
+Table1_vars <- data_v1[['data']][c('age_yr', 'sex', 'risk_status_mom','risk_status_both', 'bmi_screenout')]
 
 # convert 'haven_labelled' datatypes - your loop didn't change/update the 'Table1_vars', only the df in the dfList so that tables were not able to be created. This is where it is important that it is run fully independently/with cleared environment to ensure it works. By making your loop a function, you can apply it directly to your tables and return the changes. As we move forward, it may be a good idea to make these types of functions part of the package since they aren't super common in datasets typically needed with R.
 
@@ -75,22 +75,20 @@ Table1_vars <- convertHaven(Table1_vars)
 <!-- Add narrative for Table 1  -->
 ```{r Table1}
 # make Table 1
-## CHANGE RISK VARIABLE TO risk_status_mom
 
 Table1 <- 
   tbl_summary(
     Table1_vars,
-    # split table by group
-    by = risk_cat,
     statistic = list(all_continuous() ~ "{mean} ({sd})",
                      all_categorical() ~ "{n} ({p}%)"),
     label = list(age_yr ~ "Age (years)",
                  sex ~ "Sex",
-                 man_recode_risk ~ "Risk (manually coded)",
+                 risk_status_mom ~ "Risk (mom)",
+                 risk_status_both ~ "Risk (mom and dad)",
                  bmi_screenout ~ "Child BMI screenout")
   ) %>%
   # update the column header
-  modify_header(label = "**Risk (computed)**") %>%
+  #modify_header(label = "**Variable**") %>%
   bold_labels() 
 
 ```
@@ -117,10 +115,10 @@ data_path = '/Users/baf44/OneDrive - The Pennsylvania State University/b-childfo
 data_v1 <- util_fbs_merge_v1(child_file_pattern = 'Child_V1', parent_file_pattern = 'Parent_V1', data_path = data_path)
 
 # select variables
-Table2_vars <- data_v1[['data']][c('bmi_screenout','man_recode_risk')]
+Table2_vars <- data_v1[['data']][c('bmi_screenout','risk_status_mom')]
 
 # make eligibility variable based on parent and child weight status
-Table2_vars$elligible <- ifelse((Table2_vars$bmi_screenout == 0 & (Table2_vars$man_recode_risk == "Low Risk" | Table2_vars$man_recode_risk == "High Risk")), "Yes", "No")
+Table2_vars$elligible <- ifelse((Table2_vars$bmi_screenout == 0 & (Table2_vars$risk_status_mom == "Low Risk" | Table2_vars$risk_status_mom == "High Risk")), "Yes", "No")
 
 Table2_vars <- convertHaven(Table2_vars)
 
@@ -129,7 +127,6 @@ Table2_vars <- convertHaven(Table2_vars)
 <!-- Add narrative for Table 2  -->
 ```{r Table2}
 
-## CHANGE RISK VARIABLE TO risk_status_mom
 
 Table2 <- 
   tbl_summary(
@@ -139,7 +136,7 @@ Table2 <-
     statistic = list(all_continuous() ~ "{mean} ({sd})",
                      all_categorical() ~ "{n} ({p}%)"),
     label = list(bmi_screenout ~ "Child BMI screenout",
-                 man_recode_risk ~ "Risk status")
+                 risk_status_mom ~ "Risk status")
   ) %>%
   # update the column header
   modify_header(label = "**Elligible after V1**") %>%
@@ -195,7 +192,7 @@ extractIDs <- function(list){
 
 #' Add demo data (risk_cat, sex, age) to a dataframe by matching IDs with a reference dataframe
 #' @param df dataframe with 'id' column 
-#' @param reference_df dataframe 'id' and demographic variables (sex, risk_cat, dob)
+#' @param reference_df dataframe 'id' and demographic variables (sex, risk_status_mom, risk_status_both, dob)
 #' @return dataframe with id, sex, risk_cat, and age_yr columns 
 
 addDemo <- function(df, reference_df){
@@ -203,7 +200,9 @@ addDemo <- function(df, reference_df){
     row_id = df$id[row]
     
     # Add risk status
-    df$risk_cat[row] <- reference_df$risk_cat[reference_df$id == 
+    df$risk_status_mom[row] <- reference_df$risk_status_mom[reference_df$id == 
+                          row_id]
+    df$risk_status_both[row] <- reference_df$risk_status_both[reference_df$id == 
                           row_id]
     # Add sex
     df$sex[row] <- reference_df$sex[reference_df$id == row_id]
@@ -216,9 +215,9 @@ addDemo <- function(df, reference_df){
   
   return(df)
 }
-## CHANGE RISK VARIABLE TO risk_status_mom
+
 # Extract IDs and demo variables from V1 database
-V1 <- data_v1[["data"]][c('id', 'risk_cat','sex', 'dob', 'age_yr')]
+V1 <- data_v1[["data"]][c('id', 'risk_status_mom','risk_status_both','sex', 'dob', 'age_yr')]
 V1$visit <- "1"
 
 # Extract IDs from V2-V7 databases and add visit column (use extractIDs())
@@ -240,23 +239,89 @@ V1_7 <- bind_rows(V1, nonV1_list)
 V1_7 <- convertHaven(V1_7)
 
 # Select variables to include in table
-V1_7 <- subset(V1_7, select = c(risk_cat, sex, age_yr, visit))
+V1_7 <- subset(V1_7, select = c(risk_status_mom, risk_status_both, sex, age_yr, visit))
 
 ```
 
 <!-- Add narrative for Table 3  -->
-```{r Table3}
+```{r Table3a_by_visit}
 
-## CHANGE RISK VARIABLE TO risk_status_mom
 # make Table 3
 Table3 <- 
   tbl_summary(
     V1_7,
     by = visit, # split table by group
     label = list(sex ~ "Sex",
-                 risk_cat ~ "Risk status",
+                 risk_status_mom ~ "Risk status (mom)",
+                 risk_status_both ~ "Risk status (both)",
                  age_yr ~ "Age (years)")
   ) %>%
+  modify_header(label = "**Visit**") %>% # update the column header
+  bold_labels() 
+```
+
+
+<!-- Add narrative for stacked tables  -->
+```{r Table3b_by_risk_by_visit}
+#### Risk defined by maternal BMI ####
+# risk_low
+tbl_low_mom <-
+  V1_7 %>%
+  filter(risk_status_mom == "Low Risk") %>%
+  select(sex, age_yr, visit) %>%
+  tbl_summary(
+    by = visit,
+    label = list(sex ~ "Sex",
+                 age_yr ~ "Age (years)")) %>%
+  modify_header(all_stat_cols() ~ "**{level}**")
+
+# risk_high
+tbl_high_mom <-
+  V1_7 %>%
+  filter(risk_status_mom == "High Risk") %>%
+  select(sex, age_yr, visit) %>%
+  tbl_summary(
+    by = visit,
+    label = list(sex ~ "Sex",
+                 age_yr ~ "Age (years)")) %>%
+  modify_header(all_stat_cols() ~ "**{level}**")
+
+visit_byrisk_mom <-
+  tbl_stack(
+    list(tbl_low_mom, tbl_high_mom), 
+    group_header = c("Low Risk", "High Risk")
+    ) %>%
+  modify_header(label = "**Visit**") %>% # update the column header
+  bold_labels() 
+
+#### Risk defined by maternal and paternal BMI ####
+# risk_low
+tbl_low_both <-
+  V1_7 %>%
+  filter(risk_status_both == "Low Risk") %>%
+  select(sex, age_yr, visit) %>%
+  tbl_summary(
+    by = visit,
+    label = list(sex ~ "Sex",
+                 age_yr ~ "Age (years)")) %>%
+  modify_header(all_stat_cols() ~ "**{level}**")
+
+# risk_high
+tbl_high_both <-
+  V1_7 %>%
+  filter(risk_status_both == "High Risk") %>%
+  select(sex, age_yr, visit) %>%
+  tbl_summary(
+    by = visit,
+    label = list(sex ~ "Sex",
+                 age_yr ~ "Age (years)")) %>%
+  modify_header(all_stat_cols() ~ "**{level}**")
+
+visit_byrisk_both <-
+  tbl_stack(
+    list(tbl_low_both, tbl_high_both), 
+    group_header = c("Low Risk", "High Risk")
+    ) %>%
   modify_header(label = "**Visit**") %>% # update the column header
   bold_labels() 
 ```
