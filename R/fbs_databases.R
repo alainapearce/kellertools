@@ -4,7 +4,7 @@
 #' 1) Demographics database: includes child (e.g., age, sex, pubertal status), parent characteristics (e.g., age, sex, education, alcohol use/abuse), and household characteristics (e.g., food insecurity, income)
 #' 2) Anthropometrics: includes child and parent height/weight and child adiposity (DXA), actigraphy, physical activity, and sleep
 #' 3) Intake: includes child liking ratings, Freddy Fullness, and intake for all eating paradigms
-#' 4) Food Related Behaviors and Traits: includes all questionnaires assessing child or parent food related behaviors and/or traits (e.g., CEBQ, CFQ, TFEQ, etc.) and body image
+#' 4) Food Related Behaviors and Traits: includes all questionnaires assessing child or parent food related behaviors and/or traits (e.g., CEBQ, CFQ, TFEQ, etc.)
 #' 5) (Neuro)Psychological Assessments: includes the WASI and all questionnaires assessing the child's cognitive and/or psychosocial functioning (e.g., BRIEF, BIS/BAS, anxiety, etc.)
 #' 6) Delay Discounting: includes the modeling results for delay discounting
 #' 7) Interoception: includes all data related to the heart beat interoception task
@@ -337,8 +337,8 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         names(v2_anthro_labels)[2] <- 'v2_date'
 
         #visit 7
-        v7_anthro_data <- v7_data[['data']][c(1:2, 121:259, 266:288)]
-        v7_anthro_labels <- v7_data[['dict']][c(1:2, 121:259, 266:288)]
+        v7_anthro_data <- v7_data[['data']][c(1:2, 121:288)]
+        v7_anthro_labels <- v7_data[['dict']][c(1:2, 121:288)]
 
         names(v7_anthro_data)[2] <- 'v7_date'
         names(v7_anthro_labels)[2] <- 'v7_date'
@@ -390,7 +390,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
                 haven::write_sav(anthroprometric_data, path = paste0(write_path, 'anthro_data.sav'))
                 write.csv(antho_dict_write, file = paste0(write_path, 'dict-anthro_data.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(anthroprometric_data, path = 'anthro_data.sav')
+                haven::write_sav(anthographic_data, path = 'anthro_data.sav')
                 write.csv(antho_dict_write, file = 'dict_anthro_data.csv', row.names = FALSE)
             }
         }
@@ -671,8 +671,8 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         names(v6_foodqs_labels)[2] <- 'v6_date'
 
         #visit 7
-        v7_foodqs_data <- v7_data[['data']][c(1:2, 260:265, 462:777)]
-        v7_foodqs_labels <- v7_data[['dict']][c(1:2, 260:265, 462:777)]
+        v7_foodqs_data <- v7_data[['data']][c(1:2, 462:777)]
+        v7_foodqs_labels <- v7_data[['dict']][c(1:2, 462:777)]
 
         names(v7_foodqs_data)[2] <- 'v7_date'
         names(v7_foodqs_labels)[2] <- 'v7_date'
@@ -725,11 +725,11 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
             foodqs_dict_write <- sapply(foodqs_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
 
             if (isTRUE(writepath_arg)){
-                haven::write_sav(foodqs_data, path = paste0(write_path, 'qs_eatbeh_bodyimage.sav'))
-                write.csv(foodqs_dict_write, file = paste0(write_path, 'dict-qs_eatbeh_bodyimage.csv'), row.names = FALSE)
+                haven::write_sav(foodqs_data, path = paste0(write_path, 'qs_eat_beh.sav'))
+                write.csv(foodqs_dict_write, file = paste0(write_path, 'dict-qs_eat_beh.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(foodqs_data, path = 'qs_eatbeh_bodyimage.sav')
-                write.csv(foodqs_dict_write, file = 'dict-qs_eatbeh_bodyimage.csv', row.names = FALSE)
+                haven::write_sav(foodqs_data, path = 'qs_eat_beh.sav')
+                write.csv(foodqs_dict_write, file = 'dict-qs_eat_beh.csv', row.names = FALSE)
             }
         }
     }
