@@ -246,6 +246,8 @@ V1_7 <- subset(V1_7, select = c(risk_status_mom, risk_status_both, sex, age_yr, 
 <!-- Add narrative for Table 3  -->
 ```{r Table3a_by_visit}
 
+V1_7 <- subset(V1_7, select = c(risk_status_mom, risk_status_both, sex, age_yr, visit))
+
 # make Table 3
 Table3 <- 
   tbl_summary(
@@ -254,12 +256,33 @@ Table3 <-
     label = list(sex ~ "Sex",
                  risk_status_mom ~ "Risk status (mom)",
                  risk_status_both ~ "Risk status (both)",
-                 age_yr ~ "Age (years)")
+                 age_yr ~ "Age (years)"),
+    statistic = list(all_continuous() ~ "{mean} ({sd})",
+                     all_categorical() ~ "{n} ({p}%)")
+  ) %>%
+  modify_header(label = "**Visit**") %>% # update the column header
+  bold_labels() 
+
+```
+
+# no demo
+```{r Table3a_by_visit}
+
+V1_7_nodemo <- subset(V1_7, select = c(risk_status_mom, risk_status_both, visit))
+
+# make Table 3
+Table3c <- 
+  tbl_summary(
+    V1_7_nodemo,
+    by = visit, # split table by group
+    label = list(risk_status_mom ~ "Risk status (based on maternal BMI)",
+                 risk_status_both ~ "Risk status (based on maternal and paternal BMI)"),
+    statistic = list(all_continuous() ~ "{mean} ({sd})",
+                     all_categorical() ~ "{n}")
   ) %>%
   modify_header(label = "**Visit**") %>% # update the column header
   bold_labels() 
 ```
-
 
 <!-- Add narrative for stacked tables  -->
 ```{r Table3b_by_risk_by_visit}
@@ -324,6 +347,8 @@ visit_byrisk_both <-
     ) %>%
   modify_header(label = "**Visit**") %>% # update the column header
   bold_labels() 
+
+
 ```
 
 <!-- Add narrative for Table 3 display -->
@@ -331,3 +356,13 @@ visit_byrisk_both <-
 as_kable_extra(Table3, caption = 'Demographics by Visit', format = "latex", booktabs = TRUE, longtable = FALSE) %>%
   kableExtra::kable_styling(latex_options = "hold_position",  full_width = FALSE)
 ```
+
+
+```{r summary,  results = 'asis'}
+mri <- data_v6[["data"]][c('id', 'start_date', 'notes_mri_mprage','notes_mri_restingstate','notes_mri_run1', 'notes_mri_run2', 'notes_mri_run3','notes_mri_run4', 'notes_mri_run5', 'childnotes')]
+
+
+
+
+```
+
