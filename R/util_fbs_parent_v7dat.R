@@ -93,16 +93,18 @@ util_fbs_parent_v7dat <- function(file_pattern, data_path) {
 
     # Qualtrics data
     if (isTRUE(datapath_arg)) {
-        qv7_parent_path <- list.files(path = data_path, pattern = file_pattern, full.names = TRUE)
+        qv7_parent_pathlist <- list.files(path = data_path, pattern = file_pattern, full.names = TRUE)
     } else {
-        qv7_parent_path <- paste0(pattern = file_pattern, full.names = TRUE)
+        qv7_parent_pathlist <- paste0(pattern = file_pattern, full.names = TRUE)
     }
 
     # check number of files found
-    if (length(qv7_parent_path) > 1) {
+    if (length(qv7_parent_pathlist) > 1) {
         stop("More than one file matched the file_pattern. Be sure thefile_pattern specifies both the respondent (Parent/Child) and visit number (V#). If have more than 1 file matching the pattern in the directory, may need to move to enter a more specific file_pattern than is standard.")
-    } else if (length(qv7_parent_path) == 0) {
+    } else if (length(qv7_parent_pathlist) == 0) {
         stop('No files found. Be sure the data_path and file_pattern are correct and that the file exists')
+    } else {
+        qv7_parent_path <- qv7_parent_pathlist
     }
 
     # check that file is of type '.sav'

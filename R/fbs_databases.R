@@ -213,8 +213,8 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     if (isFALSE(databases_arg) | 'demo' %in% databases){
 
         #visit 1
-        v1_demo_data <- v1_data[['data']][c(1:13, 20:21, 60:61, 63, 94:97, 122:123, 14:19, 22:59, 65:87)]
-        v1_demo_labels <- v1_data[['dict']][c(1:13, 20:21, 60:61, 63, 94:97, 122:123, 14:19, 22:59, 65:87)]
+        v1_demo_data <- v1_data[['data']][c(1:13, 20:21, 60:61, 63, 94:97, 132:133, 14:19, 22:59, 65:87)]
+        v1_demo_labels <- v1_data[['dict']][c(1:13, 20:21, 60:61, 63, 94:97, 132:133, 14:19, 22:59, 65:87)]
 
         names(v1_demo_data)[2] <- 'v1_date'
         names(v1_demo_labels)[2] <- 'v1_date'
@@ -326,8 +326,8 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     if (isFALSE(databases_arg) | 'anthro' %in% databases){
 
         #visit 1
-        v1_anthro_data <- v1_data[['data']][c(1, 88:226)]
-        v1_anthro_labels <- v1_data[['dict']][c(1, 88:226)]
+        v1_anthro_data <- v1_data[['data']][c(1, 88:336)]
+        v1_anthro_labels <- v1_data[['dict']][c(1, 88:336)]
 
         #visit 2
         v2_anthro_data <- v2_data[['data']][c(1:2, 4:29)]
@@ -337,8 +337,8 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         names(v2_anthro_labels)[2] <- 'v2_date'
 
         #visit 7
-        v7_anthro_data <- v7_data[['data']][c(1:2, 121:259, 266:288)]
-        v7_anthro_labels <- v7_data[['dict']][c(1:2, 121:259, 266:288)]
+        v7_anthro_data <- v7_data[['data']][c(1:2, 121:369, 376:398)]
+        v7_anthro_labels <- v7_data[['dict']][c(1:2, 121:369, 376:398)]
 
         names(v7_anthro_data)[2] <- 'v7_date'
         names(v7_anthro_labels)[2] <- 'v7_date'
@@ -401,8 +401,8 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     if (isFALSE(databases_arg) | 'intake' %in% databases){
 
         #visit 1
-        v1_intake_data <- v1_data[['data']][c(1, 227:395)]
-        v1_intake_labels <- v1_data[['dict']][c(1, 227:395)]
+        v1_intake_data <- v1_data[['data']][c(1, 337:505)]
+        v1_intake_labels <- v1_data[['dict']][c(1, 337:505)]
 
         #re-name variables with 'v1_' and add 'Visit 1 - ' to labels
         for (v in 2:ncol(v1_intake_data)){
@@ -498,8 +498,8 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         names(v5_intake_labels) <- names(v5_intake_data)
 
         #visit 7
-        v7_intake_data <- v7_data[['data']][c(1:2, 289:461)]
-        v7_intake_labels <- v7_data[['dict']][c(1:2, 289:461)]
+        v7_intake_data <- v7_data[['data']][c(1:2, 399:571)]
+        v7_intake_labels <- v7_data[['dict']][c(1:2, 399:571)]
 
         names(v7_intake_data)[2] <- 'v7_date'
         names(v7_intake_labels)[2] <- 'v7_date'
@@ -632,8 +632,8 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     if (isFALSE(databases_arg) | 'food_qs' %in% databases){
 
         #visit 1
-        v1_foodqs_data <- v1_data[['data']][c(1, 396:711)]
-        v1_foodqs_labels <- v1_data[['dict']][c(1, 396:711)]
+        v1_foodqs_data <- v1_data[['data']][c(1, 506:821)]
+        v1_foodqs_labels <- v1_data[['dict']][c(1, 506:821)]
 
         #visit 2
         v2_foodqs_data <- v2_data[['data']][c(1:2, 77:299)]
@@ -671,8 +671,8 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         names(v6_foodqs_labels)[2] <- 'v6_date'
 
         #visit 7
-        v7_foodqs_data <- v7_data[['data']][c(1:2, 260:265, 462:777)]
-        v7_foodqs_labels <- v7_data[['dict']][c(1:2, 260:265, 462:777)]
+        v7_foodqs_data <- v7_data[['data']][c(1:2, 370:375, 572:887)]
+        v7_foodqs_labels <- v7_data[['dict']][c(1:2, 370:375, 572:887)]
 
         names(v7_foodqs_data)[2] <- 'v7_date'
         names(v7_foodqs_labels)[2] <- 'v7_date'
@@ -759,8 +759,8 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         names(v4_psychqs_labels)[2] <- 'v4_date'
 
         #visit 7
-        v7_psychqs_data <- v7_data[['data']][c(1:2, 778:888)]
-        v7_psychqs_labels <- v7_data[['dict']][c(1:2, 778:888)]
+        v7_psychqs_data <- v7_data[['data']][c(1:2, 888:998)]
+        v7_psychqs_labels <- v7_data[['dict']][c(1:2, 888:998)]
 
         names(v7_psychqs_data)[2] <- 'v7_date'
         names(v7_psychqs_labels)[2] <- 'v7_date'
@@ -907,8 +907,8 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     if (isFALSE(databases_arg) | 'intero' %in% databases){
 
         #visit 1
-        v1_notes_data <- v1_data[['data']][c(1, 712:715)]
-        v1_notes_labels <- v1_data[['dict']][c(1, 712:715)]
+        v1_notes_data <- v1_data[['data']][c(1, 822:825)]
+        v1_notes_labels <- v1_data[['dict']][c(1, 822:825)]
 
         #re-name variables with 'v1_' and add 'Visit 1 - ' to labels
         for (v in 2:ncol(v1_notes_data)){
@@ -1031,8 +1031,8 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         names(v6_notes_labels) <- names(v6_notes_data)
 
         #visit 7
-        v7_notes_data <- v7_data[['data']][c(1:2, 889:904)]
-        v7_notes_labels <- v7_data[['dict']][c(1:2, 889:904)]
+        v7_notes_data <- v7_data[['data']][c(1:2, 999:1014)]
+        v7_notes_labels <- v7_data[['dict']][c(1:2, 999:1014)]
 
         names(v7_notes_data)[2] <- 'v7_date'
         names(v7_notes_labels)[2] <- 'v7_date'

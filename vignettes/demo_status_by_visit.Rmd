@@ -30,6 +30,24 @@ library(knitr)
 library(kableExtra)
 ```
 
+# define functions
+```{r setup3, include=FALSE}
+# convert 'haven_labelled' datatypes - your loop didn't change/update the 'Table1_vars', only the df in the dfList so that tables were not able to be created. This is where it is important that it is run fully independently/with cleared environment to ensure it works. By making your loop a function, you can apply it directly to your tables and return the changes. As we move forward, it may be a good idea to make these types of functions part of the package since they aren't super common in datasets typically needed with R.
+
+convertHaven <- function(df){
+  for (v in 1:ncol(df)) {
+    var_name <- names(df)[v]
+    class <- class(df[[var_name]])
+    if (grepl("haven_labelled", class[1])  ) {
+      df[[var_name]] <- labelled::unlabelled(df[[var_name]])
+    }
+  }
+  
+  return(df)
+}
+
+```
+
 <!-- need to split chunks. Each chunk should have a single purpose so that you can control what is displayed in the pdf of the vignette.  -->
 <!-- pretty sure you can't have spaces in your cunck labels when you convert to pdf -->
 
@@ -53,19 +71,6 @@ data_v1 <- util_fbs_merge_v1(child_file_pattern = 'Child_V1', parent_file_patter
 ## CHANGE RISK VARIABLES TO risk_status_mom / risk_status_both
 Table1_vars <- data_v1[['data']][c('age_yr', 'sex', 'risk_status_mom','risk_status_both', 'bmi_screenout')]
 
-# convert 'haven_labelled' datatypes - your loop didn't change/update the 'Table1_vars', only the df in the dfList so that tables were not able to be created. This is where it is important that it is run fully independently/with cleared environment to ensure it works. By making your loop a function, you can apply it directly to your tables and return the changes. As we move forward, it may be a good idea to make these types of functions part of the package since they aren't super common in datasets typically needed with R.
-
-convertHaven <- function(df){
-  for (v in 1:ncol(df)) {
-    var_name <- names(df)[v]
-    class <- class(df[[var_name]])
-    if (grepl("haven_labelled", class[1])  ) {
-      df[[var_name]] <- labelled::unlabelled(df[[var_name]])
-    }
-  }
-  
-  return(df)
-}
 
 Table1_vars <- convertHaven(Table1_vars)
 

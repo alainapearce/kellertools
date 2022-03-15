@@ -98,21 +98,46 @@ util_fbs_child_v1dat_lab <- function(file_pattern, data_path) {
     if (isTRUE(datapath_arg)) {
 
         #check pattern of directories specified in Data manual
-        qv1_child_path <- list.files(path = paste0(data_path, '/Final_Covid/'), pattern = paste0(file_pattern, '_Lab'), full.names = TRUE)
+        qv1_child_pathlist <- list.files(path = paste0(data_path, '/Final_Covid/'), pattern = paste0(file_pattern, '_Lab'), full.names = TRUE)
 
         #if no files found, check direct data_path entered
-        if (length(qv1_child_path) == 0) {
-            qv1_child_path <- list.files(path = data_path, pattern = paste0(file_pattern, '_Lab'), full.names = TRUE)
+        if (length(qv1_child_pathlist) == 0) {
+            qv1_child_pathlist <- list.files(path = data_path, pattern = paste0(file_pattern, '_Lab'), full.names = TRUE)
         }
+
+        #check for DXA data
+        qv1_child_DXApathlist <- list.files(path = data_path, pattern = paste0(file_pattern, '_DXA'), full.names = TRUE)
+
+        if (length(qv1_child_DXApathlist) > 0){
+            qv1_child_pathlist <- c(qv1_child_pathlist, qv1_child_DXApathlist)
+        }
+
     } else {
-        qv1_child_path <- paste0(pattern = paste0(file_pattern, '_Lab'), full.names = TRUE)
+        qv1_child_pathlist <- paste0(pattern = paste0(file_pattern, '_Lab'), full.names = TRUE)
+
+        #check for DXA data
+        qv1_child_DXApathlist <- list.files(pattern = paste0(file_pattern, '_DXA'), full.names = TRUE)
+
+        if (length(qv1_child_DXApathlist) > 0){
+            qv1_child_pathlist <- c(qv1_child_pathlist, qv1_child_DXApathlist)
+        }
     }
 
+    # check for DXA files
+    DXA_file <- grepl('DXA', qv1_child_pathlist, fixed = TRUE)
+
     # check number of files found
-    if (length(qv1_child_path) > 1) {
+    if (length(qv1_child_pathlist) - sum(DXA_file) > 1) {
         stop("More than one file matched after adding '_Lab' to the file_pattern . Be sure thefile_pattern specifies both the respondent (Parent/Child) and visit number (V#). If have more than 1 file matching the pattern in the directory, may need to move to enter a more specific file_pattern than is standard.")
-    } else if (length(qv1_child_path) == 0) {
+    } else if (length(qv1_child_pathlist) == 0) {
         stop("No files found after adding '_Lab' to file_pattern. Be sure the data_path and file_pattern are correct and that the file exists.")
+    } else {
+        #get child qualtrics path
+        if (sum(DXA_file) > 0) {
+            qv1_child_path <- qv1_child_pathlist[DXA_file == FALSE]
+        } else {
+            qv1_child_path <- qv1_child_pathlist
+        }
     }
 
     # check that file is of type '.sav'
@@ -134,6 +159,33 @@ util_fbs_child_v1dat_lab <- function(file_pattern, data_path) {
         } else {
             stop("File does not exist. Check file_pattern and that the data exists in current working directory")
         }
+    }
+
+    # check for and load DXA data
+    if (sum(DXA_file) == 1){
+        qv1_child_DXApath <- qv1_child_pathlist[DXA_file]
+
+        # check that file is of type '.sav'
+        if (!grepl('.sav', qv1_child_DXApath, fixed = TRUE)){
+            stop("The DXA file found is not an SPSS database (.sav)")
+        }
+
+        # check if DXA exists
+        qv1_child_DXA_exists <- file.exists(qv1_child_DXApath)
+
+        # load data if it exists
+        if (isTRUE(qv1_child_DXA_exists)) {
+            qv1_child_DXAdat <- as.data.frame(haven::read_spss(qv1_child_DXApath))
+
+        } else {
+            if (isTRUE(datapath_arg)) {
+                stop("DXA file does not exist. Check file_pattern and data_path entered")
+            } else {
+                stop("DXA file does not exist. Check file_pattern and that the data exists in current working directory")
+            }
+        }
+    } else if (sum(DXA_file) > 1){
+        stop("More than one file matched the DXA file_pattern. If have more than 1 file matching the pattern in the directory, may need to move to enter a more specific file_pattern than is standard.")
     }
 
     #### 3. Clean Data #####
@@ -310,7 +362,67 @@ util_fbs_child_v1dat_lab <- function(file_pattern, data_path) {
         }
     }
 
-    #### 9) Format for export ####
+    #### 9) Add DXA data ####
+    if (sum(DXA_file) > 0){
+        if (isTRUE(qv1_child_DXA_exists)){
+
+            ## extract variable labels/descriptions
+            qv1_child_DXAlabels <- lapply(qv1_child_DXAdat, function(x) attributes(x)$label)
+
+            ## make lowercase
+            names(qv1_child_DXAdat) <- tolower(names(qv1_child_DXAdat))
+
+            ## fix naming
+            names(qv1_child_DXAdat)[c(65, 68, 70, 73, 75, 78, 80, 83, 85, 88, 90, 93, 95, 99, 102, 104, 108, 111:119, 123:126)] <- c('l_arm_lean_bmc_comb', 'l_arm_perc_fat_ptile', 'r_arm_lean_bmc_comb', 'r_arm_perc_fat_ptile', 'trunk_lean_bmc_comb', 'trunk_perc_fat_ptile', 'l_leg_lean_bmc_comb', 'l_leg_perc_fat_ptile', 'r_leg_lean_bmc_comb', 'r_leg_perc_fat_ptile', 'subtotal_lean_bmc_comb', 'subtotal_perc_fat_ptile', 'head_lean_bmc_comb', 'total_lean_bmc_comb', 'total_perc_fat_ptile', 'android_lean_bmc_comb', 'gynoid_lean_bmc_comb', 'total_body_perc_fat', 'bodyfat_ptile', 'fatmass_height_ratio', 'fatmass_height_ratio_ptile', 'android_gynoid_ratio', 'percfat_trunk_legs_ratio', 'percfat_trunk_legs_ratio_ptile', 'fatmass_trunk_legs_ratio', 'fatmass_trunk_legs_ratio_ptile', 'lean_height_ratio', 'lean_height_ratio_ptile', 'appen_lean_height', 'appen_lean_height_ptile')
+
+            ## add 'dxa' to names and shorten 'percent'
+            for (var in 1:length(names(qv1_child_DXAdat))) {
+                var_name <- names(qv1_child_DXAdat)[var]
+
+                #add DXA
+                if (var_name != 'id'){
+                    names(qv1_child_DXAdat)[var] <- paste0('dxa_', var_name)
+                }
+
+                #update var_name
+                var_name <- names(qv1_child_DXAdat)[var]
+
+                #shorten 'percent'
+                if (grepl("percent", var_name, fixed = TRUE)) {
+                    names(qv1_child_DXAdat)[var] <- gsub("percent", "perc", var_name)
+                }
+            }
+
+            #update labels
+            names(qv1_child_DXAlabels) <- names(qv1_child_DXAdat)
+
+            for (var in 1:length(names(qv1_child_DXAlabels))) {
+                var_name <- names(qv1_child_DXAlabels)[var]
+
+                if (grepl("VAT", qv1_child_DXAlabels[[var_name]], fixed = TRUE) | grepl("vat", qv1_child_DXAlabels[[var_name]], fixed = TRUE)) {
+                    qv1_child_DXAlabels[[var_name]] <- gsub("VAT", "viseral adipose tissue (VAT)", qv1_child_DXAlabels[[var_name]])
+                }
+
+                if (grepl("BMC", qv1_child_DXAlabels[[var_name]], fixed = TRUE)) {
+                    qv1_child_DXAlabels[[var_name]] <- gsub("BMC", "bone mineral content (BMC)", qv1_child_DXAlabels[[var_name]])
+                }
+
+                if (grepl("BMD", qv1_child_DXAlabels[[var_name]], fixed = TRUE)) {
+                    qv1_child_DXAlabels[[var_name]] <- gsub("BMD", "bone mineral density (BMD)", qv1_child_DXAlabels[[var_name]])
+                }
+
+                if (grepl("Percentile AM", qv1_child_DXAlabels[[var_name]], fixed = TRUE)) {
+                    qv1_child_DXAlabels[[var_name]] <- gsub("Percentile AM", "aged matched percentile", qv1_child_DXAlabels[[var_name]])
+                }
+            }
+
+            #merge
+            qv1_child_clean <- merge(qv1_child_clean, qv1_child_DXAdat[c(18, 26:135)], by = 'id', all.x = TRUE)
+            qv1_child_clean_labels <- c(qv1_child_clean_labels, qv1_child_DXAlabels[c(26:135)])
+        }
+    }
+
+    #### 10) Format for export ####
 
     #put data in order of participant ID for ease
     qv1_child_clean <- qv1_child_clean[order(qv1_child_clean[["id"]]), ]

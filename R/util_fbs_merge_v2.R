@@ -67,10 +67,10 @@ util_fbs_merge_v2 <- function(child_file_pattern, parent_file_pattern, parentV4_
         child_lab_v2dat <- util_fbs_child_v2dat_lab(child_file_pattern, data_path)
         parent_v2dat <- util_fbs_parent_v2dat(parent_file_pattern, data_path)
     } else {
-        child_v2dat <- util_fbs_child_v2dat(child_date_str)
-        child_home_v2dat <- util_fbs_child_v2dat_home(child_home_date_str)
-        child_lab_v2dat <- util_fbs_child_v2dat_lab(child_lab_date_str)
-        parent_v2dat <- util_fbs_parent_v2dat(parent_date_str)
+        child_v2dat <- util_fbs_child_v2dat(child_file_pattern)
+        child_home_v2dat <- util_fbs_child_v2dat_home(child_file_pattern)
+        child_lab_v2dat <- util_fbs_child_v2dat_lab(child_file_pattern)
+        parent_v2dat <- util_fbs_parent_v2dat(parent_file_pattern)
     }
 
     ## 2a) Check for parent V4  #####

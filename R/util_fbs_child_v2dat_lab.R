@@ -94,21 +94,23 @@ util_fbs_child_v2dat_lab <- function(file_pattern, data_path) {
     # Qualtrics data
     if (isTRUE(datapath_arg)) {
         #check pattern of directories specified in Data manual
-        qv2_child_path <- list.files(path = paste0(data_path, '/Final_Covid/'), pattern = paste0(file_pattern, '_Lab'), full.names = TRUE)
+        qv2_child_pathlist <- list.files(path = paste0(data_path, '/Final_Covid/'), pattern = paste0(file_pattern, '_Lab'), full.names = TRUE)
 
         #if no files found, check direct data_path entered
-        if (length(qv2_child_path) == 0) {
-            qv2_child_path <- list.files(path = data_path, pattern = paste0(file_pattern, '_Lab'), full.names = TRUE)
+        if (length(qv2_child_pathlist) == 0) {
+            qv2_child_pathlist <- list.files(path = data_path, pattern = paste0(file_pattern, '_Lab'), full.names = TRUE)
         }
     } else {
-        qv2_child_path <- paste0(pattern = paste0(file_pattern, '_Lab'), full.names = TRUE)
+        qv2_child_pathlist <- paste0(pattern = paste0(file_pattern, '_Lab'), full.names = TRUE)
     }
 
     # check number of files found
-    if (length(qv2_child_path) > 1) {
+    if (length(qv2_child_pathlist) > 1) {
         stop("More than one file matched after adding '_Lab' to the file_pattern . Be sure thefile_pattern specifies both the respondent (Parent/Child) and visit number (V#). If have more than 1 file matching the pattern in the directory, may need to move to enter a more specific file_pattern than is standard.")
-    } else if (length(qv2_child_path) == 0) {
+    } else if (length(qv2_child_pathlist) == 0) {
         stop("No files found after adding '_Lab' to file_pattern. Be sure the data_path and file_pattern are correct and that the file exists.")
+    } else {
+        qv2_child_path <- qv2_child_pathlist
     }
 
     # check that file is of type '.sav'

@@ -66,10 +66,10 @@ util_fbs_merge_v5 <- function(child_file_pattern, parent_file_pattern, data_path
         child_lab_v5dat <- util_fbs_child_v5dat_lab(child_file_pattern, data_path)
         parent_v5dat <- util_fbs_parent_v5dat(parent_file_pattern, data_path)
     } else {
-        child_v5dat <- util_fbs_child_v5dat(child_date_str)
-        child_home_v5dat <- util_fbs_child_v5dat_home(child_home_date_str)
-        child_lab_v5dat <- util_fbs_child_v5dat_lab(child_lab_date_str)
-        parent_v5dat <- util_fbs_parent_v5dat(parent_date_str)
+        child_v5dat <- util_fbs_child_v5dat(child_file_pattern)
+        child_home_v5dat <- util_fbs_child_v5dat_home(child_file_pattern)
+        child_lab_v5dat <- util_fbs_child_v5dat_lab(child_file_pattern)
+        parent_v5dat <- util_fbs_parent_v5dat(parent_file_pattern)
     }
 
     #### 3. Merge Child Raw Data #####

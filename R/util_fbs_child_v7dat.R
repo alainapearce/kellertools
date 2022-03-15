@@ -92,16 +92,26 @@ util_fbs_child_v7dat <- function(file_pattern, data_path) {
 
     # Qualtrics data
     if (isTRUE(datapath_arg)) {
-        qv7_child_path <- list.files(path = data_path, pattern = file_pattern, full.names = TRUE)
+        qv7_child_pathlist <- list.files(path = data_path, pattern = file_pattern, full.names = TRUE)
     } else {
-        qv7_child_path <- paste0(pattern = file_pattern, full.names = TRUE)
+        qv7_child_pathlist <- paste0(pattern = file_pattern, full.names = TRUE)
     }
 
+    # check for DXA files
+    DXA_file <- grepl('DXA', qv7_child_pathlist, fixed = TRUE)
+
     # check number of files found
-    if (length(qv7_child_path) > 1) {
+    if (length(qv7_child_pathlist) - sum(DXA_file) > 1) {
         stop("More than one file matched the file_pattern. Be sure thefile_pattern specifies both the respondent (Parent/Child) and visit number (V#). If have more than 1 file matching the pattern in the directory, may need to move to enter a more specific file_pattern than is standard.")
-    } else if (length(qv7_child_path) == 0) {
+    } else if (length(qv7_child_pathlist) == 0) {
         stop('No files found. Be sure the data_path and file_pattern are correct and that the file exists')
+    } else {
+        #get child qualtrics path
+        if (sum(DXA_file) > 0) {
+            qv7_child_path <- qv7_child_pathlist[DXA_file == FALSE]
+        } else {
+            qv7_child_path <- qv7_child_pathlist
+        }
     }
 
     # check that file is of type '.sav'
@@ -122,6 +132,33 @@ util_fbs_child_v7dat <- function(file_pattern, data_path) {
         } else {
             stop("File does not exist. Check file_pattern and that the data exists in current working directory")
         }
+    }
+
+    # check for and load DXA data
+    if (sum(DXA_file) == 1){
+        qv7_child_DXApath <- qv7_child_pathlist[DXA_file]
+
+        # check that file is of type '.sav'
+        if (!grepl('.sav', qv7_child_DXApath, fixed = TRUE)){
+            stop("The DXA file found is not an SPSS database (.sav)")
+        }
+
+        # check if DXA exists
+        qv7_child_DXA_exists <- file.exists(qv7_child_DXApath)
+
+        # load data if it exists
+        if (isTRUE(qv7_child_DXA_exists)) {
+            qv7_child_DXAdat <- as.data.frame(haven::read_spss(qv7_child_DXApath))
+
+        } else {
+            if (isTRUE(datapath_arg)) {
+                stop("DXA file does not exist. Check file_pattern and data_path entered")
+            } else {
+                stop("DXA file does not exist. Check file_pattern and that the data exists in current working directory")
+            }
+        }
+    } else if (sum(DXA_file) > 1){
+        stop("More than one file matched the DXA file_pattern. If have more than 1 file matching the pattern in the directory, may need to move to enter a more specific file_pattern than is standard.")
     }
 
     #### 3. Clean Data #####
@@ -317,13 +354,13 @@ util_fbs_child_v7dat <- function(file_pattern, data_path) {
         if (is.element(99, qv7_child_clean[[pvar]])) {
             pna_dat <- ifelse(is.na(qv7_child_clean[[pvar]]), 0, ifelse(qv7_child_clean[[pvar]] == 99, 1, 0))
 
-            new_pna <- length(names(qv1_parent_pna)) + 1
-            qv1_parent_pna[[new_pna]] <- pna_dat
+            new_pna <- length(names(qv7_parent_pna)) + 1
+            qv7_parent_pna[[new_pna]] <- pna_dat
 
-            names(qv1_parent_pna)[new_pna] <- paste0(pvar, "_pna")
+            names(qv7_parent_pna)[new_pna] <- paste0(pvar, "_pna")
 
             # add label to pna database
-            qv1_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar, ": ", qv7_child_clean_labels[[pvar]])
+            qv7_parent_pna_labels[[paste0(pvar, "_pna")]] <- paste0("prefer not to answer marked for variable ", pvar, ": ", qv7_child_clean_labels[[pvar]])
 
             # update true data label (only want to pna label if needed)
             qv7_child_clean_labels[[pvar]] <- paste0(qv7_child_clean_labels[[pvar]], " -- ", pna_label)
@@ -432,16 +469,77 @@ util_fbs_child_v7dat <- function(file_pattern, data_path) {
 
     qv7_child_clean_labels[["spacegame_reward"]] <- "Type of candy selected for Space Game reward"
 
-    #### 9) Format for export ####
+    #### 9) Add DXA data ####
+    if (sum(DXA_file) > 0){
+        if (isTRUE(qv7_child_DXA_exists)){
 
-    ## 9a) add attributes to pna data
+            ## extract variable labels/descriptions
+            qv7_child_DXAlabels <- lapply(qv7_child_DXAdat, function(x) attributes(x)$label)
+
+            ## make lowercase
+            names(qv7_child_DXAdat) <- tolower(names(qv7_child_DXAdat))
+
+            ## fix naming
+            names(qv7_child_DXAdat)[c(65, 68, 70, 73, 75, 78, 80, 83, 85, 88, 90, 93, 95, 99, 102, 104, 108, 111:119, 123:126)] <- c('l_arm_lean_bmc_comb', 'l_arm_perc_fat_ptile', 'r_arm_lean_bmc_comb', 'r_arm_perc_fat_ptile', 'trunk_lean_bmc_comb', 'trunk_perc_fat_ptile', 'l_leg_lean_bmc_comb', 'l_leg_perc_fat_ptile', 'r_leg_lean_bmc_comb', 'r_leg_perc_fat_ptile', 'subtotal_lean_bmc_comb', 'subtotal_perc_fat_ptile', 'head_lean_bmc_comb', 'total_lean_bmc_comb', 'total_perc_fat_ptile', 'android_lean_bmc_comb', 'gynoid_lean_bmc_comb', 'total_body_perc_fat', 'bodyfat_ptile', 'fatmass_height_ratio', 'fatmass_height_ratio_ptile', 'android_gynoid_ratio', 'percfat_trunk_legs_ratio', 'percfat_trunk_legs_ratio_ptile', 'fatmass_trunk_legs_ratio', 'fatmass_trunk_legs_ratio_ptile', 'lean_height_ratio', 'lean_height_ratio_ptile', 'appen_lean_height', 'appen_lean_height_ptile')
+
+            ## add 'dxa' to names and shorten 'percent'
+            for (var in 1:length(names(qv7_child_DXAdat))) {
+                var_name <- names(qv7_child_DXAdat)[var]
+
+                #add DXA
+                if (var_name != 'id'){
+                    names(qv7_child_DXAdat)[var] <- paste0('dxa_', var_name)
+                }
+
+                #update var_name
+                var_name <- names(qv7_child_DXAdat)[var]
+
+                #shorten 'percent'
+                if (grepl("percent", var_name, fixed = TRUE)) {
+                    names(qv7_child_DXAdat)[var] <- gsub("percent", "perc", var_name)
+                }
+
+            }
+
+            #update labels
+            names(qv7_child_DXAlabels) <- names(qv7_child_DXAdat)
+
+            for (var in 1:length(names(qv7_child_DXAlabels))) {
+                var_name <- names(qv7_child_DXAlabels)[var]
+
+                if (grepl("VAT", qv7_child_DXAlabels[[var_name]], fixed = TRUE) | grepl("vat", qv7_child_DXAlabels[[var_name]], fixed = TRUE)) {
+                    qv7_child_DXAlabels[[var_name]] <- gsub("VAT", "viseral adipose tissue (VAT)", qv7_child_DXAlabels[[var_name]])
+                }
+
+                if (grepl("BMC", qv7_child_DXAlabels[[var_name]], fixed = TRUE)) {
+                    qv7_child_DXAlabels[[var_name]] <- gsub("BMC", "bone mineral content (BMC)", qv7_child_DXAlabels[[var_name]])
+                }
+
+                if (grepl("BMD", qv7_child_DXAlabels[[var_name]], fixed = TRUE)) {
+                    qv7_child_DXAlabels[[var_name]] <- gsub("BMD", "bone mineral density (BMD)", qv7_child_DXAlabels[[var_name]])
+                }
+
+                if (grepl("Percentile AM", qv7_child_DXAlabels[[var_name]], fixed = TRUE)) {
+                    qv7_child_DXAlabels[[var_name]] <- gsub("Percentile AM", "aged matched percentile", qv7_child_DXAlabels[[var_name]])
+                }
+            }
+
+            #merge
+            qv7_child_clean <- merge(qv7_child_clean, qv7_child_DXAdat[c(18, 26:135)], by = 'id', all.x = TRUE)
+            qv7_child_clean_labels <- c(qv7_child_clean_labels, qv7_child_DXAlabels[c(26:135)])
+        }
+    }
+
+    #### 10) Format for export ####
+
+    ## 10a) add attributes to pna data
     qv7_child_pna[2:ncol(qv7_child_pna)] <- as.data.frame(lapply(qv7_child_pna[2:ncol(qv7_child_pna)], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
 
     for (v in 2:ncol(qv7_child_pna)){
         class(qv7_child_pna[[v]]) <- c("haven_labelled", "vctrs_vctr", "double")
     }
 
-    ## 9b) put data in order of participant ID for ease ####
+    ## 10b) put data in order of participant ID for ease ####
     qv7_child_clean <- qv7_child_clean[order(qv7_child_clean[["id"]]), ]
 
     qv7_child_pna <- qv7_child_pna[order(qv7_child_pna[["id"]]), ]

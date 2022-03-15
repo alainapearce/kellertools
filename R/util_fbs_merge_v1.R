@@ -65,10 +65,10 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
         child_lab_v1dat <- util_fbs_child_v1dat_lab(child_file_pattern, data_path)
         parent_v1dat <- util_fbs_parent_v1dat(parent_file_pattern, data_path)
     } else {
-        child_v1dat <- util_fbs_child_v1dat(child_date_str)
-        child_home_v1dat <- util_fbs_child_v1dat_home(child_home_date_str)
-        child_lab_v1dat <- util_fbs_child_v1dat_lab(child_lab_date_str)
-        parent_v1dat <- util_fbs_parent_v1dat(parent_date_str)
+        child_v1dat <- util_fbs_child_v1dat(child_file_pattern)
+        child_home_v1dat <- util_fbs_child_v1dat_home(child_file_pattern)
+        child_lab_v1dat <- util_fbs_child_v1dat_lab(child_file_pattern)
+        parent_v1dat <- util_fbs_parent_v1dat(parent_file_pattern)
     }
 
     #### 3. Merge Child Raw Data #####
@@ -77,14 +77,14 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
     child_covidmerge_v1dat <- merge(child_lab_v1dat[['data']], child_home_v1dat[['data']][c(1, 7:95)], by = 'id', all = TRUE)
 
     # re-order so matches child_v1dat
-    child_covidmerge_v1dat <- child_covidmerge_v1dat[c(1:160, 163:251, 161:162)]
+    child_covidmerge_v1dat <- child_covidmerge_v1dat[c(1:160, 273:361, 161:272)]
 
     # add pss soup since it is missing from v1 home - need to have same columns to merge
     child_covidmerge_v1dat[['pss_soup_eat']] <- NA
     child_covidmerge_v1dat[['pss_soup_much']] <- NA
     child_covidmerge_v1dat[['pss_soup_like']] <- NA
 
-    child_covidmerge_v1dat <- child_covidmerge_v1dat[c(1:243, 252:254, 244:251)]
+    child_covidmerge_v1dat <- child_covidmerge_v1dat[c(1:243, 362:364, 244:361)]
 
     # merge all child into single database
     all_child_v1dat <- rbind.data.frame(child_v1dat[['data']], child_covidmerge_v1dat)
@@ -127,6 +127,15 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
 
     # order of vars: 1) Demographics, 2) Anthro (hw, DXA, sleep, PA), 3) Intake (FF, liking, intake, want), 4) feeding/food Q's, 5) cog/trait Q's, 6) Delay Discounting, 7) MRI related (CAMS, FF, snack info, image ratings), 8) Notes
 
+    #pull out DXA to add in separately
+    v1dat_dxa <- v1dat[255:364]
+    v1dat_dxa[['id']] <- as.numeric(v1dat[['id']])
+    v1dat_labels_dxa <- v1dat_labels[c(1,255:364)]
+
+    v1dat <- v1dat[c(1:254, 365:768)]
+    v1dat_labels <- v1dat_labels[c(1:254, 365:768)]
+
+    # organize non-DXA data
     v1dat_org <- v1dat[c(1:2, 16, 360:361, 3:6, 258:279, 362:364, 386:420, 429:440, 7:15, 255:257, 365:385, 280:359, 17:160, 421:428, 441:500, 161:252, 501:656, 657:658, 253:254)]
 
     v1dat_labels <- v1dat_labels[c(1:2, 16, 360:361, 3:6, 258:279, 362:364, 386:420, 429:440, 7:15, 255:257, 365:385, 280:359, 17:160, 421:428, 441:500, 161:252, 501:656, 657:658, 253:254)]
@@ -203,7 +212,6 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
     risk_scored[risk_scored[['id']] == 65, 'risk_status_both'] <- 2
     risk_scored[risk_scored[['id']] == 66, 'risk_status_both'] <- 2
     risk_scored[risk_scored[['id']] == 88, 'risk_status_both'] <- 2
-
 
     # get labels from scored data and simplify
     risk_scored_labels <- sapply(risk_scored, function(x) attributes(x)$label, simplify = TRUE, USE.NAMES = FALSE)
@@ -285,12 +293,18 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
 
     v1dat_scored_labels <- v1dat_scored_labels[c(1:258, 702, 259:262, 703, 263:266, 704, 267:270, 705, 271:274, 706, 275:278, 707, 279:282, 708, 283:286, 709, 287:290, 710, 291:294, 711, 295:298, 712, 299:302, 713:715, 303:701)]
 
-    #### 8. PNA data #####
+    #### 8. DXA data #####
+    v1dat_scored <- merge(v1dat_scored, v1dat_dxa, by = 'id', all = TRUE)
+    v1dat_scored <- v1dat_scored[c(1:100, 716:825, 101:715)]
+
+    v1dat_scored_labels <- c(v1dat_scored_labels[1:100], v1dat_labels_dxa[1:110], v1dat_scored_labels[101:715])
+
+    #### 9. PNA data #####
 
     # only parent has pna data to organize
     v1dat_pna <- parent_v1dat[['pna_data']]
 
-    #### 9. save to list #####
+    #### 10. save to list #####
 
     # put data in order of participant ID for ease
     v1dat_scored <- v1dat_scored[order(v1dat_scored[["id"]]), ]

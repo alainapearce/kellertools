@@ -4,9 +4,9 @@
 #'
 #' The databases MUST follow the naming convention: Child_V7_YYYY-MM-DD.sav, Child_V7_Home_YYY-MM-DD.sav, Child_V7_Lab_YYY-MM-DD.sav, and Parent_V7_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered and the directory organization does not follow the structure laid out in the DataManual.
 #'
-#' @inheritParams util_fbs_merge_v1
-#' @inheritParams util_fbs_merge_v1
-#' @inheritParams util_fbs_parent_v1dat
+#' @inheritParams util_fbs_merge_v7
+#' @inheritParams util_fbs_merge_v7
+#' @inheritParams util_fbs_parent_v7dat
 #'
 #' @return A list containing: 1) data: data.frame with raw, cleaned data from parent visit 7 Qualtrics; 2) dict: all variable descriptions; 3) pna_data: data.frame marking participants who 'preferred not to answer' (pna) specific questions; and 4) pna_dict: all variable descriptions for pna_data
 #'
@@ -67,10 +67,10 @@ util_fbs_merge_v7 <- function(child_file_pattern, parent_file_pattern, data_path
         parent_v7dat <- util_fbs_parent_v7dat(parent_file_pattern, data_path)
         parent_home_v7dat <- util_fbs_parent_v7dat_home(parent_file_pattern, data_path)
     } else {
-        child_v7dat <- util_fbs_child_v7dat(child_date_str)
-        child_home_v7dat <- util_fbs_child_v7dat_home(child_home_date_str)
-        child_lab_v7dat <- util_fbs_child_v7dat_lab(child_lab_date_str)
-        parent_v7dat <- util_fbs_parent_v7dat(parent_date_str)
+        child_v7dat <- util_fbs_child_v7dat(child_file_pattern)
+        child_home_v7dat <- util_fbs_child_v7dat_home(child_file_pattern)
+        child_lab_v7dat <- util_fbs_child_v7dat_lab(child_file_pattern)
+        parent_v7dat <- util_fbs_parent_v7dat(parent_file_pattern)
         parent_home_v7dat <- util_fbs_parent_v7dat_home(parent_file_pattern)
     }
 
@@ -80,7 +80,7 @@ util_fbs_merge_v7 <- function(child_file_pattern, parent_file_pattern, data_path
     child_covidmerge_v7dat <- merge(child_lab_v7dat[['data']], child_home_v7dat[['data']][c(1, 5:39)], by = 'id', all = TRUE)
 
     # re-order so matches child_v7dat
-    child_covidmerge_v7dat <- child_covidmerge_v7dat[c(1:15, 190:203, 16:186, 204:224, 187:189)]
+    child_covidmerge_v7dat <- child_covidmerge_v7dat[c(1:15, 300:313, 16:186, 314:334, 187:299)]
 
     # merge all child into single database
 
@@ -170,6 +170,14 @@ util_fbs_merge_v7 <- function(child_file_pattern, parent_file_pattern, data_path
     v7dat_labels <- c(child_v7dat[['dict']], parent_v7dat[['dict']][5:549])
 
     #### 5. Organize V7 data ####
+
+    #pull out DXA to add in separately
+    v7dat_dxa <- v7dat[225:334]
+    v7dat_dxa[['id']] <- as.numeric(v7dat[['id']])
+    v7dat_labels_dxa <- v7dat_labels[c(1,225:334)]
+
+    v7dat <- v7dat[c(1:224, 335:879)]
+    v7dat_labels <- v7dat_labels[c(1:224, 335:879)]
 
     # order of vars: 1) Demographics, 2) Anthro (hw, DXA, sleep, PA), 3) Intake (FF, liking, intake, want), 4) feeding/food Q's, 5) cog/trait Q's, 6) Delay Discounting, 7) MRI related (CAMS, FF, snack info, image ratings), 8) Notes
 
@@ -406,7 +414,13 @@ util_fbs_merge_v7 <- function(child_file_pattern, parent_file_pattern, data_path
 
     v7dat_scored_labels <- v7dat_scored_labels[c(1:129, 902, 130:285, 903:904, 286:901)]
 
-    #### 9. PNA data #####
+    #### 9. DXA data #####
+    v7dat_scored <- merge(v7dat_scored, v7dat_dxa, by = 'id', all = TRUE)
+    v7dat_scored <- v7dat_scored[c(1:130, 905:1014, 131:904)]
+
+    v7dat_scored_labels <- c(v7dat_scored_labels[1:130], v7dat_labels_dxa[2:111], v7dat_scored_labels[131:904])
+
+    #### 10. PNA data #####
 
     # child pna data
 
@@ -502,7 +516,7 @@ util_fbs_merge_v7 <- function(child_file_pattern, parent_file_pattern, data_path
 
     v7dat_pna_labels <- c(child_v7dat_pna_labels, parent_v7dat_pna_labels[2:length(parent_v7dat_pna_labels)])
 
-    #### 10. save to list #####
+    #### 11. save to list #####
 
     # put data in order of participant ID for ease
     v7dat_scored <- v7dat_scored[order(v7dat_scored[["id"]]), ]

@@ -62,21 +62,23 @@ util_fbs_parent_v7dat_home <- function(file_pattern, data_path) {
 
     if (isTRUE(datapath_arg)) {
         #check pattern of directories specified in Data manual
-        qv7_parent_path <- list.files(path = paste0(data_path, '/Final_Covid/'), pattern = paste0(file_pattern, '_Home'), full.names = TRUE)
+        qv7_parent_pathlist <- list.files(path = paste0(data_path, '/Final_Covid/'), pattern = paste0(file_pattern, '_Home'), full.names = TRUE)
 
         #if no files found, check direct data_path entered
-        if (length(qv7_parent_path) == 0) {
-            qv7_parent_path <- list.files(path = data_path, pattern = paste0(file_pattern, '_Home'), full.names = TRUE)
+        if (length(qv7_parent_pathlist) == 0) {
+            qv7_parent_pathlist <- list.files(path = data_path, pattern = paste0(file_pattern, '_Home'), full.names = TRUE)
         }
     } else {
-        qv7_parent_path <- paste0(pattern = paste0(file_pattern, '_Home'), full.names = TRUE)
+        qv7_parent_pathlist <- paste0(pattern = paste0(file_pattern, '_Home'), full.names = TRUE)
     }
 
     # check number of files found
-    if (length(qv7_parent_path) > 1) {
+    if (length(qv7_parent_pathlist) > 1) {
         stop("More than one file matched after adding '_Home' to the file_pattern . Be sure thefile_pattern specifies both the respondent (Parent/Child) and visit number (V#). If have more than 1 file matching the pattern in the directory, may need to move to enter a more specific file_pattern than is standard.")
-    } else if (length(qv7_parent_path) == 0) {
+    } else if (length(qv7_parent_pathlist) == 0) {
         stop("No files found after adding '_Home' to file_pattern. Be sure the data_path and file_pattern are correct and that the file exists.")
+    } else {
+        qv7_parent_path <- qv7_parent_pathlist
     }
 
     # check that file is of type '.sav'

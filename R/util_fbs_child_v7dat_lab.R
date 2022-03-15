@@ -12,8 +12,8 @@
 #'
 #' The databases MUST follow the naming convention: Child_V7_Lab_YYYY-MM-DD.sav
 #'
-#' @inheritParams util_fbs_parent_v1dat
-#' @inheritParams util_fbs_parent_v1dat
+#' @inheritParams util_fbs_parent_v7dat
+#' @inheritParams util_fbs_parent_v7dat
 #'
 #'
 #' @return A list containing: 1) data: data.frame with raw, cleaned data from child visit 7 Qualtrics; 2) dict: all variable descriptions; 3) pna_data: data.frame marking participants who 'prefered not to answer' (pna) specific questions; and 4) pna_dict: all variable descriptions for pna_data
@@ -94,22 +94,39 @@ util_fbs_child_v7dat_lab <- function(file_pattern, data_path) {
     # Qualtrics data
     if (isTRUE(datapath_arg)) {
         #check pattern of directories specified in Data manual
-        qv7_child_path <- list.files(path = paste0(data_path, '/Final_Covid/'), pattern = paste0(file_pattern, '_Lab'), full.names = TRUE)
+        qv7_child_pathlist <- list.files(path = paste0(data_path, '/Final_Covid/'), pattern = paste0(file_pattern, '_Lab'), full.names = TRUE)
 
         #if no files found, check direct data_path entered
-        if (length(qv7_child_path) == 0) {
-            qv7_child_path <- list.files(path = data_path, pattern = paste0(file_pattern, '_Lab'), full.names = TRUE)
+        if (length(qv7_child_pathlist) == 0) {
+            qv7_child_pathlist <- list.files(path = data_path, pattern = paste0(file_pattern, '_Lab'), full.names = TRUE)
+        }
+
+        #check for DXA data
+        qv7_child_DXApathlist <- list.files(path = data_path, pattern = paste0(file_pattern, '_DXA'), full.names = TRUE)
+
+        if (length(qv7_child_DXApathlist) > 0){
+            qv7_child_pathlist <- c(qv7_child_pathlist, qv7_child_DXApathlist)
         }
 
     } else {
-        qv7_child_path <- paste0(pattern = paste0(file_pattern, '_Lab'), full.names = TRUE)
+        qv7_child_pathlist <- paste0(pattern = paste0(file_pattern, '_Lab'), full.names = TRUE)
     }
 
+    # check for DXA files
+    DXA_file <- grepl('DXA', qv7_child_pathlist, fixed = TRUE)
+
     # check number of files found
-    if (length(qv7_child_path) > 1) {
+    if (length(qv7_child_pathlist) - sum(DXA_file) > 1) {
         stop("More than one file matched after adding '_Lab' to the file_pattern . Be sure thefile_pattern specifies both the respondent (Parent/Child) and visit number (V#). If have more than 1 file matching the pattern in the directory, may need to move to enter a more specific file_pattern than is standard.")
-    } else if (length(qv7_child_path) == 0) {
+    } else if (length(qv7_child_pathlist) == 0) {
         stop("No files found after adding '_Lab' to file_pattern. Be sure the data_path and file_pattern are correct and that the file exists.")
+    } else {
+        #get child qualtrics path
+        if (sum(DXA_file) > 0) {
+            qv7_child_path <- qv7_child_pathlist[DXA_file == FALSE]
+        } else {
+            qv7_child_path <- qv7_child_pathlist
+        }
     }
 
     # check that file is of type '.sav'
@@ -130,6 +147,33 @@ util_fbs_child_v7dat_lab <- function(file_pattern, data_path) {
         } else {
             stop("File does not exist. Check file_pattern and that the data exists in current working directory")
         }
+    }
+
+    # check for and load DXA data
+    if (sum(DXA_file) == 1){
+        qv7_child_DXApath <- qv7_child_pathlist[DXA_file]
+
+        # check that file is of type '.sav'
+        if (!grepl('.sav', qv7_child_DXApath, fixed = TRUE)){
+            stop("The DXA file found is not an SPSS database (.sav)")
+        }
+
+        # check if DXA exists
+        qv7_child_DXA_exists <- file.exists(qv7_child_DXApath)
+
+        # load data if it exists
+        if (isTRUE(qv7_child_DXA_exists)) {
+            qv7_child_DXAdat <- as.data.frame(haven::read_spss(qv7_child_DXApath))
+
+        } else {
+            if (isTRUE(datapath_arg)) {
+                stop("DXA file does not exist. Check file_pattern and data_path entered")
+            } else {
+                stop("DXA file does not exist. Check file_pattern and that the data exists in current working directory")
+            }
+        }
+    } else if (sum(DXA_file) > 1){
+        stop("More than one file matched the DXA file_pattern. If have more than 1 file matching the pattern in the directory, may need to move to enter a more specific file_pattern than is standard.")
     }
 
     #### 3. Clean Data #####
@@ -223,12 +267,12 @@ util_fbs_child_v7dat_lab <- function(file_pattern, data_path) {
 
     # avg child height, update label
     qv7_child_clean[["height_avg"]] <- ifelse(is.na(qv7_child_clean[["height1"]]) | is.na(qv7_child_clean[["height2"]]), NA, rowSums(qv7_child_clean[c("height1",
-        "height2")], na.rm = TRUE)/2)
+                                                                                                                                                       "height2")], na.rm = TRUE)/2)
     qv7_child_clean_labels[["height_avg"]] <- "average height calculated in R"
 
     # avg child weight, update label
     qv7_child_clean[["weight_avg"]] <- ifelse(is.na(qv7_child_clean[["weight1"]]) | is.na(qv7_child_clean[["weight2"]]), NA, rowSums(qv7_child_clean[c("weight1",
-        "weight2")], na.rm = TRUE)/2)
+                                                                                                                                                       "weight2")], na.rm = TRUE)/2)
     qv7_child_clean_labels[["weight_avg"]] <- "average weight calculated in R"
 
     # child bmi, update label
@@ -237,7 +281,7 @@ util_fbs_child_v7dat_lab <- function(file_pattern, data_path) {
     }
 
     qv7_child_clean[["bmi"]] <- ifelse(is.na(qv7_child_clean[["height_avg"]]) | is.na(qv7_child_clean[["weight_avg"]]), NA, round(qv7_child_clean[["weight_avg"]]/((qv7_child_clean[["height_avg"]]/100)^2),
-        digits = 2))
+                                                                                                                                  digits = 2))
     qv7_child_clean_labels[["bmi"]] <- "bmi calculated in R package using scripted average height and weight"
 
     # child age - new variables so need to add to labels
@@ -352,7 +396,7 @@ util_fbs_child_v7dat_lab <- function(file_pattern, data_path) {
 
     # 8) fix labels ####
 
-    ## remove 'V7', 'V6', and 'V1' in labels
+    ## remove 'V7', 'V6', and 'v7' in labels
     for (var in 1:length(names(qv7_child_clean))) {
         var_name <- as.character(names(qv7_child_clean)[var])
 
@@ -364,8 +408,8 @@ util_fbs_child_v7dat_lab <- function(file_pattern, data_path) {
             qv7_child_clean_labels[[var_name]] <- gsub("V6 ", "", qv7_child_clean_labels[[var_name]])
         }
 
-        if (grepl("V1", qv7_child_clean_labels[[var_name]], fixed = TRUE)) {
-            qv7_child_clean_labels[[var_name]] <- gsub("V1 ", "", qv7_child_clean_labels[[var_name]])
+        if (grepl("v7", qv7_child_clean_labels[[var_name]], fixed = TRUE)) {
+            qv7_child_clean_labels[[var_name]] <- gsub("v7 ", "", qv7_child_clean_labels[[var_name]])
         }
     }
 
@@ -390,9 +434,71 @@ util_fbs_child_v7dat_lab <- function(file_pattern, data_path) {
 
     qv7_child_clean_labels[["spacegame_reward"]] <- "Type of candy selected for Space Game reward"
 
-    #### 9) Format for export ####
+    #### 9) Add DXA data ####
+    if (sum(DXA_file) > 0){
+        if (isTRUE(qv7_child_DXA_exists)){
 
-    ## 9a) add attributes to pna data
+            ## extract variable labels/descriptions
+            qv7_child_DXAlabels <- lapply(qv7_child_DXAdat, function(x) attributes(x)$label)
+
+            ## make lowercase
+            names(qv7_child_DXAdat) <- tolower(names(qv7_child_DXAdat))
+
+            ## fix naming
+            names(qv7_child_DXAdat)[c(65, 68, 70, 73, 75, 78, 80, 83, 85, 88, 90, 93, 95, 99, 102, 104, 108, 111:119, 123:126)] <- c('l_arm_lean_bmc_comb', 'l_arm_perc_fat_ptile', 'r_arm_lean_bmc_comb', 'r_arm_perc_fat_ptile', 'trunk_lean_bmc_comb', 'trunk_perc_fat_ptile', 'l_leg_lean_bmc_comb', 'l_leg_perc_fat_ptile', 'r_leg_lean_bmc_comb', 'r_leg_perc_fat_ptile', 'subtotal_lean_bmc_comb', 'subtotal_perc_fat_ptile', 'head_lean_bmc_comb', 'total_lean_bmc_comb', 'total_perc_fat_ptile', 'android_lean_bmc_comb', 'gynoid_lean_bmc_comb', 'total_body_perc_fat', 'bodyfat_ptile', 'fatmass_height_ratio', 'fatmass_height_ratio_ptile', 'android_gynoid_ratio', 'percfat_trunk_legs_ratio', 'percfat_trunk_legs_ratio_ptile', 'fatmass_trunk_legs_ratio', 'fatmass_trunk_legs_ratio_ptile', 'lean_height_ratio', 'lean_height_ratio_ptile', 'appen_lean_height', 'appen_lean_height_ptile')
+
+            ## add 'dxa' to names and shorten 'percent'
+            for (var in 1:length(names(qv7_child_DXAdat))) {
+                var_name <- names(qv7_child_DXAdat)[var]
+
+                #add DXA
+                #add DXA
+                if (var_name != 'id'){
+                    names(qv7_child_DXAdat)[var] <- paste0('dxa_', var_name)
+                }
+
+                #update var_name
+                var_name <- names(qv7_child_DXAdat)[var]
+
+                #shorten 'percent'
+                if (grepl("percent", var_name, fixed = TRUE)) {
+                    names(qv7_child_DXAdat)[var] <- gsub("percent", "perc", var_name)
+                }
+
+            }
+
+            #update labels
+            names(qv7_child_DXAlabels) <- names(qv7_child_DXAdat)
+
+            for (var in 1:length(names(qv7_child_DXAlabels))) {
+                var_name <- names(qv7_child_DXAlabels)[var]
+
+                if (grepl("VAT", qv7_child_DXAlabels[[var_name]], fixed = TRUE) | grepl("vat", qv7_child_DXAlabels[[var_name]], fixed = TRUE)) {
+                    qv7_child_DXAlabels[[var_name]] <- gsub("VAT", "viseral adipose tissue (VAT)", qv7_child_DXAlabels[[var_name]])
+                }
+
+                if (grepl("BMC", qv7_child_DXAlabels[[var_name]], fixed = TRUE)) {
+                    qv7_child_DXAlabels[[var_name]] <- gsub("BMC", "bone mineral content (BMC)", qv7_child_DXAlabels[[var_name]])
+                }
+
+                if (grepl("BMD", qv7_child_DXAlabels[[var_name]], fixed = TRUE)) {
+                    qv7_child_DXAlabels[[var_name]] <- gsub("BMD", "bone mineral density (BMD)", qv7_child_DXAlabels[[var_name]])
+                }
+
+                if (grepl("Percentile AM", qv7_child_DXAlabels[[var_name]], fixed = TRUE)) {
+                    qv7_child_DXAlabels[[var_name]] <- gsub("Percentile AM", "aged matched percentile", qv7_child_DXAlabels[[var_name]])
+                }
+            }
+
+            #merge
+            qv7_child_clean <- merge(qv7_child_clean, qv7_child_DXAdat[c(18, 26:135)], by = 'id', all.x = TRUE)
+            qv7_child_clean_labels <- c(qv7_child_clean_labels, qv7_child_DXAlabels[c(26:135)])
+        }
+    }
+
+    #### 10) Format for export ####
+
+    ## 10a) add attributes to pna data
     qv7_child_pna[2:ncol(qv7_child_pna)] <- as.data.frame(lapply(qv7_child_pna[2:ncol(qv7_child_pna)], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
 
     for (v in 2:ncol(qv7_child_pna)){
