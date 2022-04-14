@@ -163,7 +163,9 @@ library(dplyr)
 data_path = '/Users/baf44/OneDrive - The Pennsylvania State University/b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'
 
 # Load data
-data_v1 <- util_fbs_merge_v1(child_file_pattern = 'Child_V1', parent_file_pattern = 'Parent_V1', data_path = data_path)
+data_v1 <- util_fbexample <- matrix(c(1,2,3))
+View(example)
+s_merge_v1(child_file_pattern = 'Child_V1', parent_file_pattern = 'Parent_V1', data_path = data_path)
 data_v2 <- util_fbs_merge_v2(child_file_pattern = 'Child_V2', parent_file_pattern = 'Parent_V2', parentV4_file_pattern = 'Parent_V4', data_path = data_path)
 data_v3 <- util_fbs_merge_v3(child_file_pattern = 'Child_V3', parent_file_pattern = 'Parent_V3', data_path = data_path, model_DD = FALSE)
 data_v4 <- util_fbs_merge_v4(child_file_pattern = 'Child_V4', parent_file_pattern = 'Parent_V4', data_path = data_path)
@@ -366,6 +368,8 @@ as_kable_extra(Table3, caption = 'Demographics by Visit', format = "latex", book
 ```{r summary,  results = 'asis'}
 mri <- data_v6[["data"]][c('id', 'start_date', 'notes_mri_mprage','notes_mri_restingstate','notes_mri_run1', 'notes_mri_run2', 'notes_mri_run3','notes_mri_run4', 'notes_mri_run5', 'childnotes')]
 
+
+intero <- data_v5[["data"]][c('id', 'start_date', 'hrv_dur', 'hrv_starttime', 'child_notes')]
 
 
 

@@ -297,7 +297,7 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
     v1dat_scored <- merge(v1dat_scored, v1dat_dxa, by = 'id', all = TRUE)
     v1dat_scored <- v1dat_scored[c(1:100, 716:825, 101:715)]
 
-    v1dat_scored_labels <- c(v1dat_scored_labels[1:100], v1dat_labels_dxa[1:110], v1dat_scored_labels[101:715])
+    v1dat_scored_labels <- c(v1dat_scored_labels[1:100], v1dat_labels_dxa[2:111], v1dat_scored_labels[101:715])
 
     #### 9. PNA data #####
 
