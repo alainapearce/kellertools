@@ -169,10 +169,10 @@ util_fbs_child_v1dat <- function(file_pattern, data_path) {
     qv1_child_labels <- lapply(qv1_child_dat, function(x) attributes(x)$label)
 
     # 2) selecting relevant data columns ####
-    qv1_child_clean <- qv1_child_dat[c(1, 11:13, 20:39, 44:46, 54:81, 92:103, 112, 121, 130, 139, 148, 157:335)]
+    qv1_child_clean <- qv1_child_dat[c(1, 11:13, 20, 22:40, 45:47, 55:82, 93:104, 113, 122, 131, 140, 149, 158:336)]
 
     ## update labels
-    qv1_child_clean_labels <- qv1_child_labels[c(1, 11:13, 20:39, 44:46, 54:81, 92:103, 112, 121, 130, 139, 148, 157:335)]
+    qv1_child_clean_labels <- qv1_child_labels[c(1, 11:13, 20, 22:40, 45:47, 55:82, 93:104, 113, 122, 131, 140, 149, 158:336)]
 
 
     # 3) removing all practice events (e.g., 999) ####
@@ -278,7 +278,7 @@ util_fbs_child_v1dat <- function(file_pattern, data_path) {
     for (var in 1:length(intake_vars)) {
         var_name <- intake_vars[[var]]
 
-        qv1_child_clean[[var_name]] <- ifelse(qv1_child_clean[[var_name]] == "-", NA, ifelse(qv1_child_clean[[var_name]] == "66.19231.35", "66.19", ifelse(qv1_child_clean[[var_name]] == "246.60q", "246.60", ifelse(qv1_child_clean[[var_name]] == "na", NA, qv1_child_clean[[var_name]]))))
+        qv1_child_clean[[var_name]] <- ifelse(qv1_child_clean[[var_name]] == "-", NA, ifelse(qv1_child_clean[[var_name]] == "na", NA, qv1_child_clean[[var_name]]))
 
         if (is.character(qv1_child_clean[[var_name]])) {
             qv1_child_clean[[var_name]] <- as.numeric(qv1_child_clean[[var_name]])
