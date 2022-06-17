@@ -568,18 +568,22 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         ## portion size data
         ps1_intake_data <- as.data.frame(sapply(ps_vars, FUN = ps_convert_fn, intake_data = intake_data, ps = 1, simplify = TRUE, USE.NAMES = TRUE))
         names(ps1_intake_data)[2:ncol(ps1_intake_data)] <- paste0('ps1_', ps_vars[2:length(ps_vars)])
+        ps1_intake_data[c(1, 3:13, 16:47)] <- sapply(ps1_intake_data[c(1, 3:13, 16:47)], as.numeric)
         intake_data <- merge(intake_data, ps1_intake_data, by = 'id',  all = TRUE)
 
         ps2_intake_data <- as.data.frame(sapply(ps_vars, FUN = ps_convert_fn, intake_data = intake_data, ps = 2, simplify = TRUE, USE.NAMES = TRUE))
         names(ps2_intake_data)[2:ncol(ps2_intake_data)] <- paste0('ps2_', ps_vars[2:length(ps_vars)])
+        ps2_intake_data[c(1, 3:13, 16:47)] <- sapply(ps2_intake_data[c(1, 3:13, 16:47)], as.numeric)
         intake_data <- merge(intake_data, ps2_intake_data, by = 'id',  all = TRUE)
 
         ps3_intake_data <- as.data.frame(sapply(ps_vars, FUN = ps_convert_fn, intake_data = intake_data, ps = 3, simplify = TRUE, USE.NAMES = TRUE))
         names(ps3_intake_data)[2:ncol(ps3_intake_data)] <- paste0('ps3_', ps_vars[2:length(ps_vars)])
+        ps3_intake_data[c(1, 3:13, 16:47)] <- sapply(ps3_intake_data[c(1, 3:13, 16:47)], as.numeric)
         intake_data <- merge(intake_data, ps3_intake_data, by = 'id',  all = TRUE)
 
         ps4_intake_data <- as.data.frame(sapply(ps_vars, FUN = ps_convert_fn, intake_data = intake_data, ps = 4, simplify = TRUE, USE.NAMES = TRUE))
         names(ps4_intake_data)[2:ncol(ps4_intake_data)] <- paste0('ps4_', ps_vars[2:length(ps_vars)])
+        ps4_intake_data[c(1, 3:13, 16:47)] <- sapply(ps4_intake_data[c(1, 3:13, 16:47)], as.numeric)
         intake_data <- merge(intake_data, ps4_intake_data, by = 'id',  all = TRUE)
 
 
