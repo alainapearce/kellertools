@@ -96,8 +96,13 @@ util_fbs_merge_v4 <- function(child_file_pattern, parent_file_pattern, data_path
     # re-order so matches child_v4dat
     child_covidmerge_v4dat <- child_covidmerge_v4dat[c(1:43, 47:65, 44:46)]
 
-    # merge all child into single database
-    all_child_v4dat <- rbind.data.frame(child_v4dat[['data']], child_covidmerge_v4dat)
+    # merge all child into single database - need to split of wasi first
+    v4_wasi <- child_v4dat[['data']][c(1, 66:75)]
+    names(v4_wasi)[3] <- 'wasi_dob'
+
+    names(child_v4dat[['data']])[3] = 'dob'
+    all_child_v4dat <- rbind.data.frame(child_v4dat[['data']][1:65], child_covidmerge_v4dat)
+
 
     #### 4. Merge Parent Raw Data #####
 
@@ -128,8 +133,14 @@ util_fbs_merge_v4 <- function(child_file_pattern, parent_file_pattern, data_path
 
     v4dat_labels <- v4dat_labels[c(1:3, 65:136, 52:61, 4:51, 138:201, 137, 62:64, 202:214)]
 
+    v4_wasi_labels <- child_v4dat[['dict']][c(1, 66:75)]
+    names(v4_wasi_labels)[3] <- 'wasi_dob'
+    v4_wasi_labels[['wasi_dob']] <- 'Participant DOB written on WASI'
+
     # ensure labels are up to date
     v4dat_org = sjlabelled::set_label(v4dat_org, label = matrix(unlist(v4dat_labels, use.names = FALSE)))
+    v4_wasi = sjlabelled::set_label(v4_wasi, label = matrix(unlist(v4_wasi_labels, use.names = FALSE)))
+
 
     #### 6. Score V4 data ####
 
@@ -268,7 +279,12 @@ util_fbs_merge_v4 <- function(child_file_pattern, parent_file_pattern, data_path
 
     v4dat_scored_labels <- v4dat_scored_labels[c(1:113, 287, 114:117, 280, 118:121, 281, 122:125, 282, 126:130, 283, 131:134, 284, 135:138, 285:286, 139:279)]
 
-    #### 8. PNA data #####
+    #### 8. WASI data ####
+    v4dat_scored <- merge(v4dat_scored, v4_wasi, by = 'id')
+    v4dat_scored <- v4dat_scored[c(1:270, 288:297, 271:287)]
+    v4dat_scored_labels <- c(v4dat_scored_labels[1:270], v4_wasi_labels[2:11], v4dat_scored_labels[271:287])
+
+    #### 9. PNA data #####
 
     # child pna data
 
@@ -323,7 +339,7 @@ util_fbs_merge_v4 <- function(child_file_pattern, parent_file_pattern, data_path
 
     v4dat_pna_labels <- c(child_v4dat_pna_labels, parent_v4dat[['pna_dict']][2:length(parent_v4dat[['pna_dict']])])
 
-    #### 9. save to list #####
+    #### 10. save to list #####
 
     # put data in order of participant ID for ease
     v4dat_scored <- v4dat_scored[order(v4dat_scored[["id"]]), ]

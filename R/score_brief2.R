@@ -153,8 +153,8 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     ## Score Subscales
 
     # brief2_inhibit
-    inhib_vars <- c("brief1", "brief10", "brief16", "brief24", "brief30", "brief39", "brief48", "brief62")
-    brief_score_dat[["brief2_inhibit"]] <- rowSums(brief_data[inhib_vars])
+    brief2_inhib_vars <- c("brief1", "brief10", "brief16", "brief24", "brief30", "brief39", "brief48", "brief62")
+    brief_score_dat[["brief2_inhibit"]] <- rowSums(brief_data[brief2_inhib_vars])
 
     # look up T-score and percentile
     inhib_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_inhibit"]], sex = brief_data[[sex_var]], age = brief_data[[age_var]], MoreArgs = list(item = 'inhibit'))
@@ -315,7 +315,7 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     brief_score_dat_labels[["brief2_orgmat_p"]] <- "BRIEF2 Organization of Materials Percentile"
 
     # Behavioral Regulation Index
-    brief_score_dat[["brief2_bri"]] <- rowSums(brief_data[c(inhib_vars, brief2_selfmon_vars)])
+    brief_score_dat[["brief2_bri"]] <- rowSums(brief_data[c(brief2_inhib_vars, brief2_selfmon_vars)])
 
     # look up T-score and percentile
     brief2_bri_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_bri"]], sex = brief_data[[sex_var]], age = brief_data[[age_var]], MoreArgs = list(item = 'bri'))
@@ -348,7 +348,7 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     brief_score_dat_labels[["brief2_eri_t"]] <- "BRIEF2 Emotional Regulation Index T-Score"
     brief_score_dat_labels[["brief2_eri_p"]] <- "BRIEF2 Emotional Regulation Index Percentile"
 
-    # General Executive Composite
+    # Cognitive Regulation Index
     brief_score_dat[["brief2_cri"]] <- rowSums(brief_data[c(brief2_initiate_vars, brief2_wm_vars, brief2_planorg_vars, taskmon_vars, brief2_orgmat_vars)])
 
     # look up T-score and percentile
@@ -361,12 +361,12 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     brief_score_dat[["brief2_cri_p"]] <- brief2_cri_scores[['p']]
 
     ## add labels to data
-    brief_score_dat_labels[["brief2_cri"]] <- "BRIEF2 General Executive Composite Raw Score"
-    brief_score_dat_labels[["brief2_cri_t"]] <- "BRIEF2 General Executive Composite T-Score"
-    brief_score_dat_labels[["brief2_cri_p"]] <- "BRIEF2 General Executive Composite Percentile"
+    brief_score_dat_labels[["brief2_cri"]] <- "BRIEF2 Cognitive Regulation Index Raw Score"
+    brief_score_dat_labels[["brief2_cri_t"]] <- "BRIEF2 Cognitive Regulation Index T-Score"
+    brief_score_dat_labels[["brief2_cri_p"]] <- "BRIEF2 Cognitive Regulation Index Percentile"
 
-    # Cognitive Regulation Index
-    brief_score_dat[["brief2_gec"]] <- rowSums(brief_data[c(inhib_vars, brief2_selfmon_vars, brief2_shift_vars, brief2_emcont_vars, brief2_initiate_vars, brief2_wm_vars, brief2_planorg_vars, taskmon_vars, brief2_orgmat_vars)])
+    # General Executive Composite
+    brief_score_dat[["brief2_gec"]] <- rowSums(brief_data[c(brief2_inhib_vars, brief2_selfmon_vars, brief2_shift_vars, brief2_emcont_vars, brief2_initiate_vars, brief2_wm_vars, brief2_planorg_vars, taskmon_vars, brief2_orgmat_vars)])
 
     # look up T-score and percentile
     brief2_gec_scores_list <- mapply(ref_brief2_lookup, value = brief_score_dat[["brief2_gec"]], sex = brief_data[[sex_var]], age = brief_data[[age_var]], MoreArgs = list(item = 'gec'))
@@ -378,9 +378,9 @@ score_brief2 <- function(brief_data, age_var, sex_var, male = 0, female = 1, par
     brief_score_dat[["brief2_gec_p"]] <- brief2_gec_scores[['p']]
 
     ## add labels to data
-    brief_score_dat_labels[["brief2_gec"]] <- "BRIEF2 Cognitive Regulation Index Raw Score"
-    brief_score_dat_labels[["brief2_gec_t"]] <- "BRIEF2 Cognitive Regulation Index T-Score"
-    brief_score_dat_labels[["brief2_gec_p"]] <- "BRIEF2 Cognitive Regulation Index Percentile"
+    brief_score_dat_labels[["brief2_gec"]] <- "BRIEF2 General Executive Composite Raw Score"
+    brief_score_dat_labels[["brief2_gec_t"]] <- "BRIEF2 General Executive Composite T-Score"
+    brief_score_dat_labels[["brief2_gec_p"]] <- "BRIEF2 General Executive Composite Percentile"
 
 
     ## Scale Checks

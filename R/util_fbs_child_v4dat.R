@@ -97,13 +97,23 @@ util_fbs_child_v4dat <- function(file_pattern, data_path) {
         qv4_child_pathlist <- paste0(pattern = file_pattern, full.names = TRUE)
     }
 
+    # check for WASI files
+    wasi_file <- grepl('WASI', qv4_child_pathlist, fixed = TRUE)
+
+
     # check number of files found
-    if (length(qv4_child_pathlist) > 1) {
+    if (length(qv4_child_pathlist) - sum(wasi_file) > 1) {
         stop("More than one file matched the file_pattern. Be sure thefile_pattern specifies both the respondent (Parent/Child) and visit number (V#). If have more than 1 file matching the pattern in the directory, may need to move to enter a more specific file_pattern than is standard.")
     } else if (length(qv4_child_pathlist) == 0) {
         stop('No files found. Be sure the data_path and file_pattern are correct and that the file exists')
     } else {
-        qv4_child_path <- qv4_child_pathlist
+
+        #get child qualtrics path
+        if (sum(wasi_file) > 0) {
+          qv4_child_path <- qv4_child_pathlist[wasi_file == FALSE]
+        } else {
+          qv4_child_path <- qv4_child_pathlist
+        }
     }
 
     # check that file is of type '.sav'
@@ -124,6 +134,33 @@ util_fbs_child_v4dat <- function(file_pattern, data_path) {
         } else {
             stop("File does not exist. Check file_pattern and that the data exists in current working directory")
         }
+    }
+
+    # check for and load WASI data
+    if (sum(wasi_file) == 1){
+      qv4_child_WASIpath <- qv4_child_pathlist[wasi_file]
+
+      # check that file is of type '.sav'
+      if (!grepl('.sav', qv4_child_WASIpath, fixed = TRUE)){
+        stop("The WASI file found is not an SPSS database (.sav)")
+      }
+
+      # check if WASI exists
+      qv4_child_WASI_exists <- file.exists(qv4_child_WASIpath)
+
+      # load data if it exists
+      if (isTRUE(qv4_child_WASI_exists)) {
+        qv4_child_WASIdat <- as.data.frame(haven::read_spss(qv4_child_WASIpath))
+
+      } else {
+        if (isTRUE(datapath_arg)) {
+          stop("WASI file does not exist. Check file_pattern and data_path entered")
+        } else {
+          stop("WASI file does not exist. Check file_pattern and that the data exists in current working directory")
+        }
+      }
+    } else if (sum(wasi_file) > 1){
+      stop("More than one file matched the WASI file_pattern. If have more than 1 file matching the pattern in the directory, may need to move to enter a more specific file_pattern than is standard.")
     }
 
     #### 3. Clean Data #####
@@ -293,9 +330,33 @@ util_fbs_child_v4dat <- function(file_pattern, data_path) {
 
     }
 
-    # 9) Format for export ####
+    # 9) Add WASI data
+    if (sum(wasi_file) > 0){
+      if (isTRUE(qv4_child_WASI_exists)){
 
-    ## 9a) add attributes to pna data
+        ## extract variable labels/descriptions
+        qv4_child_WASIlabels <- lapply(qv4_child_WASIdat, function(x) attributes(x)$label)
+
+        ## make lowercase
+        names(qv4_child_WASIdat) <- tolower(names(qv4_child_WASIdat))
+
+        qv4_child_WASIdat_clean <- qv4_child_WASIdat[c(18:28)]
+        qv4_child_WASIlabels_clean <- qv4_child_WASIlabels[18:28]
+
+        names(qv4_child_WASIdat_clean)[2] <- 'wasi_date'
+
+        #update labels
+        names(qv4_child_WASIlabels_clean) <- names(qv4_child_WASIdat_clean)
+
+        qv4_child_clean <- merge(qv4_child_clean, qv4_child_WASIdat_clean, by = 'id')
+        qv4_child_clean_labels <- c(qv4_child_clean_labels, qv4_child_WASIlabels_clean[2:11])
+      }
+    }
+
+
+    # 10) Format for export ####
+
+    ## 10a) add attributes to pna data
     qv4_child_pna[2:ncol(qv4_child_pna)] <- as.data.frame(lapply(qv4_child_pna[2:ncol(qv4_child_pna)], function(x) sjlabelled::add_labels(x, labels = c(`Did not skip due to prefer not to answer` = 0, `Prefer not to answer` = 1))))
 
     for (v in 2:ncol(qv4_child_pna)){

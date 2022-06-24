@@ -756,8 +756,8 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         names(v3_psychqs_labels)[2] <- 'v3_date'
 
         #visit 4
-        v4_psychqs_data <- v4_data[['data']][c(1:2, 159:270)]
-        v4_psychqs_labels <- v4_data[['dict']][c(1:2, 159:270)]
+        v4_psychqs_data <- v4_data[['data']][c(1:2, 159:280)]
+        v4_psychqs_labels <- v4_data[['dict']][c(1:2, 159:280)]
 
         names(v4_psychqs_data)[2] <- 'v4_date'
         names(v4_psychqs_labels)[2] <- 'v4_date'
