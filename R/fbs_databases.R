@@ -203,8 +203,8 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     database_return <- list()
 
     #get cross-database variables
-    common_demo_data <- v1_data[['data']][c(1:13, 20:21, 60:64, 94:97, 122:123)]
-    common_demo_labels <- v1_data[['dict']][c(1:13, 20:21, 60:64, 94:97, 122:123)]
+    common_demo_data <- v1_data[['data']][c(1:13, 20:21, 60:64, 94:97, 232:233)]
+    common_demo_labels <- v1_data[['dict']][c(1:13, 20:21, 60:64, 94:97, 232:233)]
 
     names(common_demo_data)[2] <- 'v1_date'
     names(common_demo_labels)[2] <- 'v1_date'
@@ -213,8 +213,8 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     if (isFALSE(databases_arg) | 'demo' %in% databases){
 
         #visit 1
-        v1_demo_data <- v1_data[['data']][c(1:13, 20:21, 60:61, 63, 94:97, 132:133, 14:19, 22:59, 65:87)]
-        v1_demo_labels <- v1_data[['dict']][c(1:13, 20:21, 60:61, 63, 94:97, 132:133, 14:19, 22:59, 65:87)]
+        v1_demo_data <- v1_data[['data']][c(1:13, 20:21, 60:61, 63, 94:97, 232:233, 14:19, 22:59, 65:87)]
+        v1_demo_labels <- v1_data[['dict']][c(1:13, 20:21, 60:61, 63, 94:97, 232:233, 14:19, 22:59, 65:87)]
 
         names(v1_demo_data)[2] <- 'v1_date'
         names(v1_demo_labels)[2] <- 'v1_date'
