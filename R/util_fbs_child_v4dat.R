@@ -330,7 +330,7 @@ util_fbs_child_v4dat <- function(file_pattern, data_path) {
 
     }
 
-    # 9) Add WASI data
+    # 9) Add WASI data ####
     if (sum(wasi_file) > 0){
       if (isTRUE(qv4_child_WASI_exists)){
 
@@ -348,7 +348,7 @@ util_fbs_child_v4dat <- function(file_pattern, data_path) {
         #update labels
         names(qv4_child_WASIlabels_clean) <- names(qv4_child_WASIdat_clean)
 
-        qv4_child_clean <- merge(qv4_child_clean, qv4_child_WASIdat_clean, by = 'id')
+        qv4_child_clean <- merge(qv4_child_clean, qv4_child_WASIdat_clean, by = 'id', all.x = TRUE, all.y = FALSE)
         qv4_child_clean_labels <- c(qv4_child_clean_labels, qv4_child_WASIlabels_clean[2:11])
       }
     }

@@ -200,7 +200,6 @@ util_fbs_merge_v1 <- function(child_file_pattern, parent_file_pattern, data_path
     risk_scored[risk_scored[['id']] == 79, 'risk_status_mom'] <- 2
     risk_scored[risk_scored[['id']] == 85, 'risk_status_mom'] <- 2
     risk_scored[risk_scored[['id']] == 88, 'risk_status_mom'] <- 2
-    risk_scored[risk_scored[['id']] == 110, 'risk_status_mom'] <- 2
 
     risk_scored[risk_scored[['id']] == 8, 'risk_status_both'] <- 2
     risk_scored[risk_scored[['id']] == 12, 'risk_status_both'] <- 2

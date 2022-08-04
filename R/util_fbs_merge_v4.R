@@ -93,16 +93,23 @@ util_fbs_merge_v4 <- function(child_file_pattern, parent_file_pattern, data_path
 
     child_covidmerge_v4dat <- merge(child_lab_v4dat[['data']], child_home_v4dat[['data']][c(1, 3:21)], by = 'id', all = TRUE)
 
+    #get wasi
+    v4_covidmerge_wasi <- child_covidmerge_v4dat[c(1, 47:56)]
+    names(v4_covidmerge_wasi)[3] <- 'wasi_dob'
+
     # re-order so matches child_v4dat
-    child_covidmerge_v4dat <- child_covidmerge_v4dat[c(1:43, 47:65, 44:46)]
+    child_covidmerge_v4dat <- child_covidmerge_v4dat[c(1:43, 57:75, 44:46)]
+    names(child_covidmerge_v4dat)[3] = 'dob'
 
     # merge all child into single database - need to split of wasi first
-    v4_wasi <- child_v4dat[['data']][c(1, 66:75)]
-    names(v4_wasi)[3] <- 'wasi_dob'
-
+    child_v4_wasi <- child_v4dat[['data']][c(1, 66:75)]
+    names(child_v4_wasi)[3] <- 'wasi_dob'
     names(child_v4dat[['data']])[3] = 'dob'
+
+    # merge all together
     all_child_v4dat <- rbind.data.frame(child_v4dat[['data']][1:65], child_covidmerge_v4dat)
 
+    v4_wasi <- rbind.data.frame(child_v4_wasi, v4_covidmerge_wasi)
 
     #### 4. Merge Parent Raw Data #####
 

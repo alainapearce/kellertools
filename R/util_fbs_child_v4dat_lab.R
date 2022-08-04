@@ -64,8 +64,12 @@ util_fbs_child_v4dat_lab <- function(file_pattern, data_path) {
         #check pattern of directories specified in Data manual
         visit_dates_path <- list.files(path = data_path, pattern = 'verified_visit_dates', full.names = TRUE)
 
+        #check pattern of directories specified in Data manual
+        qv4_child_WASIpath <- list.files(path = data_path, pattern = 'WASI', full.names = TRUE)
+
     } else {
         visit_dates_path <- list.files(pattern = 'verified_visit_dates', full.names = TRUE)
+        qv4_child_WASIpath <- list.files(pattern = 'WASI', full.names = TRUE)
     }
 
     # check number of files found
@@ -132,6 +136,28 @@ util_fbs_child_v4dat_lab <- function(file_pattern, data_path) {
         } else {
             stop("File does not exist. Check file_pattern and that the data exists in current working directory")
         }
+    }
+
+    # check number of WASI files found
+    if (length(qv4_child_WASIpath) > 1) {
+      stop("More than one file matched 'WASI'. If have more than 1 file matching the pattern in the directory, may need to move one.")
+    } else if (length(qv4_child_WASIpath) == 0) {
+      stop("No files found for file_pattern 'WASI'. Be sure the data_path is correct and that the file exists.")
+    }
+
+    # check if WASI exists
+    qv4_child_WASI_exists <- file.exists(qv4_child_WASIpath)
+
+    # load data if it exists
+    if (isTRUE(qv4_child_WASI_exists)) {
+      qv4_child_WASIdat <- as.data.frame(haven::read_spss(qv4_child_WASIpath))
+
+    } else {
+      if (isTRUE(datapath_arg)) {
+        stop("WASI file does not exist. Check file_pattern and data_path entered")
+      } else {
+        stop("WASI file does not exist. Check file_pattern and that the data exists in current working directory")
+      }
     }
 
     #### 3. Clean Data #####
@@ -247,7 +273,28 @@ util_fbs_child_v4dat_lab <- function(file_pattern, data_path) {
 
     }
 
-    # 8) Format for export ####
+    # 8) Add WASI data ####
+    if (isTRUE(qv4_child_WASI_exists)){
+
+      ## extract variable labels/descriptions
+      qv4_child_WASIlabels <- lapply(qv4_child_WASIdat, function(x) attributes(x)$label)
+
+      ## make lowercase
+      names(qv4_child_WASIdat) <- tolower(names(qv4_child_WASIdat))
+
+      qv4_child_WASIdat_clean <- qv4_child_WASIdat[c(18:28)]
+      qv4_child_WASIlabels_clean <- qv4_child_WASIlabels[18:28]
+
+      names(qv4_child_WASIdat_clean)[2] <- 'wasi_date'
+
+      #update labels
+      names(qv4_child_WASIlabels_clean) <- names(qv4_child_WASIdat_clean)
+
+      qv4_child_clean <- merge(qv4_child_clean, qv4_child_WASIdat_clean, by = 'id', all.x = TRUE, all.y = FALSE)
+      qv4_child_clean_labels <- c(qv4_child_clean_labels, qv4_child_WASIlabels_clean[2:11])
+    }
+
+    # 9) Format for export ####
 
     #put data in order of participant ID for ease
     qv4_child_clean <- qv4_child_clean[order(qv4_child_clean[["id"]]), ]
