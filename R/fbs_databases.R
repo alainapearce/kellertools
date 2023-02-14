@@ -814,7 +814,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         psychqs_data = sjlabelled::set_label(psychqs_demov2v3v4v7_data, label = matrix(unlist(psychqs_labels, use.names = FALSE)))
 
         # add to list
-        database_return <- list(database_return, c(psychqs_data = psychqs_data, psychqs_dict = psychqs_labels))
+        database_return <- c(database_return, list(psychqs_data = psychqs_data, psychqs_dict = psychqs_labels))
 
         #write out
         if (isTRUE(write_dat)){
@@ -900,7 +900,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         intero_data = sjlabelled::set_label(intero_demov5_data, label = matrix(unlist(intero_labels, use.names = FALSE)))
 
         # add to list
-        database_return <- c(database_return, c(intero_data = intero_data, intero_dict = intero_labels))
+        database_return <- c(database_return, list(intero_data = intero_data, intero_dict = intero_labels))
 
         #write out
         if (isTRUE(write_dat)){
@@ -1234,7 +1234,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         pna_data = sjlabelled::set_label(pna_v1v2v3v4v5v7_data, label = matrix(unlist(pna_labels, use.names = FALSE)))
 
         # add to list
-        database_return <- c(database_return, c(pna_data = pna_data, pna_dict = pna_labels))
+        database_return <- c(database_return, list(pna_data = pna_data, pna_dict = pna_labels))
 
         #write out
         if (isTRUE(write_dat)){
@@ -1279,7 +1279,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
 
 
       # add to list
-      database_return <- c(database_return, c(micro_wide = beh_wide_data, micro_wide_dict = beh_wide_labels, micro_event = event_data, micro_event_dict = event_labels))
+      database_return <- c(database_return, list(micro_wide = beh_wide_data, micro_wide_dict = beh_wide_labels, micro_event = event_data, micro_event_dict = event_labels))
 
       #write out
       if (isTRUE(write_dat)){
