@@ -240,8 +240,14 @@ util_fbs_microstructure <- function(file_pattern, data_path) {
     micro_dat_wide[['bite_rate_active_c1']] <- micro_dat_wide[['nbites_c1']]/micro_dat_wide[['total_active_eating_c1']]
     micro_dat_wide[['bite_rate_active_c2']] <- micro_dat_wide[['nbites_c2']]/micro_dat_wide[['total_active_eating_c2']]
 
+    micro_dat_wide[['sip_rate_c1']] <- micro_dat_wide[['nsips_c1']]/micro_dat_wide[['meal_duration_c1']]
+    micro_dat_wide[['sip_rate_c2']] <- micro_dat_wide[['nsips_c2']]/micro_dat_wide[['meal_duration_c2']]
+
+    micro_dat_wide[['sip_rate_active_c1']] <- micro_dat_wide[['nsips_c1']]/micro_dat_wide[['total_active_eating_c1']]
+    micro_dat_wide[['sip_rate_active_c2']] <- micro_dat_wide[['nsips_c2']]/micro_dat_wide[['total_active_eating_c2']]
+
     #clean up order
-    micro_dat_wide <- micro_dat_wide[c(1:3, 5, 7:8, 11:14, 19, 21, 4, 6, 9:10, 15:18, 20, 22)]
+    micro_dat_wide <- micro_dat_wide[c(1:3, 5, 7:8, 11:14, 19, 21, 23, 25, 4, 6, 9:10, 15:18, 20, 22, 24, 26)]
 
     #add variable labels
     micro_wide_labels <- lapply(micro_dat_wide, function(x) attributes(x)$label)
@@ -257,6 +263,8 @@ util_fbs_microstructure <- function(file_pattern, data_path) {
     micro_wide_labels['meal_duration_c1'] <- 'coder 1 - meal duration in seconds'
     micro_wide_labels['bite_rate_c1'] <- 'coder 1 - bites per second of meal duration'
     micro_wide_labels['bite_rate_active_c1'] <- 'coder 1 - bites per second of active eating time'
+    micro_wide_labels['sip_rate_c1'] <- 'coder 1 - sips per second of meal duration'
+    micro_wide_labels['sip_rate_active_c1'] <- 'coder 1 - sips per second of active eating time'
     micro_wide_labels['affect_mealstart_c2'] <- 'coder 2 - start of meal affect'
     micro_wide_labels['affect_mealend_c2'] <- 'coder 2 - end of meal affect'
     micro_wide_labels['nbites_c2'] <- 'coder 2 - number of bites'
@@ -267,6 +275,8 @@ util_fbs_microstructure <- function(file_pattern, data_path) {
     micro_wide_labels['meal_duration_c2'] <- 'coder 2 - meal duration in seconds'
     micro_wide_labels['bite_rate_c2'] <- 'coder 2 - bites per second of meal duration'
     micro_wide_labels['bite_rate_active_c2'] <- 'coder 2 - bites per second of active eating time'
+    micro_wide_labels['sip_rate_c2'] <- 'coder 2 - sips per second of meal duration'
+    micro_wide_labels['sip_rate_active_c2'] <- 'coder 2 - sips per second of active eating time'
 
     micro_dat_wide = sjlabelled::set_label(micro_dat_wide, label = matrix(unlist(micro_wide_labels, use.names = FALSE)))
 
