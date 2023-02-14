@@ -1260,6 +1260,9 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     ## 3i) Microstructure data ####
     if (isFALSE(databases_arg) | 'micro' %in% databases){
 
+      micro_data[['beh_wide']][['data']][['id']] <- as.numeric(micro_data[['beh_wide']][['data']][['id']])
+      micro_data[['event']][['data']][['id']] <- as.numeric(micro_data[['event']][['data']][['id']])
+
       ## merge databases - set all = TRUE so get all participants in visits 1-7
       beh_wide_demo_data <- merge(common_demo_data, micro_data[['beh_wide']][['data']], by = 'id', all = TRUE)
 
