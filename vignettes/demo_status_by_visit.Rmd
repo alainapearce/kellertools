@@ -54,7 +54,7 @@ convertHaven <- function(df){
 ```{r load_data}
 
 #this path is specific to your laptop - we should try to create some fake/simulated data that we can rely on for examples
-data_path = '/Users/baf44/OneDrive - The Pennsylvania State University/b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'
+data_path <- '/Users/azp271/OneDrive - The Pennsylvania State University/b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'
 
 #will probably want to do individually for each table so get the data needed for each part separately - may need to change some of these to the user-interface wrappers once they are done
 
@@ -112,20 +112,13 @@ as_kable_extra(Table1, caption = 'Demographic Characteristics by Risk Status', f
 ```{r Table2_Prep}
 
 ## CHANGE RISK VARIABLE TO risk_status_mom
-
-#this path is specific to your laptop - we should try to create some fake/simulated data that we can rely on for examples
-data_path = '/Users/baf44/OneDrive - The Pennsylvania State University/b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'
-
-# Load data
-data_v1 <- util_fbs_merge_v1(child_file_pattern = 'Child_V1', parent_file_pattern = 'Parent_V1', data_path = data_path)
-
 # select variables
-Table2_vars <- data_v1[['data']][c('bmi_screenout','risk_status_mom')]
+Table2_vars <- data_v1[['data']][c('bmi_screenout', 'risk_status_mom')]
+
+Table2_vars <- convertHaven(Table2_vars)
 
 # make eligibility variable based on parent and child weight status
 Table2_vars$elligible <- ifelse((Table2_vars$bmi_screenout == 0 & (Table2_vars$risk_status_mom == "Low Risk" | Table2_vars$risk_status_mom == "High Risk")), "Yes", "No")
-
-Table2_vars <- convertHaven(Table2_vars)
 
 ```
 
@@ -157,15 +150,10 @@ as_kable_extra(Table2, caption = 'ADD CAPTION', format = "latex", booktabs = TRU
 # Table 3: Demographics by visit
 <!-- Add narrative for Table 3 prep -->
 ```{r Table3_Prep}
-library(dplyr)
-
-#this path is specific to your laptop - we should try to create some fake/simulated data that we can rely on for examples
-data_path = '/Users/baf44/OneDrive - The Pennsylvania State University/b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'
-
 # Load data
-data_v1 <- util_fbexample <- matrix(c(1,2,3))
-View(example)
-s_merge_v1(child_file_pattern = 'Child_V1', parent_file_pattern = 'Parent_V1', data_path = data_path)
+# util_fbexample <- matrix(c(1,2,3))
+# View(example)
+#data_v1 <- util_fbs_merge_v1(child_file_pattern = 'Child_V1', parent_file_pattern = 'Parent_V1', data_path = data_path)
 data_v2 <- util_fbs_merge_v2(child_file_pattern = 'Child_V2', parent_file_pattern = 'Parent_V2', parentV4_file_pattern = 'Parent_V4', data_path = data_path)
 data_v3 <- util_fbs_merge_v3(child_file_pattern = 'Child_V3', parent_file_pattern = 'Parent_V3', data_path = data_path, model_DD = FALSE)
 data_v4 <- util_fbs_merge_v4(child_file_pattern = 'Child_V4', parent_file_pattern = 'Parent_V4', data_path = data_path)
@@ -238,23 +226,32 @@ V7 <- extractIDs(data_v7)
 # Add demo data to V2-V7 dataframes by referencing V1
 nonV1_list <- list(V2, V3, V4, V5, V6, V7)
 nonV1_list <- lapply(nonV1_list, addDemo, reference_df = V1)
+nonV1_dat <- do.call('rbind', nonV1_list)
 
-# Combine visit dataframes
-V1_7 <- bind_rows(V1, nonV1_list)
+nonV1_dat <- nonV1_dat[names(V1[c(1:4, 6:7)])]
 
 # Convert 'haven_labelled' datatypes 
-V1_7 <- convertHaven(V1_7)
+V1 <- convertHaven(V1)
+
+nonV1_dat$risk_status_mom <- ifelse(nonV1_dat$risk_status_mom == 0, 'Low Risk', ifelse(nonV1_dat$risk_status_mom == 1, 'High Risk', 'Neither'))
+nonV1_dat$risk_status_mom  <- as.factor(nonV1_dat$risk_status_mom)
+
+nonV1_dat$risk_status_both <- ifelse(nonV1_dat$risk_status_both == 0, 'Low Risk', ifelse(nonV1_dat$risk_status_both == 1, 'High Risk', 'Neither'))
+nonV1_dat$risk_status_both <- as.factor(nonV1_dat$risk_status_both)
+
+nonV1_dat$sex <- ifelse(nonV1_dat$sex == 0, 'Male', 'Female')
+nonV1_dat$sex <- as.factor(nonV1_dat$sex)
+
+# Combine visit dataframes
+V1_7 <- rbind.data.frame(V1[c(1:4, 6:7)], nonV1_dat)
 
 # Select variables to include in table
-V1_7 <- subset(V1_7, select = c(risk_status_mom, risk_status_both, sex, age_yr, visit))
+V1_7 <- V1_7[c('risk_status_mom', 'risk_status_both', 'sex', 'age_yr', 'visit')]
 
 ```
 
 <!-- Add narrative for Table 3  -->
 ```{r Table3a_by_visit}
-
-V1_7 <- subset(V1_7, select = c(risk_status_mom, risk_status_both, sex, age_yr, visit))
-
 # make Table 3
 Table3 <- 
   tbl_summary(
@@ -273,9 +270,8 @@ Table3 <-
 ```
 
 # no demo
-```{r Table3a_by_visit}
-
-V1_7_nodemo <- subset(V1_7, select = c(risk_status_mom, risk_status_both, visit))
+```{r Table3a_by_visit_nodemo}
+V1_7_nodemo <- V1_7[c('risk_status_mom', 'risk_status_both', 'visit')]
 
 # make Table 3
 Table3c <- 
@@ -295,22 +291,22 @@ Table3c <-
 ```{r Table3b_by_risk_by_visit}
 #### Risk defined by maternal BMI ####
 # risk_low
+tbl_low_mom_dat <- V1_7[V1_7$risk_status_mom == 'Low Risk', c('sex', 'age_yr', 'visit')]
+
 tbl_low_mom <-
-  V1_7 %>%
-  filter(risk_status_mom == "Low Risk") %>%
-  select(sex, age_yr, visit) %>%
   tbl_summary(
+    tbl_low_mom_dat,
     by = visit,
     label = list(sex ~ "Sex",
                  age_yr ~ "Age (years)")) %>%
   modify_header(all_stat_cols() ~ "**{level}**")
 
 # risk_high
+tbl_high_mom_dat <- V1_7[V1_7$risk_status_mom == 'High Risk', c('sex', 'age_yr', 'visit')]
+
 tbl_high_mom <-
-  V1_7 %>%
-  filter(risk_status_mom == "High Risk") %>%
-  select(sex, age_yr, visit) %>%
   tbl_summary(
+    tbl_high_mom_dat,
     by = visit,
     label = list(sex ~ "Sex",
                  age_yr ~ "Age (years)")) %>%
@@ -326,22 +322,22 @@ visit_byrisk_mom <-
 
 #### Risk defined by maternal and paternal BMI ####
 # risk_low
+tbl_low_both_dat <- V1_7[V1_7$risk_status_both == 'Low Risk', c('sex', 'age_yr', 'visit')]
+
 tbl_low_both <-
-  V1_7 %>%
-  filter(risk_status_both == "Low Risk") %>%
-  select(sex, age_yr, visit) %>%
   tbl_summary(
+    tbl_low_both_dat,
     by = visit,
     label = list(sex ~ "Sex",
                  age_yr ~ "Age (years)")) %>%
   modify_header(all_stat_cols() ~ "**{level}**")
 
 # risk_high
+tbl_high_both_dat <- V1_7[V1_7$risk_status_both == 'High Risk', c('sex', 'age_yr', 'visit')]
+
 tbl_high_both <-
-  V1_7 %>%
-  filter(risk_status_both == "High Risk") %>%
-  select(sex, age_yr, visit) %>%
   tbl_summary(
+    tbl_high_both_dat,
     by = visit,
     label = list(sex ~ "Sex",
                  age_yr ~ "Age (years)")) %>%
@@ -370,8 +366,6 @@ mri <- data_v6[["data"]][c('id', 'start_date', 'notes_mri_mprage','notes_mri_res
 
 
 intero <- data_v5[["data"]][c('id', 'start_date', 'hrv_dur', 'hrv_starttime', 'child_notes')]
-
-
 
 ```
 

@@ -100,19 +100,31 @@ util_fbs_child_v7dat <- function(file_pattern, data_path) {
     # check for DXA files
     DXA_file <- grepl('DXA', qv7_child_pathlist, fixed = TRUE)
 
+    # check for ranking data
+    ranking_file <- grepl('rank', qv7_child_pathlist, fixed = TRUE)
+
     # check number of files found
-    if (length(qv7_child_pathlist) - sum(DXA_file) > 1) {
-        stop("More than one file matched the file_pattern. Be sure thefile_pattern specifies both the respondent (Parent/Child) and visit number (V#). If have more than 1 file matching the pattern in the directory, may need to move to enter a more specific file_pattern than is standard.")
+    if (length(qv7_child_pathlist) - sum(DXA_file) - sum(ranking_file) > 1) {
+      stop("More than one file matched the file_pattern. Be sure thefile_pattern specifies both the respondent (Parent/Child) and visit number (V#). If have more than 1 file matching the pattern in the directory, may need to move to enter a more specific file_pattern than is standard.")
     } else if (length(qv7_child_pathlist) == 0) {
-        stop('No files found. Be sure the data_path and file_pattern are correct and that the file exists')
+      stop('No files found. Be sure the data_path and file_pattern are correct and that the file exists')
     } else {
-        #get child qualtrics path
-        if (sum(DXA_file) > 0) {
-            qv7_child_path <- qv7_child_pathlist[DXA_file == FALSE]
+      #get child qualtrics path
+      if (sum(DXA_file) > 0) {
+        if(sum(ranking_file) > 0) {
+          qv7_child_path <- qv7_child_pathlist[DXA_file == FALSE & ranking_file == FALSE]
         } else {
-            qv7_child_path <- qv7_child_pathlist
+          qv7_child_path <- qv7_child_pathlist[DXA_file == FALSE]
         }
+      } else {
+        if(sum(ranking_file) > 0) {
+          qv7_child_path <- qv7_child_pathlist[ranking_file == FALSE]
+        } else {
+          qv7_child_path <- qv7_child_pathlist
+        }
+      }
     }
+
 
     # check that file is of type '.sav'
     if (!grepl('.sav', qv7_child_path, fixed = TRUE)){
@@ -161,16 +173,50 @@ util_fbs_child_v7dat <- function(file_pattern, data_path) {
         stop("More than one file matched the DXA file_pattern. If have more than 1 file matching the pattern in the directory, may need to move to enter a more specific file_pattern than is standard.")
     }
 
+    # check for and load ranking data
+    if (sum(ranking_file) == 1){
+      qv7_child_rankingpath <- qv7_child_pathlist[ranking_file]
+
+      # check that file is of type '.sav'
+      if (!grepl('.sav', qv7_child_rankingpath, fixed = TRUE)){
+        stop("The ranking file found is not an SPSS database (.sav)")
+      }
+
+      # check if DXA exists
+      qv7_child_ranking_exists <- file.exists(qv7_child_rankingpath)
+
+      # load data if it exists
+      if (isTRUE(qv7_child_ranking_exists)) {
+        qv7_child_rankingdat <- as.data.frame(haven::read_spss(qv7_child_rankingpath))
+
+      } else {
+        if (isTRUE(datapath_arg)) {
+          stop("Ranking file does not exist. Check file_pattern and data_path entered")
+        } else {
+          stop("Ranking file does not exist. Check file_pattern and that the data exists in current working directory")
+        }
+      }
+    } else if (sum(ranking_file) > 1){
+      stop("More than one file matched the ranking file_pattern. If have more than 1 file matching the pattern in the directory, may need to move to enter a more specific file_pattern than is standard.")
+    }
+
     #### 3. Clean Data #####
 
     # 1) extract variable labels/descriptions  ####
     qv7_child_labels <- lapply(qv7_child_dat, function(x) attributes(x)$label)
+    qv7_child_ratinglabels <- lapply(qv7_child_rankingdat, function(x) attributes(x)$label)
 
     # 2) selecting relevant data columns ####
-    qv7_child_clean <- qv7_child_dat[c(1, 11:13, 21:44, 50:52, 60:87, 99:115, 117:261, 266)]
+    qv7_child_clean <- qv7_child_dat[c(1, 11:13, 21:40)]
+    qv7_child_clean <- merge(qv7_child_clean, qv7_child_rankingdat[c(11, 41:44)], by = 'ID', all = TRUE)
+
+    qv7_child_clean <- merge(qv7_child_clean, qv7_child_dat[c(11, 45:47, 55:82, 94:110, 112:256, 261)], by = 'ID', all = TRUE)
+
+    # before questions on rating and book were removed - 5 total removed
+    #qv7_child_clean <- qv7_child_dat[c(1, 11:13, 21:44, 50:52, 60:87, 99:115, 117:261, 266)]
 
     ## update labels
-    qv7_child_clean_labels <- qv7_child_labels[c(1, 11:13, 21:44, 50:52, 60:87, 99:115, 117:261, 266)]
+    qv7_child_clean_labels <- c(qv7_child_labels[c(1, 11:13, 21:40)], qv7_child_ratinglabels[41:44], qv7_child_labels[c(45:47, 55:82, 94:110, 112:256, 261)])
 
 
     # 3) removing all practice events (e.g., 999) ####
@@ -180,9 +226,15 @@ util_fbs_child_v7dat <- function(file_pattern, data_path) {
 
     #1) child information (sex, dob, h/w, bmi, puberty), 2) freddies, 3) food VAS 4) intakes (preMeal, EAH, meal duration), 5) wanting, LOC, 6) CTC, CWC, etc 7) notes
 
-    qv7_child_clean <- qv7_child_clean[c(2, 1, 3:4, 120:127, 106:119, 128:129, 132, 130:131, 5:24, 29:31, 133:220, 32:59, 25:28, 82:104, 60:75, 77:81, 76, 221:222)]
+    #orignal before questions were removed from Qualtrics
+    # qv7_child_clean <- qv7_child_clean[c(2, 1, 3:4, 120:127, 106:119, 128:129, 132, 130:131, 5:24, 29:31, 133:220, 32:59, 25:28, 82:104, 60:75, 77:81, 76, 221:222)]
+    #
+    # qv7_child_clean_labels <- qv7_child_clean_labels[c(2, 1, 3:4, 120:127, 106:119, 128:129, 132, 130:131, 5:24, 29:31, 133:220, 32:59, 25:28, 82:104, 60:75, 77:81, 76, 221:222)]
 
-    qv7_child_clean_labels <- qv7_child_clean_labels[c(2, 1, 3:4, 120:127, 106:119, 128:129, 132, 130:131, 5:24, 29:31, 133:220, 32:59, 25:28, 82:104, 60:75, 77:81, 76, 221:222)]
+    qv7_child_clean <- qv7_child_clean[c(1:4, 120:127, 106:119, 128:129, 132, 130:131, 5:24, 29:31, 133:220, 32:59, 25:28, 82:104, 60:75, 77:81, 76, 221:222)]
+
+    qv7_child_clean_labels <- qv7_child_clean_labels[c(1:4, 120:127, 106:119, 128:129, 132, 130:131, 5:24, 29:31, 133:220, 32:59, 25:28, 82:104, 60:75, 77:81, 76, 221:222)]
+
 
     ## make lower case
     names(qv7_child_clean) <- tolower(names(qv7_child_clean))

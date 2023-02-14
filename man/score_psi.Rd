@@ -42,5 +42,5 @@ psi_score_data <- score_psi(psi_data, parID = 'ID')
 Darling N, Toyokawa T. Construction and validation of the parenting style inventory II (PSI-II). Unpublished manuscript. 1997;89. (https://www.researchgate.net/profile/Nancy-Darling/publication/341909949_Construction_and_Validation_of_the_Parenting_Style_Inventory_II_PSI-II/links/5ed9027792851c9c5e7bc63d/Construction-and-Validation-of-the-Parenting-Style-Inventory-II-PSI-II.pdf)
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_child_v4dat}} and \code{\link{qualtrics_child_v4dat_home}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_child_v4dat}} and \code{\link{util_fbs_child_v4dat_home}}
 }

@@ -43,5 +43,5 @@ Original/adult citation:
 Torrubia R, Ávila C, Moltó J, Caseras X. The Sensitivity to Punishment and Sensitivity to Reward Questionnaire (SPSRQ) as a measure of Gray’s anxiety and impulsivity dimensions. Personality and Individual Differences. 2001;31(6):837-862. doi:10.1016/S0191-8869(00)00183-5
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v3dat}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_parent_v3dat}}
 }

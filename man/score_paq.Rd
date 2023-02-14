@@ -51,5 +51,5 @@ mvpa_sleep_score <- score_paq(paq_data, sleep = TRUE, parID = 'ID')
 Harro, M. (1997). Validation of a Questionnaire to Assess Physical Activity of Children Ages 4–8 Years. Research Quarterly for Exercise and Sport, 68(4), 259–268. https://doi.org/10.1080/02701367.1997.10608007 (\href{https://pubmed.ncbi.nlm.nih.gov/9421838/}{PubMed})
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v1dat}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_parent_v1dat}}
 }

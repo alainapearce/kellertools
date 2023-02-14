@@ -12,10 +12,11 @@ fbs_visit_databases(
   visit5 = FALSE,
   visit6 = FALSE,
   visit7 = FALSE,
+  model_DD = FALSE,
   write_dat = TRUE,
   write_path,
+  return_data = FALSE,
   data_path,
-  model_DD = FALSE,
   child_file_pattern,
   parent_file_pattern,
   visit_file_pattern
@@ -36,13 +37,15 @@ fbs_visit_databases(
 
 \item{visit7}{(optional) logical indicator if want visit 7 data in database. Default = FALSE.}
 
+\item{model_DD}{If visit3 is set to TRUE, indicate if delay discounting data should be modeled. This will take an addition 3-5 minutes of processing time. Default = FALSE.}
+
 \item{write_dat}{indicate whether to write databases. Default is TRUE.}
 
 \item{write_path}{(optional) a string with the path indicating where to save the generated databases if write_dat is TRUE (default option). If no path is given, databases will be written to working directory.}
 
-\item{data_path}{(optional) the full path to the directory where the raw Qualtrics database are saved, EXCLUDING the .sav file name (e.g., '.../b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'). If NOT entered, will assume the database is saved in the working directory.}
+\item{return_data}{indicate whether to return databases to the environment. Default is FALSE.}
 
-\item{model_DD}{If visit3 is set to TRUE, indicate if delay discounting data should be modeled. This will take an addition 3-5 minutes of processing time. Default = FALSE.}
+\item{data_path}{(optional) the full path to the directory where the raw Qualtrics database are saved, EXCLUDING the .sav file name (e.g., '.../b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'). If NOT entered, will assume the database is saved in the working directory.}
 
 \item{child_file_pattern}{(optional) This is only needed if file naming deviates from the standard naming: e.g., Child_V#_*sav'. Only enter the string indicating a respondent (e.g., 'Child').}
 

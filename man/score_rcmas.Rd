@@ -41,5 +41,5 @@ Reynolds CR, Richmond BO. Factor structure and construct validity of’What I th
 Stallard P, Velleman R, Langsford J, Baldwin S. Coping and psychological distress in children involved in road traffic accidents. British Journal of Clinical Psychology. 2001;40(2):197-208. (\href{https://pubmed.ncbi.nlm.nih.gov/11446241/}{PubMed})
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_child_v2dat}} and \code{\link{qualtrics_child_v2dat_home}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_child_v2dat}} and \code{\link{util_fbs_child_v2dat_home}}
 }

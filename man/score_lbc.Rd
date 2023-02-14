@@ -44,5 +44,5 @@ Subscales:
 West F, Morawska A, Joughin K. The Lifestyle Behaviour Checklist: evaluation of the factor structure. Child: Care, Health and Development. 2010;36(4):508-515. doi:10.1111/j.1365-2214.2010.01074.x (\href{https://pubmed.ncbi.nlm.nih.gov/20337641/}{PubMed})
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v3dat}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_parent_v3dat}}
 }

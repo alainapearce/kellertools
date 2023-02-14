@@ -41,5 +41,5 @@ Gormally, J., Black, S., Daston, S., & Rardin, D. (1982). The assessment of bing
 Timmerman, G. M. (1999). Binge Eating Scale: Further Assessment of Validity and Reliability. Journal of Applied Biobehavioral Research, 4(1), 1–12. https://doi.org/10.1111/j.1751-9861.1999.tb00051.x
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v2dat}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_parent_v2dat}}
 }

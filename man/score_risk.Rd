@@ -34,5 +34,5 @@ risk_score <- score_risk(risk_data, respondent = 'parent_respondent', parID = 'I
 
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v1dat}}, \code{\link{util_merge_v1}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_parent_v1dat}}, \code{\link{util_merge_v1}}
 }

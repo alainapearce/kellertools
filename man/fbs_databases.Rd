@@ -6,17 +6,20 @@
 \usage{
 fbs_databases(
   databases,
+  model_DD = FALSE,
   write_dat = TRUE,
   write_path,
   data_path,
-  model_DD = FALSE,
+  return_data = FALSE,
   child_file_pattern,
   parent_file_pattern,
   visit_file_pattern
 )
 }
 \arguments{
-\item{databases}{(optional) list of strings to indicate which databases to process. If not entered, all databases will be generated. Options include: 1) 'demo' for Demographic, 2) 'anthro' for Anthropometrics, 3) 'intake' for Intake, 4) 'food_qs' for food-related questionnaires, 5) 'psych_qs' for cognitive and psych related data, 6) 'dd' for Delay Discounting, 7) 'intero' for Interoception data, 8) 'notes' for Notes, and 9) 'pna' for Prefer Not to Answer}
+\item{databases}{(optional) list of strings to indicate which databases to process. If not entered, all databases will be generated. Options include: 1) 'demo' for Demographic, 2) 'anthro' for Anthropometrics, 3) 'intake' for Intake, 4) 'food_qs' for food-related questionnaires, 5) 'psych_qs' for cognitive and psych related data, 6) 'dd' for Delay Discounting, 7) 'intero' for Interoception data, 8) 'notes' for Notes, 9) 'pna' for Prefer Not to Answer, and 10) 'micro' for microstructure data (note - microstructure will always be in separate databases)}
+
+\item{model_DD}{Indicate if delay discounting data should be modeled. This will take an addition 3-5 minutes of processing time. Default = FALSE. The Delay Discounting database will only be generate if set to TRUE.}
 
 \item{write_dat}{indicate whether to write databases. Default is TRUE.}
 
@@ -24,7 +27,7 @@ fbs_databases(
 
 \item{data_path}{(optional) the full path to the directory where the raw Qualtrics database are saved, EXCLUDING the .sav file name (e.g., '.../b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'). If NOT entered, will assume the database is saved in the working directory.}
 
-\item{model_DD}{Indicate if delay discounting data should be modeled. This will take an addition 3-5 minutes of processing time. Default = FALSE. The Delay Discounting database will only be generate if set to TRUE.}
+\item{return_data}{indicate whether to return databases to the environment. Default is FALSE.}
 
 \item{child_file_pattern}{(optional) This is only needed if file naming deviates from the standard naming: e.g., Child_V#_*sav'. Only enter the string indicating a respondent (e.g., 'Child').}
 
@@ -40,12 +43,13 @@ This function will generate up-to-date databases for the Food and Brain Study. T
 1) Demographics database: includes child (e.g., age, sex, pubertal status), parent characteristics (e.g., age, sex, education, alcohol use/abuse), and household characteristics (e.g., food insecurity, income)
 2) Anthropometrics: includes child and parent height/weight and child adiposity (DXA), actigraphy, physical activity, and sleep
 3) Intake: includes child liking ratings, Freddy Fullness, and intake for all eating paradigms
-4) Food Related Behaviors and Traits: includes all questionnaires assessing child or parent food related behaviors and/or traits (e.g., CEBQ, CFQ, TFEQ, etc.)
+4) Food Related Behaviors and Traits: includes all questionnaires assessing child or parent food related behaviors and/or traits (e.g., CEBQ, CFQ, TFEQ, etc.) and body image
 5) (Neuro)Psychological Assessments: includes the WASI and all questionnaires assessing the child's cognitive and/or psychosocial functioning (e.g., BRIEF, BIS/BAS, anxiety, etc.)
 6) Delay Discounting: includes the modeling results for delay discounting
 7) Interoception: includes all data related to the heart beat interoception task
 8) Notes: this is a reference databases that includes any research and/or parent notes or updates from each visit
 9) Prefer Not to Answer: this is a reference databases that includes any questions the 'prefer not to answer' option was marked. Only saved in case there is a desire to determine the number of responses on an item that were missing versus 'prefer not to answer'.
+10) Microstrucure: includes databases related to microstructure coding of meals
 }
 \details{
 To process the raw data, the raw databases from Qualtrics MUST follow the naming convention: Child_V1_YYYY-MM-DD.sav, Child_V1_Home_YYY-MM-DD.sav, Child_V1_Lab_YYY-MM-DD.sav, and Parent_V1_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered and the directory organization does not follow the structure laid out in the DataManual.

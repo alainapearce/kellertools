@@ -10,10 +10,11 @@
 #' 7) Interoception: includes all data related to the heart beat interoception task
 #' 8) Notes: this is a reference databases that includes any research and/or parent notes or updates from each visit
 #' 9) Prefer Not to Answer: this is a reference databases that includes any questions the 'prefer not to answer' option was marked. Only saved in case there is a desire to determine the number of responses on an item that were missing versus 'prefer not to answer'.
+#' 10) Microstrucure: includes databases related to microstructure coding of meals
 #'
 #' To process the raw data, the raw databases from Qualtrics MUST follow the naming convention: Child_V1_YYYY-MM-DD.sav, Child_V1_Home_YYY-MM-DD.sav, Child_V1_Lab_YYY-MM-DD.sav, and Parent_V1_YYY-MM-DD.sav. The databases must all be in the SAME directory to be processed if the data_path is not entered and the directory organization does not follow the structure laid out in the DataManual.
 #'
-#' @param databases (optional) list of strings to indicate which databases to process. If not entered, all databases will be generated. Options include: 1) 'demo' for Demographic, 2) 'anthro' for Anthropometrics, 3) 'intake' for Intake, 4) 'food_qs' for food-related questionnaires, 5) 'psych_qs' for cognitive and psych related data, 6) 'dd' for Delay Discounting, 7) 'intero' for Interoception data, 8) 'notes' for Notes, and 9) 'pna' for Prefer Not to Answer
+#' @param databases (optional) list of strings to indicate which databases to process. If not entered, all databases will be generated. Options include: 1) 'demo' for Demographic, 2) 'anthro' for Anthropometrics, 3) 'intake' for Intake, 4) 'food_qs' for food-related questionnaires, 5) 'psych_qs' for cognitive and psych related data, 6) 'dd' for Delay Discounting, 7) 'intero' for Interoception data, 8) 'notes' for Notes, 9) 'pna' for Prefer Not to Answer, and 10) 'micro' for microstructure data (note - microstructure will always be in separate databases)
 #' @param model_DD Indicate if delay discounting data should be modeled. This will take an addition 3-5 minutes of processing time. Default = FALSE. The Delay Discounting database will only be generate if set to TRUE.
 #' @param write_dat indicate whether to write databases. Default is TRUE.
 #' @param write_path (optional) a string with the path indicating where to save the generated databases if write_dat is TRUE (default option). If no path is given, databases will be written to working directory.
@@ -95,12 +96,19 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         if (!is.character(data_path)) {
             stop("data_path must be entered as a string: e.g., '.../Participant_Data/untouchedRaw/")
         }
+
+      #make universal to 'Untouched_Raw'
+      if (grepl('Qualtrics_Raw', data_path, fixed = TRUE)){
+        data_path <- gsub('Qualtrics_Raw', '', data_path)
+      } else if (grepl('Microstructure_Raw', data_path, fixed = TRUE)){
+        data_path <- gsub('Microstructure_Raw', '', data_path)
+      }
     }
 
     # check databases argument
     databases_arg <- methods::hasArg(databases)
 
-    database_options <- c('demo', 'anthro', 'intake', 'food_qs', 'psych_qs', 'dd', 'intero', 'notes', 'pna')
+    database_options <- c('demo', 'anthro', 'intake', 'food_qs', 'psych_qs', 'dd', 'intero', 'notes', 'pna', 'micro')
 
     if (isTRUE(databases_arg)) {
 
@@ -113,7 +121,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
 
         #check if entered databases match database_options
         if (sum(databases %in% database_options) != ndatabases){
-            stop("Not all items listed in databases match available options. Options include: 'demo', 'anthro', 'intake', 'food_qs', 'psych_qs', 'dd', 'intero', 'notes', 'pna'.")
+            stop("Not all items listed in databases match available options. Options include: 'demo', 'anthro', 'intake', 'food_qs', 'psych_qs', 'dd', 'intero', 'notes', 'pna', 'micro'.")
         }
     } else {
         databases <- NA
@@ -128,12 +136,12 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
         }
     }
 
-    #### 2. Get Visit Databases #####
+    #### 2. Get Visit Databases ####
 
     ## Visit 1 data - need for all databases
 
     if (isTRUE(datapath_arg)){
-        v1_data <- util_fbs_merge_v1(child_file_pattern = paste0(child_fp, '_', visit_fp, '1'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '1'), data_path = data_path)
+        v1_data <- util_fbs_merge_v1(child_file_pattern = paste0(child_fp, '_', visit_fp, '1'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '1'), data_path = paste0(data_path, '/Qualtrics_Raw/'))
     } else {
         v1_data <- util_fbs_merge_v1(child_file_pattern = paste0(child_fp, '_', visit_fp, '1'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '1'))
     }
@@ -144,7 +152,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     if (isFALSE(databases_arg) | 'anthro' %in% databases | 'food_qs' %in% databases | 'psych_qs' %in% databases | 'intake' %in% databases | 'notes' %in% databases | 'pna' %in% databases){
 
         if (isTRUE(datapath_arg)){
-            v2_data <- util_fbs_merge_v2(child_file_pattern = paste0(child_fp, '_', visit_fp, '2'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '2'), parentV4_file_pattern = paste0(parent_fp, '_', visit_fp, '4'), data_path = data_path)
+            v2_data <- util_fbs_merge_v2(child_file_pattern = paste0(child_fp, '_', visit_fp, '2'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '2'), parentV4_file_pattern = paste0(parent_fp, '_', visit_fp, '4'), data_path = paste0(data_path, '/Qualtrics_Raw/'))
         } else {
             v2_data <- util_fbs_merge_v2(child_file_pattern = paste0(child_fp, '_', visit_fp, '2'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '2'), parentV4_file_pattern = paste0(parent_fp, '_', visit_fp, '4'))
         }
@@ -154,7 +162,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     if (isFALSE(databases_arg) | 'food_qs' %in% databases | 'psych_qs' %in% databases | 'dd' %in% databases | 'intake' %in% databases | 'notes' %in% databases | 'pna' %in% databases){
 
         if (isTRUE(datapath_arg)){
-            v3_data <- util_fbs_merge_v3(child_file_pattern = paste0(child_fp, '_', visit_fp, '3'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '3'), data_path = data_path, model_DD = model_DD)
+            v3_data <- util_fbs_merge_v3(child_file_pattern = paste0(child_fp, '_', visit_fp, '3'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '3'), data_path = paste0(data_path, '/Qualtrics_Raw/'), model_DD = model_DD)
         } else {
             v3_data <- util_fbs_merge_v3(child_file_pattern = paste0(child_fp, '_', visit_fp, '3'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '3'), model_DD = model_DD)
         }
@@ -163,7 +171,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     ## Visit 4 data - need for the demographics, food/eating behavior, and cog/psych databases
     if (isFALSE(databases_arg) | 'demo' %in% databases | 'food_qs' %in% databases | 'psych_qs' %in% databases | 'intake' %in% databases | 'notes' %in% databases | 'pna' %in% databases){
         if (isTRUE(datapath_arg)){
-            v4_data <- util_fbs_merge_v4(child_file_pattern = paste0(child_fp, '_', visit_fp, '4'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '4'), data_path = data_path)
+            v4_data <- util_fbs_merge_v4(child_file_pattern = paste0(child_fp, '_', visit_fp, '4'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '4'), data_path = paste0(data_path, '/Qualtrics_Raw/'))
         } else {
             v4_data <- util_fbs_merge_v4(child_file_pattern = paste0(child_fp, '_', visit_fp, '4'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '4'))
         }
@@ -172,7 +180,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     ## Visit 5 data - need for the demographics database
     if (isFALSE(databases_arg) | 'demo' %in% databases | 'intake' %in% databases | 'food_qs' %in% databases | 'notes' %in% databases | 'pna' %in% databases){
         if (isTRUE(datapath_arg)){
-            v5_data <- util_fbs_merge_v5(child_file_pattern = paste0(child_fp, '_', visit_fp, '5'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '5'), data_path = data_path)
+            v5_data <- util_fbs_merge_v5(child_file_pattern = paste0(child_fp, '_', visit_fp, '5'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '5'), data_path = paste0(data_path, '/Qualtrics_Raw/'))
         } else {
             v5_data <- util_fbs_merge_v5(child_file_pattern = paste0(child_fp, '_', visit_fp, '5'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '5'))
         }
@@ -181,7 +189,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     ## Visit 6 data - need for the fMRI database
     if (isFALSE(databases_arg) | 'food_qs' %in% databases | 'notes' %in% databases | 'pna' %in% databases){
         if (isTRUE(datapath_arg)){
-            v6_data <- util_fbs_merge_v6(child_file_pattern = paste0(child_fp, '_', visit_fp, '6'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '6'), data_path = data_path)
+            v6_data <- util_fbs_merge_v6(child_file_pattern = paste0(child_fp, '_', visit_fp, '6'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '6'), data_path = paste0(data_path, '/Qualtrics_Raw/'))
         } else {
             v6_data <- util_fbs_merge_v6(child_file_pattern = paste0(child_fp, '_', visit_fp, '6'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '6'))
         }
@@ -190,12 +198,20 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     ## Visit 7 data - need for the demographics, anthroprometrics, food/eating behavior, and cog/psych databases
     if (isFALSE(databases_arg) | 'demo' %in% databases | 'anthro' %in% databases | 'food_qs' %in% databases | 'psych_qs' %in% databases | 'intake' %in% databases | 'notes' %in% databases | 'pna' %in% databases){
         if (isTRUE(datapath_arg)){
-            v7_data <- util_fbs_merge_v7(child_file_pattern = paste0(child_fp, '_', visit_fp, '7'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '7'), data_path = data_path)
+            v7_data <- util_fbs_merge_v7(child_file_pattern = paste0(child_fp, '_', visit_fp, '7'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '7'), data_path = paste0(data_path, '/Qualtrics_Raw/'))
         } else {
             v7_data <- util_fbs_merge_v7(child_file_pattern = paste0(child_fp, '_', visit_fp, '7'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '7'))
         }
     }
 
+    ## Microstructure data
+    if (isFALSE(databases_arg) | 'micro' %in% databases){
+      if (isTRUE(datapath_arg)){
+        micro_data <- util_fbs_merge_micro(data_path = paste0(data_path, '/Microstructure_Raw/'))
+      } else {
+        micro_data <- util_fbs_merge_micro()
+      }
+    }
 
     #### 3. Make Databases #####
 
@@ -1239,6 +1255,60 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
                 write.csv(pna_dict_write, file = 'dict-pna_notes.csv', row.names = FALSE)
             }
         }
+    }
+
+    ## 3i) Microstructure data ####
+    if (isFALSE(databases_arg) | 'micro' %in% databases){
+
+      ## merge databases - set all = TRUE so get all participants in visits 1-7
+      beh_wide_demo_data <- merge(common_demo_data, micro_data[['beh_wide']][['data']], by = 'id', all = TRUE)
+
+      event_demo_data <- merge(common_demo_data, micro_data[['event']][['data']], by = 'id', all = TRUE)
+
+      #get labels
+      beh_wide_labels <- c(common_demo_labels, micro_data[['beh_wide']][['dict']][2:length(micro_data[['beh_wide']][['dict']])])
+      event_labels <- c(common_demo_labels, micro_data[['event']][['dict']][2:length(micro_data[['event']][['dict']])])
+
+      # ensure labels are up to date
+      beh_wide_data = sjlabelled::set_label(beh_wide_demo_data, label = matrix(unlist(beh_wide_labels, use.names = FALSE)))
+
+      event_data = sjlabelled::set_label(event_demo_data, label = matrix(unlist(event_labels, use.names = FALSE)))
+
+
+      # add to list
+      database_return <- c(database_return, c(micro_wide = beh_wide_data, micro_wide_dict = beh_wide_labels, micro_event = event_data, micro_event_dict = event_labels))
+
+      #write out
+      if (isTRUE(write_dat)){
+
+        #data dictionary
+        micro_wide_dict <- labelled::generate_dictionary(beh_wide_data, details = TRUE)
+        micro_wide_dict$label <- matrix(unlist(beh_wide_labels, use.names = FALSE))
+        names(micro_wide_dict)[1] <- 'column'
+
+        micro_event_dict <- labelled::generate_dictionary(event_data, details = TRUE)
+        micro_event_dict$label <- matrix(unlist(event_labels, use.names = FALSE))
+        names(micro_event_dict)[1] <- 'column'
+
+        #interprets the value_labels as list so need to make everything a character
+        micro_wide_dict_write <- sapply(micro_wide_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
+
+        micro_event_dict_write <- sapply(micro_event_dict[c(1:3, 6:8, 12:13)], FUN = as.character)
+
+        if (isTRUE(writepath_arg)){
+          haven::write_sav(beh_wide_data, path = paste0(write_path, 'micro_beh_summary.sav'))
+          write.csv(micro_wide_dict_write, file = paste0(write_path, 'dict-micro_beh_summary.csv'), row.names = FALSE)
+
+          haven::write_sav(event_data, path = paste0(write_path, 'micro_events.sav'))
+          write.csv(micro_event_dict_write, file = paste0(write_path, 'dict-micro_events.csv'), row.names = FALSE)
+        } else {
+          haven::write_sav(beh_wide_data, 'micro_beh_summary.sav')
+          write.csv(micro_wide_dict, 'dict-micro_beh_summary.csv', row.names = FALSE)
+
+          haven::write_sav(event_data, path = 'micro_events.sav')
+          write.csv(micro_event_dict, file = 'dict-micro_events.csv', row.names = FALSE)
+        }
+      }
     }
 
     #### 10. Return List #####

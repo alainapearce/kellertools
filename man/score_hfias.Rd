@@ -39,5 +39,5 @@ hfias_score_data <- score_hfias(hfias_data, parID = 'ID')
 Coates J, Swindale A, Bilinsky P. Household Food Insecurity Access Scale (HFIAS) for measurement of food access: indicator guide: version 3. Published online 2007.
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v4dat}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_parent_v4dat}}
 }

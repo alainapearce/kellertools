@@ -37,5 +37,5 @@ cchip_score_data <- score_cchip(cchip_data, parID = 'ID')
 Wehler CA, Scott RI, Anderson JJ. The community childhood hunger identification project: A model of domestic hunger—Demonstration project in Seattle, Washington. Journal of Nutrition Education. 1992;24(1):29S-35S. doi:10.1016/S0022-3182(12)80135-X
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v4dat}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_parent_v4dat}}
 }

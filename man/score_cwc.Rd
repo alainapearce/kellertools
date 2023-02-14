@@ -38,5 +38,5 @@ Killen JD, Taylor CB, Hayward C, et al. Pursuit of thinness and onset of eating 
 Taylor CB, Sharpe T, Shisslak C, et al. Factors associated with weight concerns in adolescent girls. Int J Eat Disord. 1998;24(1):31-42. doi:10.1002/(SICI)1098-108X(199807)24:1<31::AID-EAT3>3.0.CO;2-1 (\href{https://pubmed.ncbi.nlm.nih.gov/9589309/}{PubMed})
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_child_v4dat}} and \code{\link{qualtrics_child_v4dat_home}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_child_v4dat}} and \code{\link{util_fbs_child_v4dat_home}}
 }

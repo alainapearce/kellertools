@@ -41,5 +41,5 @@ Measure Adapted from:
 French SA, Perry CL, Leon GR, Fulkerson JA. Dieting behaviors and weight change history in female adolescents. Health Psychology. 1995;14(6):548-555. doi:http://dx.doi.org/10.1037/0278-6133.14.6.548 (\href{https://pubmed.ncbi.nlm.nih.gov/8565929/}{PubMed})
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v3dat}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_parent_v3dat}}
 }

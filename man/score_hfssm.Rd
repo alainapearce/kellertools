@@ -47,5 +47,5 @@ Bickel G, Nord M, Price C, Hamilton W, Cook J, others. Guide to measuring househ
 Nord M. Measuring Children’s Food Security in US Households, 1995-99. US Department of Agriculture, Economic Research Service; 2002.
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v4dat}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_parent_v4dat}}
 }

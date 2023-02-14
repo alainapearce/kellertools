@@ -24,6 +24,7 @@ Imports:
     methods,
     haven,
     sjlabelled,
+    minpack.lm,
     childsds,
     lubridate,
     readxl,

@@ -43,5 +43,5 @@ Abreviated Scoring: C
 hawla, J. K., Howard, A., Burgess, S., & Heussler, H. (2021). Sleep problems in Australian children with Down syndrome: The need for greater awareness. Sleep Medicine, 78, 81–87. https://doi.org/10.1016/j.sleep.2020.12.022 (\href{https://pubmed.ncbi.nlm.nih.gov/33412456/}{PubMed})
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v2dat}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_parent_v2dat}}
 }

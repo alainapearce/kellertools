@@ -38,5 +38,5 @@ Primary References for the Children's Eating Behavior Questionniare and Scoring:
 Wardle, J., Guthrie, C. A., Sanderson, S., & Rapoport, L. (2001). Development of the children’s eating behaviour questionnaire. Journal of Child Psychology and Psychiatry, 42, 963–970. https://doi.org/10.1017/S0021963001007727 (\href{https://pubmed.ncbi.nlm.nih.gov/11693591/}{PubMed})
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v2dat}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_parent_v2dat}}
 }

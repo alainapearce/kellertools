@@ -40,5 +40,5 @@ Primary References for the Three Factor Eating Questionnaire and Scoring:
 Stunkard AJ, Messick S. The three-factor eating questionnaire to measure dietary restraint, disinhibition and hunger. Journal of Psychosomatic Research. 1985;29(1):71-83. doi:10.1016/0022-3999(85)90010-8
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v3dat}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_parent_v3dat}}
 }

@@ -38,5 +38,5 @@ ctc_score_data <- score_ctc(ctc_data, parID = 'ID')
 NEED
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_child_v5dat}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_child_v5dat}}
 }

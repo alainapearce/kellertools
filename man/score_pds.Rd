@@ -60,5 +60,5 @@ Carskadon, Mary A., and Christine Acebo. A self-administered rating scale for pu
 Crockett, L. J. Pubertal development scale: Pubertal categories. Unpublished manuscript (1988).
 }
 \seealso{
-For the Food and Brain Study, raw data from Qualtrics was processed using \code{\link{qualtrics_parent_v1dat}}, \code{\link{qualtrics_child_v7dat}}, and \code{\link{qualtrics_child_v7dat_home}},
+For the Food and Brain Study, raw data from Qualtrics was processed using \code{\link{util_fbs_parent_v1dat}}, \code{\link{util_fbs_child_v7dat}}, and \code{\link{util_fbs_child_v7dat_home}},
 }

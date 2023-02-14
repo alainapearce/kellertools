@@ -34,7 +34,9 @@ cbq_score_data <- score_cbq(cbq_data, parID = 'ID')
 }
 \references{
 Putnam SP, Rothbart MK. Development of Short and Very Short Forms of the Children’s Behavior Questionnaire. Journal of Personality Assessment. 2006;87(1):102-112. doi:10.1207/s15327752jpa8701_09 https://doi.org/10.1097/00004703-200112000-00007 (\href{https://pubmed.ncbi.nlm.nih.gov/16856791/}{PubMed})
+
+Rothbart MΚ, Ahadi SA, Hershey KL. Temperament and Social Behavior in Childhood. Merrill-Palmer Quarterly. 1994;40(1):21-39 (\href{https://www.jstor.org/stable/23087906}{jstore})
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v2dat}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_parent_v2dat}}
 }

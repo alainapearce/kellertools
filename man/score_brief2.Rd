@@ -65,5 +65,5 @@ brief_score_data <- score_brief2(brief_data, age_var = 'age', sex_var = 'sex', m
 Gioia GA, Isquith PK, Guy SC, Kenworthy L. BRIEF-2: Behavior Rating Inventory of Executive Function: Professional Manual. Psychological Assessment Resources; 2015.
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v4dat}}. Normed values were be identified using \code{\link{ref_brief2_lookup}} but could also be done through \code{\link{ref_lookup_fm}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_parent_v4dat}}, \code{\link{util_fbs_parent_v7dat}} and \code{\link{util_fbs_parent_v7dat}}. Normed values were be identified using \code{\link{ref_brief2_lookup}} but could also be done through \code{\link{ref_lookup_fm}}
 }

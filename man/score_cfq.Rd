@@ -47,5 +47,5 @@ cfq_score_data <- score_cfq(cfq_data, restriction_split = TRUE, parID = 'ID')
 Birch, L. L., Fisher, J. O., Grimm-Thomas, K., Markey, C. N., Sawyer, R., & Johnson, S. L. (2001). Confirmatory factor analysis of the Child Feeng Questionnaire: A measure of parental attitudes, beliefs and practices about child feeng and obesity proneness. Appetite, 36(3), 201–210. https://doi.org/10.1006/appe.2001.0398 (\href{https://pubmed.ncbi.nlm.nih.gov/11358344/}{PubMed})
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_parent_v2dat}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_parent_v2dat}}
 }

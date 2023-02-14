@@ -36,5 +36,5 @@ cbis_score_data <- score_cbis(cbis_data, parID = 'ID')
 Truby H, Paxton SJ. Development of the Children’s Body Image Scale. British Journal of Clinical Psychology. 2002;41(2):185-203. doi:10.1348/014466502163967 (\href{https://pubmed.ncbi.nlm.nih.gov/12034005/}{PubMed})
 }
 \seealso{
-Raw data from Qualtrics was processed using the following script: \code{\link{qualtrics_child_v4dat}} and \code{\link{qualtrics_child_v4dat_home}}
+Raw data from Qualtrics was processed using the following script: \code{\link{util_fbs_child_v4dat}} and \code{\link{util_fbs_child_v4dat_home}}
 }
