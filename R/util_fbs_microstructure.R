@@ -249,36 +249,6 @@ util_fbs_microstructure <- function(file_pattern, data_path) {
     #clean up order
     micro_dat_wide <- micro_dat_wide[c(1:3, 5, 7:8, 11:14, 19, 21, 23, 25, 4, 6, 9:10, 15:18, 20, 22, 24, 26)]
 
-    #add variable labels
-    micro_wide_labels <- lapply(micro_dat_wide, function(x) attributes(x)$label)
-    micro_wide_labels['id'] <- 'participant id'
-    micro_wide_labels['visit'] <- 'visit number'
-    micro_wide_labels['affect_mealstart_c1'] <- 'coder 1 - start of meal affect'
-    micro_wide_labels['affect_mealend_c1'] <- 'coder 1 - end of meal affect'
-    micro_wide_labels['nbites_c1'] <- 'coder 1 - number of bites'
-    micro_wide_labels['nsips_c1'] <- 'coder 1 - number of sips'
-    micro_wide_labels['total_active_eating_c1'] <- 'coder 1 - total active eating time in seconds'
-    micro_wide_labels['bite_latency_c1'] <- 'coder 1 - latency to first bite in seconds'
-    micro_wide_labels['total_leave_chair_c1'] <- 'coder 1 - total time out of chair in seconds'
-    micro_wide_labels['meal_duration_c1'] <- 'coder 1 - meal duration in seconds'
-    micro_wide_labels['bite_rate_c1'] <- 'coder 1 - bites per second of meal duration'
-    micro_wide_labels['bite_rate_active_c1'] <- 'coder 1 - bites per second of active eating time'
-    micro_wide_labels['sip_rate_c1'] <- 'coder 1 - sips per second of meal duration'
-    micro_wide_labels['sip_rate_active_c1'] <- 'coder 1 - sips per second of active eating time'
-    micro_wide_labels['affect_mealstart_c2'] <- 'coder 2 - start of meal affect'
-    micro_wide_labels['affect_mealend_c2'] <- 'coder 2 - end of meal affect'
-    micro_wide_labels['nbites_c2'] <- 'coder 2 - number of bites'
-    micro_wide_labels['nsips_c2'] <- 'coder 2 - number of sips'
-    micro_wide_labels['total_active_eating_c2'] <- 'coder 2 - total active eating time in seconds'
-    micro_wide_labels['bite_latency_c2'] <- 'coder 2 - latency to first bite in seconds'
-    micro_wide_labels['total_leave_chair_c2'] <- 'coder 2 - total time out of chair in seconds'
-    micro_wide_labels['meal_duration_c2'] <- 'coder 2 - meal duration in seconds'
-    micro_wide_labels['bite_rate_c2'] <- 'coder 2 - bites per second of meal duration'
-    micro_wide_labels['bite_rate_active_c2'] <- 'coder 2 - bites per second of active eating time'
-    micro_wide_labels['sip_rate_c2'] <- 'coder 2 - sips per second of meal duration'
-    micro_wide_labels['sip_rate_active_c2'] <- 'coder 2 - sips per second of active eating time'
-
-    micro_dat_wide = sjlabelled::set_label(micro_dat_wide, label = matrix(unlist(micro_wide_labels, use.names = FALSE)))
 
     ## 5 - Event Data by Coder ####
     micro_dat_clean_event <- micro_dat_clean[micro_dat_clean[['behavior']] == 'Bite' | micro_dat_clean[['behavior']] == 'Sips', 1:16]
@@ -295,12 +265,9 @@ util_fbs_microstructure <- function(file_pattern, data_path) {
     names(micro_dat_event_c2)[4:5] <- c('coder2_phase1', 'coder2_phase2')
 
     #get event number by id
-    micro_dat_event_c1$event_num <- unlist(sapply(unique(micro_dat_event_c1$id), function(x) seq(1, nrow(micro_dat_event_c1[micro_dat_event_c1[['id']] == x, ]), 1), USE.NAMES = FALSE))
+    micro_dat_event_c1[['event_num']] <- unlist(sapply(unique(micro_dat_event_c1$id), function(x) seq(1, nrow(micro_dat_event_c1[micro_dat_event_c1[['id']] == x, ]), 1), USE.NAMES = FALSE))
 
-    micro_dat_event_c2$event_num <- unlist(sapply(unique(micro_dat_event_c2$id), function(x) seq(1, nrow(micro_dat_event_c2[micro_dat_event_c2[['id']] == x, ]), 1), USE.NAMES = FALSE))
-
-    #merge
-    micro_dat_event_wide <- merge(micro_dat_event_c1[c(1:2, 4:17)], micro_dat_event_c2[c(1, 4:17)], by = c('id', 'event_num'), all = TRUE)
+    micro_dat_event_c2[['event_num']] <- unlist(sapply(unique(micro_dat_event_c2$id), function(x) seq(1, nrow(micro_dat_event_c2[micro_dat_event_c2[['id']] == x, ]), 1), USE.NAMES = FALSE))
 
     #code switches
     switch_fn <- function(food, event){
@@ -313,29 +280,100 @@ util_fbs_microstructure <- function(file_pattern, data_path) {
       }
     }
 
-    switch_wrapper <- function(id, coder_num){
-      dat <- micro_dat_event_wide[micro_dat_event_wide[['id']] == id, ]
+    switch_wrapper_food <- function(id, coder_num, dat){
+      id_dat <- dat[dat[['id']] == id, ]
 
       if (coder_num == 1){
-        food_list <- dat[['food_c1']]
+        food_list <- id_dat[['food_c1']]
       } else {
-        food_list <- dat[['food_c2']]
+        food_list <- id_dat[['food_c2']]
       }
 
-      switch <- sapply(dat$event_num, function(x) switch_fn(dat[['food_c1']], x))
+      switch <- sapply(id_dat[['event_num']], function(x) switch_fn(food_list, x))
     }
 
-    micro_dat_event_wide$switch_c1 <- unlist(sapply(unique(micro_dat_event_wide$id), function(x) switch_wrapper(x, 1), USE.NAMES = FALSE))
+    micro_dat_event_c1[['switch_c1']] <- unlist(sapply(unique(micro_dat_event_c1$id), function(x) switch_wrapper_food(x, 1, micro_dat_event_c1), USE.NAMES = FALSE))
 
-    micro_dat_event_wide[["switch_c1"]] <- sjlabelled::add_labels(micro_dat_event_wide[["switch_c1"]], labels = c(`yes` = 1, `no` = 0, `NA or not entered` = 99))
+    micro_dat_event_c1[["switch_c1"]] <- sjlabelled::add_labels(micro_dat_event_c1[["switch_c1"]], labels = c(`yes` = 1, `no` = 0, `NA or not entered` = 99))
 
-    micro_dat_event_wide$switch_c2 <- unlist(sapply(unique(micro_dat_event_wide$id), function(x) switch_wrapper(x, 2), USE.NAMES = FALSE))
+    micro_dat_event_c2[['switch_c2']] <- unlist(sapply(unique(micro_dat_event_c2$id), function(x) switch_wrapper_food(x, 2, micro_dat_event_c2), USE.NAMES = FALSE))
 
-    micro_dat_event_wide[["switch_c2"]] <- sjlabelled::add_labels(micro_dat_event_wide[["switch_c2"]], labels = c(`yes` = 1, `no` = 0, `NA or not entered` = 99))
+    micro_dat_event_c2[["switch_c2"]] <- sjlabelled::add_labels(micro_dat_event_c2[["switch_c2"]], labels = c(`yes` = 1, `no` = 0, `NA or not entered` = 99))
 
+    # add switch by ED
+    micro_dat_event_c1[["food_ed_c1"]] <- ifelse(grepl('Mac', micro_dat_event_c1[["food_c1"]]) | grepl('Chicken', micro_dat_event_c1[["food_c1"]]), ifelse(grepl('Grape', micro_dat_event_c1[["food_c1"]]) | grepl('Broccoli', micro_dat_event_c1[["food_c1"]]), 'mixed', 'h_ed'), ifelse(grepl('Grape', micro_dat_event_c1[["food_c1"]]) | grepl('Broccoli', micro_dat_event_c1[["food_c1"]]), 'l_ed', as.character(micro_dat_event_c1[["food_c1"]])))
+
+    micro_dat_event_c1[["food_ed_c1"]] <- sjlabelled::add_labels(micro_dat_event_c1[["food_ed_c1"]], labels = c(`Ketchup` = 3, `mixed` = 2, `h_ed` = 1, `l_ed` = 0, `NA or not entered` = 99))
+
+    micro_dat_event_c2[["food_ed_c2"]] <- ifelse(grepl('Mac', micro_dat_event_c2[["food_c2"]]) | grepl('Chicken', micro_dat_event_c2[["food_c2"]]), ifelse(grepl('Grape', micro_dat_event_c2[["food_c2"]]) | grepl('Broccoli', micro_dat_event_c2[["food_c2"]]), 'mixed', 'h_ed'), ifelse(grepl('Grape', micro_dat_event_c2[["food_c2"]]) | grepl('Broccoli', micro_dat_event_c2[["food_c2"]]), 'l_ed', as.character(micro_dat_event_c2[["food_c2"]])))
+
+    micro_dat_event_c2[["food_ed_c2"]] <- sjlabelled::add_labels(micro_dat_event_c2[["food_ed_c2"]], labels = c(`Ketchup` = 3, `mixed` = 2, `h_ed` = 1, `l_ed` = 0, `NA or not entered` = 99))
+
+    switch_wrapper_ed <- function(id, coder_num, dat){
+      id_dat <- dat[dat[['id']] == id, ]
+
+      if (coder_num == 1){
+        food_list <- id_dat[['food_ed_c1']]
+      } else {
+        food_list <- id_dat[['food_ed_c2']]
+      }
+
+      switch <- sapply(id_dat[['event_num']], function(x) switch_fn(food_list, x))
+    }
+
+    micro_dat_event_c1[['switch_ed_c1']] <- unlist(sapply(unique(micro_dat_event_c1$id), function(x) switch_wrapper_ed(x, 1, micro_dat_event_c1), USE.NAMES = FALSE))
+
+    micro_dat_event_c1[["switch_ed_c1"]] <- sjlabelled::add_labels(micro_dat_event_c1[["switch_ed_c1"]], labels = c(`yes` = 1, `no` = 0, `NA or not entered` = 99))
+
+    micro_dat_event_c2[['switch_ed_c2']] <- unlist(sapply(unique(micro_dat_event_c2$id), function(x) switch_wrapper_ed(x, 2, micro_dat_event_c2), USE.NAMES = FALSE))
+
+    micro_dat_event_c2[["switch_ed_c2"]] <- sjlabelled::add_labels(micro_dat_event_c2[["switch_ed_c2"]], labels = c(`yes` = 1, `no` = 0, `NA or not entered` = 99))
+
+    #merge
+    micro_dat_event_wide <- merge(micro_dat_event_c1[c(1:2, 4:20)], micro_dat_event_c2[c(1, 4:20)], by = c('id', 'event_num'), all = TRUE)
 
     #organize
-    micro_dat_event_wide <- micro_dat_event_wide[c(1, 3:5, 17:18, 2, 6:9, 30, 19:22, 31,11:16, 24:29)]
+    micro_dat_event_wide <- micro_dat_event_wide[c(1, 3:5, 20:21, 2, 6:9, 17:19, 22:25, 33:35, 11:16, 27:32)]
+
+    ## 6. Add switches to behavior summary output ####
+    micro_dat_wide[c('nswitch_c1', 'nswitch_ed_c1', 'nswitch_c2', 'nswitch_ed_c2')]  <- t(sapply(unique(micro_dat_event_wide[['id']]), function(x) colSums(micro_dat_event_wide[micro_dat_event_wide[['id']] == x, c('switch_c1', 'switch_ed_c1', 'switch_c2', 'switch_ed_c2')], na.rm = TRUE), USE.NAMES = FALSE))
+
+    micro_dat_wide <- micro_dat_wide[c(1:14, 27:28, 15:26, 29:30)]
+
+    ## 7. add variable labels ####
+    micro_wide_labels <- lapply(micro_dat_wide, function(x) attributes(x)$label)
+    micro_wide_labels['id'] <- 'participant id'
+    micro_wide_labels['visit'] <- 'visit number'
+    micro_wide_labels['affect_mealstart_c1'] <- 'coder 1 - start of meal affect'
+    micro_wide_labels['affect_mealend_c1'] <- 'coder 1 - end of meal affect'
+    micro_wide_labels['nbites_c1'] <- 'coder 1 - number of bites'
+    micro_wide_labels['nsips_c1'] <- 'coder 1 - number of sips'
+    micro_wide_labels['total_active_eating_c1'] <- 'coder 1 - total active eating time in seconds'
+    micro_wide_labels['bite_latency_c1'] <- 'coder 1 - latency to first bite in seconds'
+    micro_wide_labels['total_leave_chair_c1'] <- 'coder 1 - total time out of chair in seconds'
+    micro_wide_labels['meal_duration_c1'] <- 'coder 1 - meal duration in seconds'
+    micro_wide_labels['bite_rate_c1'] <- 'coder 1 - bites per second of meal duration'
+    micro_wide_labels['bite_rate_active_c1'] <- 'coder 1 - bites per second of active eating time'
+    micro_wide_labels['sip_rate_c1'] <- 'coder 1 - sips per second of meal duration'
+    micro_wide_labels['sip_rate_active_c1'] <- 'coder 1 - sips per second of active eating time'
+    micro_wide_labels['nswitch_c1'] <- 'coder 1 - number of switches between foods and/or drinks'
+    micro_wide_labels['nswitch_ed_c1'] <- 'coder 1 - number of switches between food energy density categories and/or drinks, Ketchup (left separate if consumed alone)'
+    micro_wide_labels['affect_mealstart_c2'] <- 'coder 2 - start of meal affect'
+    micro_wide_labels['affect_mealend_c2'] <- 'coder 2 - end of meal affect'
+    micro_wide_labels['nbites_c2'] <- 'coder 2 - number of bites'
+    micro_wide_labels['nsips_c2'] <- 'coder 2 - number of sips'
+    micro_wide_labels['total_active_eating_c2'] <- 'coder 2 - total active eating time in seconds'
+    micro_wide_labels['bite_latency_c2'] <- 'coder 2 - latency to first bite in seconds'
+    micro_wide_labels['total_leave_chair_c2'] <- 'coder 2 - total time out of chair in seconds'
+    micro_wide_labels['meal_duration_c2'] <- 'coder 2 - meal duration in seconds'
+    micro_wide_labels['bite_rate_c2'] <- 'coder 2 - bites per second of meal duration'
+    micro_wide_labels['bite_rate_active_c2'] <- 'coder 2 - bites per second of active eating time'
+    micro_wide_labels['sip_rate_c2'] <- 'coder 2 - sips per second of meal duration'
+    micro_wide_labels['sip_rate_active_c2'] <- 'coder 2 - sips per second of active eating time'
+    micro_wide_labels['nswitch_c2'] <- 'coder 2 - number of switches between foods and/or drinks'
+    micro_wide_labels['nswitch_ed_c2'] <- 'coder 2 - number of switches between food energy density categories and/or drinks, Ketchup (left separate if consumed alone)'
+
+    micro_dat_wide = sjlabelled::set_label(micro_dat_wide, label = matrix(unlist(micro_wide_labels, use.names = FALSE)))
 
     #add variable labels
     micro_wide_event_labels <- lapply(micro_dat_event_wide, function(x) attributes(x)$label)
@@ -351,11 +389,15 @@ util_fbs_microstructure <- function(file_pattern, data_path) {
     micro_wide_event_labels['time_relative_hms_c1'] <- 'coder 1 - time relative to start in hours:minums:seconds'
     micro_wide_event_labels['time_relative_sf_c1'] <- 'coder 1 - time relative to start in seconds'
     micro_wide_event_labels['switch_c1'] <- 'coder 1 - food/drink switch'
+    micro_wide_event_labels['food_ed_c1'] <- 'coder 1 - food energy density category'
+    micro_wide_event_labels['switch_ed_c1'] <- 'coder 1 - food switch by energy density'
     micro_wide_event_labels['behavior_c2'] <- 'coder 2 - event behavior coded'
     micro_wide_event_labels['food_c2'] <- 'coder 2 - food  item'
     micro_wide_event_labels['time_relative_hms_c2'] <- 'coder 2 - time relative to start in hours:minums:seconds'
     micro_wide_event_labels['time_relative_sf_c2'] <- 'coder 2 - time relative to start in seconds'
     micro_wide_event_labels['switch_c2'] <- 'coder 2 - food/drink switch'
+    micro_wide_event_labels['food_ed_c2'] <- 'coder 2 - food energy density category'
+    micro_wide_event_labels['switch_ed_c2'] <- 'coder 2 - food switch by energy density'
     micro_wide_event_labels['talk_hunger_c1'] <- 'coder 1 - vocalization about hunger'
     micro_wide_event_labels['talk_fulness_c1'] <- 'coder 1 - vocalization about fullness'
     micro_wide_event_labels['talk_story_c1'] <- 'coder 1 - vocalization about story'
