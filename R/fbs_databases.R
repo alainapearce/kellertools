@@ -924,7 +924,7 @@ fbs_databases <- function(databases, model_DD = FALSE, write_dat = TRUE, write_p
     }
 
     ## 3h) Notes ####
-    if (isFALSE(databases_arg) | 'intero' %in% databases){
+    if (isFALSE(databases_arg) | 'notes' %in% databases){
 
         #visit 1
         v1_notes_data <- v1_data[['data']][c(1, 822:825)]

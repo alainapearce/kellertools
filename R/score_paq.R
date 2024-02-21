@@ -22,7 +22,7 @@
 #' parameter is included so this script can be adapted for future studies that collect proper continuous data.
 #' @param sleep (optional) A boolean indicator for whether parent-reported sleep should be estimated
 #' for each day and week. Default = FALSE.
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #' @return A dataset with amount of MVPA calculated for each day and week. If sleep = TRUE,
 #' parent-reported sleep will also be included

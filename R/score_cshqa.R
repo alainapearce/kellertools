@@ -20,7 +20,7 @@
 #'
 #' @param cshqa_data a data.frame all items for the Child Sleep Habits Questionnaire - Abbreviated following the naming conventions described above
 #' @param study a string indicating which study collected the data. Currently, only option and default is 'fbs'. This parameter is included so this script can be adapted for future studies that collect all subscales.
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #'
 #' @return A dataset with total and subscale scores for the Child Sleep Habits Questionnaire - Abbreviated

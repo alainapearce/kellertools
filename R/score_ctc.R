@@ -15,7 +15,7 @@
 #'
 #' @param ctc_data a data.frame all items for the Child Behavior Questionnaire following the naming conventions described above
 #' @param study a string indicating which study collected the data. Currently, only option and default is 'fbs'. This parameter is included because the Food and Brain study used a highly adapted verison of the Communities that Care Questionnaire with only 16 questions
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #' @return A dataset with subscale scores for the Child Behavior Questionnaire
 #' @examples

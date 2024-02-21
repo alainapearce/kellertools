@@ -15,7 +15,7 @@
 #' Wardle, J., Guthrie, C. A., Sanderson, S., & Rapoport, L. (2001). Development of the children’s eating behaviour questionnaire. Journal of Child Psychology and Psychiatry, 42, 963–970. https://doi.org/10.1017/S0021963001007727 (\href{https://pubmed.ncbi.nlm.nih.gov/11693591/}{PubMed})
 #'
 #' @param cebq_data a data.frame all items for the Children's Eating Behavior Questionnaire following the naming conventions described above
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #' @return A dataset with subscale scores for the Children's Eating Behavior Questionnaire
 #' @examples

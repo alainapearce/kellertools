@@ -310,6 +310,26 @@ util_fbs_parent_v3dat <- function(file_pattern, data_path) {
 
     }
 
+    ## 6c) fix BIS/BAS levels
+    bisbas_vars <- names(qv3_parent_clean)[c(152:175)]
+
+    for (v in 1:length(bisbas_vars)) {
+      # get variable name
+      pvar <- bisbas_vars[v]
+
+      # extract variable attributes
+      pvar_attr <- attributes(qv3_parent_clean[[pvar]])
+
+      # fix response coding
+      qv3_parent_clean[[pvar]] <- ifelse(qv3_parent_clean[[pvar]] == 1, 4, ifelse(qv3_parent_clean[[pvar]] == 2, 3, ifelse(qv3_parent_clean[[pvar]] == 3, 2, 1)))
+
+      # replace attributes
+      attributes(qv3_parent_clean[[pvar]]) <- pvar_attr
+
+      qv3_parent_clean[[pvar]] <- sjlabelled::add_labels(qv3_parent_clean[[pvar]], labels = c(`Very True` = 1, `Somewhat True` = 2, `Somewhat False` = 3,`Very False` = 4))
+
+    }
+
     #### 7) reformatting dates/times ####
 
     ##7a) dates (start, dobs)

@@ -8,6 +8,8 @@ score_cbis(cbis_data, parID)
 }
 \arguments{
 \item{cbis_data}{a data.frame all items for the Children's Body Image Scale following the naming conventions described above}
+
+\item{parID}{(optional) name of participant ID column in intake_data. If included the output dataset will be matched by parID, if not included the output dataset will be in the order of intake_data but will have no participant identifier.}
 }
 \value{
 A dataset with a score for the Children's Body Image Scale

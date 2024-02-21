@@ -10,6 +10,8 @@ score_psi(psi_data, study, parID)
 \item{psi_data}{a data.frame all items for the Parenting Style Inventory-II following the naming conventions described above}
 
 \item{study}{a string indicating which study collected the data. Currently, only option and default is 'fbs'. This parameter is included so this script can be adapted for future studies that use published question 1 and 2 phrasing that need to be reversed scored.}
+
+\item{parID}{(optional) name of participant ID column in intake_data. If included the output dataset will be matched by parID, if not included the output dataset will be in the order of intake_data but will have no participant identifier.}
 }
 \value{
 A dataset with a score for the Parenting Style Inventory-II

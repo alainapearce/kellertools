@@ -8,6 +8,8 @@ score_bisbas(bisbas_data, parID)
 }
 \arguments{
 \item{bisbas_data}{a data.frame all items for the Behavioral Inhibition Scale/Behavioral Activation Scale following the naming conventions described above}
+
+\item{parID}{(optional) name of participant ID column in intake_data. If included the output dataset will be matched by parID, if not included the output dataset will be in the order of intake_data but will have no participant identifier.}
 }
 \value{
 A dataset with subscale scores for the Behavioral Inhibition Scale/Behavioral Activation Scale

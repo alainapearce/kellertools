@@ -14,6 +14,8 @@ score_pds(pds_data, respondent, male = 0, female = 1, parID)
 \item{male}{(optional) value for male. Default value is male = 0}
 
 \item{female}{(optional) value for female. Default value is female = 1}
+
+\item{parID}{(optional) name of participant ID column in intake_data. If included the output dataset will be matched by parID, if not included the output dataset will be in the order of intake_data but will have no participant identifier.}
 }
 \value{
 A dataset with a Pubertal Development Score and the Tanner Stage equivalents.

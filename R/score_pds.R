@@ -20,7 +20,7 @@
 #' @param respondent string to indicate if parent or child completed the Pubertal Development Scale. Must enter either 'parent' or 'child'
 #' @param male (optional) value for male. Default value is male = 0
 #' @param female (optional) value for female. Default value is female = 1
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #' @return A dataset with a Pubertal Development Score and the Tanner Stage equivalents.
 #'

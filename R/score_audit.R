@@ -17,7 +17,7 @@
 #' Saunders JB, Aasland OG, Babor TF, De La Fuente JR, Grant M. Development of the Alcohol Use Disorders Identification Test (AUDIT): WHO Collaborative Project on Early Detection of Persons with Harmful Alcohol Consumption-II. Addiction. 1993;88(6):791-804. doi:10.1111/j.1360-0443.1993.tb02093.x (\href{https://pubmed.ncbi.nlm.nih.gov/8329970/}{PubMed})
 #'
 #' @param audit_data a data.frame all items for the Alcohol Use Disorders Identification Test following the naming conventions described above
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #' @return A dataset with a score for the Alcohol Use Disorders Identification Test
 #' @examples

@@ -18,7 +18,7 @@
 #' Stallard P, Velleman R, Langsford J, Baldwin S. Coping and psychological distress in children involved in road traffic accidents. British Journal of Clinical Psychology. 2001;40(2):197-208. (\href{https://pubmed.ncbi.nlm.nih.gov/11446241/}{PubMed})
 #'
 #' @param rcmas_data a data.frame all items for the Revised Children's Manifest Anxiety Scale following the naming conventions described above
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #' @return A dataset with a score for the Revised Children's Manifest Anxiety Scale
 #'

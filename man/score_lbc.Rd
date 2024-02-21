@@ -10,6 +10,8 @@ score_lbc(lbc_data, study = "fbs", parID)
 \item{lbc_data}{a data.frame all items for the Lifestyle Behavior Checklist following the naming conventions described above}
 
 \item{study}{a string indicating which study collected the data. Currently, only option and default is 'fbs'. This parameter is included so this script can be adapted for future studies that collect all questions - FBS skipped first 5 questions}
+
+\item{parID}{(optional) name of participant ID column in intake_data. If included the output dataset will be matched by parID, if not included the output dataset will be in the order of intake_data but will have no participant identifier.}
 }
 \value{
 A dataset with subscale scores for the Lifestyle Behavior Checklist

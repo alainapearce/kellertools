@@ -13,7 +13,7 @@
 #' Wehler CA, Scott RI, Anderson JJ. The community childhood hunger identification project: A model of domestic hunger—Demonstration project in Seattle, Washington. Journal of Nutrition Education. 1992;24(1):29S-35S. doi:10.1016/S0022-3182(12)80135-X
 #'
 #' @param cchip_data a data.frame all items for the Community Childhood Hunger Identification Project following the naming conventions described above
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #' @return A dataset with scores for the Community Childhood Hunger Identification Project
 #' @examples

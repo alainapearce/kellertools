@@ -10,6 +10,8 @@ score_ctc(ctc_data, study, parID)
 \item{ctc_data}{a data.frame all items for the Child Behavior Questionnaire following the naming conventions described above}
 
 \item{study}{a string indicating which study collected the data. Currently, only option and default is 'fbs'. This parameter is included because the Food and Brain study used a highly adapted verison of the Communities that Care Questionnaire with only 16 questions}
+
+\item{parID}{(optional) name of participant ID column in intake_data. If included the output dataset will be matched by parID, if not included the output dataset will be in the order of intake_data but will have no participant identifier.}
 }
 \value{
 A dataset with subscale scores for the Child Behavior Questionnaire

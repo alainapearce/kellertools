@@ -15,6 +15,8 @@ parameter is included so this script can be adapted for future studies that coll
 
 \item{sleep}{(optional) A boolean indicator for whether parent-reported sleep should be estimated
 for each day and week. Default = FALSE.}
+
+\item{parID}{(optional) name of participant ID column in intake_data. If included the output dataset will be matched by parID, if not included the output dataset will be in the order of intake_data but will have no participant identifier.}
 }
 \value{
 A dataset with amount of MVPA calculated for each day and week. If sleep = TRUE,

@@ -19,7 +19,7 @@
 #' Torrubia R, Ávila C, Moltó J, Caseras X. The Sensitivity to Punishment and Sensitivity to Reward Questionnaire (SPSRQ) as a measure of Gray’s anxiety and impulsivity dimensions. Personality and Individual Differences. 2001;31(6):837-862. doi:10.1016/S0191-8869(00)00183-5
 #'
 #' @param spsrq_data a data.frame all items for the Sensitivity to Punishment and Sensitivity to Reward Questionnaire following the naming conventions described above
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #' @return A dataset with subscale scores for the Sensitivity to Punishment and Sensitivity to Reward Questionnaire
 #' @examples

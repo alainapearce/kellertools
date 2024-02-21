@@ -17,7 +17,7 @@
 #'
 #'
 #' @param bisbas_data a data.frame all items for the Behavioral Inhibition Scale/Behavioral Activation Scale following the naming conventions described above
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #' @return A dataset with subscale scores for the Behavioral Inhibition Scale/Behavioral Activation Scale
 #' @examples

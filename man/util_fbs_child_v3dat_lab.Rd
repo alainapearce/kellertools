@@ -6,6 +6,11 @@
 \usage{
 util_fbs_child_v3dat_lab(file_pattern, data_path)
 }
+\arguments{
+\item{file_pattern}{string with the pattern to search for to find the raw data file. The pattern must contain respondent and visit number (e.g., for files from parent visit 1, would enter 'Parent_V1').}
+
+\item{data_path}{(optional) the full path to the directory where the raw Qualtrics database are saved, EXCLUDING the .sav file name (e.g., '.../b-childfoodlab_Shared/Active_Studies/RO1_Brain_Mechanisms_IRB_5357/Participant_Data/untouchedRaw/Qualtrics_Raw/'). If NOT entered, will assume the database is saved in the working directory.}
+}
 \value{
 A list containing: 1) data: data.frame with raw, cleaned data from child visit 3 Qualtrics and 2) dict: all variable descriptions
 }

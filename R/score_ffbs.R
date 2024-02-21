@@ -15,7 +15,7 @@
 #' McCurdy, K., & Gorman, K. S. (2010). Measuring family food environments in diverse families with young children. Appetite, 54(3), 615–618. https://doi.org/10.1016/j.appet.2010.03.004 (\href{https://pubmed.ncbi.nlm.nih.gov/20227449/}{PubMed})
 #'
 #' @param ffbs_data a data.frame all items for the Family Food Behvior Survey following the naming conventions described above
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #' @return A dataset with subscale scores for the Family Food Behavior Survey
 #' @examples

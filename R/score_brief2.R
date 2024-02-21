@@ -19,7 +19,7 @@
 #' @param sex_var a string with the name of the sex variable in brief_data
 #' @inheritParams score_pds
 #' @inheritParams score_pds
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #' @return A dataset with subscale scores for the Behavioral Rating Inventory of Executive Function-2
 #' @examples

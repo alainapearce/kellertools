@@ -87,9 +87,16 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
     datapath_arg <- methods::hasArg(data_path)
 
     if (isTRUE(datapath_arg)) {
-        if (!is.character(data_path)) {
-            stop("data_path must be entered as a string: e.g., '.../Participant_Data/untouchedRaw/")
-        }
+      if (!is.character(data_path)) {
+        stop("data_path must be entered as a string: e.g., '.../Participant_Data/untouchedRaw/")
+      }
+
+      #make universal to 'Untouched_Raw'
+      if (grepl('Qualtrics_Raw', data_path, fixed = TRUE)){
+        data_path <- gsub('Qualtrics_Raw', '', data_path)
+      } else if (grepl('Microstructure_Raw', data_path, fixed = TRUE)){
+        data_path <- gsub('Microstructure_Raw', '', data_path)
+      }
     }
 
     # check write_path
@@ -112,11 +119,11 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
 
     ## Visit 1 data ####
     if (isTRUE(visit1)){
-        if (isTRUE(datapath_arg)){
-            v1_data <- util_fbs_merge_v1(child_file_pattern = paste0(child_fp, '_', visit_fp, '1'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '1'), data_path = data_path)
-        } else {
-            v1_data <- util_fbs_merge_v1(child_file_pattern = paste0(child_fp, '_', visit_fp, '1'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '1'))
-        }
+      if (isTRUE(datapath_arg)){
+        v1_data <- util_fbs_merge_v1(child_file_pattern = paste0(child_fp, '_', visit_fp, '1'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '1'), data_path = paste0(data_path, '/Qualtrics_Raw/'))
+      } else {
+        v1_data <- util_fbs_merge_v1(child_file_pattern = paste0(child_fp, '_', visit_fp, '1'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '1'))
+      }
 
         #get data
         visit1_data <- v1_data[['data']]
@@ -153,11 +160,11 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
     ## Visit 2 data ####
     if (isTRUE(visit2)){
 
-        if (isTRUE(datapath_arg)){
-            v2_data <- util_fbs_merge_v2(child_file_pattern = paste0(child_fp, '_', visit_fp, '2'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '2'), parentV4_file_pattern = paste0(parent_fp, '_', visit_fp, '4'), data_path = data_path)
-        } else {
-            v2_data <- util_fbs_merge_v2(child_file_pattern = paste0(child_fp, '_', visit_fp, '2'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '2'), parentV4_file_pattern = paste0(parent_fp, '_', visit_fp, '4'))
-        }
+      if (isTRUE(datapath_arg)){
+        v2_data <- util_fbs_merge_v2(child_file_pattern = paste0(child_fp, '_', visit_fp, '2'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '2'), parentV4_file_pattern = paste0(parent_fp, '_', visit_fp, '4'), data_path = paste0(data_path, '/Qualtrics_Raw/'))
+      } else {
+        v2_data <- util_fbs_merge_v2(child_file_pattern = paste0(child_fp, '_', visit_fp, '2'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '2'), parentV4_file_pattern = paste0(parent_fp, '_', visit_fp, '4'))
+      }
 
         #get data
         visit2_data <- v2_data[['data']]
@@ -193,11 +200,11 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
     ## Visit 3 data ####
     if (isTRUE(visit3)){
 
-        if (isTRUE(datapath_arg)){
-            v3_data <- util_fbs_merge_v3(child_file_pattern = paste0(child_fp, '_', visit_fp, '3'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '3'), data_path = data_path, model_DD = model_DD)
-        } else {
-            v3_data <- util_fbs_merge_v3(child_file_pattern = paste0(child_fp, '_', visit_fp, '3'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '3'), model_DD = model_DD)
-        }
+      if (isTRUE(datapath_arg)){
+        v3_data <- util_fbs_merge_v3(child_file_pattern = paste0(child_fp, '_', visit_fp, '3'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '3'), data_path = paste0(data_path, '/Qualtrics_Raw/'), model_DD = model_DD)
+      } else {
+        v3_data <- util_fbs_merge_v3(child_file_pattern = paste0(child_fp, '_', visit_fp, '3'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '3'), model_DD = model_DD)
+      }
 
         #get data
         visit3_data <- v3_data[['data']]
@@ -232,11 +239,11 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
 
     ## Visit 4 data ####
     if (isTRUE(visit4)){
-        if (isTRUE(datapath_arg)){
-            v4_data <- util_fbs_merge_v4(child_file_pattern = paste0(child_fp, '_', visit_fp, '4'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '4'), data_path = data_path)
-        } else {
-            v4_data <- util_fbs_merge_v4(child_file_pattern = paste0(child_fp, '_', visit_fp, '4'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '4'))
-        }
+      if (isTRUE(datapath_arg)){
+        v4_data <- util_fbs_merge_v4(child_file_pattern = paste0(child_fp, '_', visit_fp, '4'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '4'), data_path = paste0(data_path, '/Qualtrics_Raw/'))
+      } else {
+        v4_data <- util_fbs_merge_v4(child_file_pattern = paste0(child_fp, '_', visit_fp, '4'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '4'))
+      }
 
         #get data
         visit4_data <- v4_data[['data']]
@@ -271,11 +278,11 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
 
     ## Visit 5 data ####
     if (isTRUE(visit5)){
-        if (isTRUE(datapath_arg)){
-            v5_data <- util_fbs_merge_v5(child_file_pattern = paste0(child_fp, '_', visit_fp, '5'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '5'), data_path = data_path)
-        } else {
-            v5_data <- util_fbs_merge_v5(child_file_pattern = paste0(child_fp, '_', visit_fp, '5'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '5'))
-        }
+      if (isTRUE(datapath_arg)){
+        v5_data <- util_fbs_merge_v5(child_file_pattern = paste0(child_fp, '_', visit_fp, '5'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '5'), data_path = paste0(data_path, '/Qualtrics_Raw/'))
+      } else {
+        v5_data <- util_fbs_merge_v5(child_file_pattern = paste0(child_fp, '_', visit_fp, '5'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '5'))
+      }
 
         #get data
         visit5_data <- v5_data[['data']]
@@ -310,11 +317,11 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
 
     ## Visit 6 data ####
     if (isTRUE(visit6)){
-        if(isTRUE(datapath_arg)){
-            v6_data <- util_fbs_merge_v6(child_file_pattern = paste0(child_fp, '_', visit_fp, '6'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '6'), data_path = data_path)
-        } else {
-            v6_data <- util_fbs_merge_v6(child_file_pattern = paste0(child_fp, '_', visit_fp, '6'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '6'))
-        }
+      if (isTRUE(datapath_arg)){
+        v6_data <- util_fbs_merge_v6(child_file_pattern = paste0(child_fp, '_', visit_fp, '6'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '6'), data_path = paste0(data_path, '/Qualtrics_Raw/'))
+      } else {
+        v6_data <- util_fbs_merge_v6(child_file_pattern = paste0(child_fp, '_', visit_fp, '6'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '6'))
+      }
 
         #get data
         visit6_data <- v6_data[['data']]
@@ -349,11 +356,11 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
 
     ## Visit 7 data ####
     if (isTRUE(visit7)){
-        if (isTRUE(datapath_arg)){
-            v7_data <- util_fbs_merge_v7(child_file_pattern = paste0(child_fp, '_', visit_fp, '7'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '7'), data_path = data_path)
-        } else {
-            v7_data <- util_fbs_merge_v7(child_file_pattern = paste0(child_fp, '_', visit_fp, '7'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '7'))
-        }
+      if (isTRUE(datapath_arg)){
+        v7_data <- util_fbs_merge_v7(child_file_pattern = paste0(child_fp, '_', visit_fp, '7'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '7'), data_path = paste0(data_path, '/Qualtrics_Raw/'))
+      } else {
+        v7_data <- util_fbs_merge_v7(child_file_pattern = paste0(child_fp, '_', visit_fp, '7'), parent_file_pattern = paste0(parent_fp, '_', visit_fp, '7'))
+      }
 
         #get data
         visit7_data <- v7_data[['data']]

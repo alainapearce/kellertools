@@ -23,7 +23,7 @@
 #' Nord M. Measuring Children’s Food Security in US Households, 1995-99. US Department of Agriculture, Economic Research Service; 2002.
 #'
 #' @param hfssm_data a data.frame all items for the US Household Food Security Survey Module: Three Stage following the naming conventions described above
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #' @return A dataset with subscale scores for the US Household Food Security Survey Module: Three Stage
 #' @examples

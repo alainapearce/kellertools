@@ -15,7 +15,7 @@
 #' Coates J, Swindale A, Bilinsky P. Household Food Insecurity Access Scale (HFIAS) for measurement of food access: indicator guide: version 3. Published online 2007.
 #'
 #' @param hfias_data a data.frame all items for the Household Food Insecurity Access Scale following the naming conventions described above
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #' @return A dataset with scores for the Household Food Insecurity Access Scale
 #' @examples

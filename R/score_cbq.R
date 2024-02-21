@@ -15,7 +15,7 @@
 #'Rothbart MΚ, Ahadi SA, Hershey KL. Temperament and Social Behavior in Childhood. Merrill-Palmer Quarterly. 1994;40(1):21-39 (\href{https://www.jstor.org/stable/23087906}{jstore})
 #'
 #' @param cbq_data a data.frame all items for the Child Behavior Questionnaire following the naming conventions described above
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #' @return A dataset with subscale scores for the Child Behavior Questionnaire
 #' @examples

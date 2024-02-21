@@ -15,7 +15,7 @@
 #' Taylor CB, Sharpe T, Shisslak C, et al. Factors associated with weight concerns in adolescent girls. Int J Eat Disord. 1998;24(1):31-42. doi:10.1002/(SICI)1098-108X(199807)24:1<31::AID-EAT3>3.0.CO;2-1 (\href{https://pubmed.ncbi.nlm.nih.gov/9589309/}{PubMed})
 #'
 #' @param cwc_data a data.frame all items for the Child Weight Concerns following the naming conventions described above
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #' @return A dataset with a score for the Child Weight Concerns
 #' @examples

@@ -17,7 +17,7 @@
 #' Wilson VB, Mitchell SH, Musser ED, Schmitt CF, Nigg JT. Delay discounting of reward in ADHD: application in young children: Delay discounting and ADHD. Journal of Child Psychology and Psychiatry. 2011;52(3):256-264. doi:10.1111/j.1469-7610.2010.02347.x (\href{https://pubmed.ncbi.nlm.nih.gov/21083561/}{PubMed})
 #'
 #' @param dd_data a data.frame all items for the Delay Discounting following the naming conventions described above
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #'
 #' @return A dataset with a score for the Delay Discounting

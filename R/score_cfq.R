@@ -19,7 +19,7 @@
 #' @param cfq_data a data.frame all items for the Child Feeng Questionnaire following the naming conventions described above
 #' @param restriction_split a boolean incating if the Restriction subscale should be split to remove food as reward items. Default = FALSE. The standard Restriction subscale will always be available. If restriction_split = TRUE, then two adtion scales will be computed: 1) cfq_rest_noreward: questions 17-20, 23-24 and 1) cfq_foodreward: questions 21-22
 #' @param study a string incating which study collected the data. Currently, only option and default is 'fbs'. This parameter is included so this script can be adapted for future stues that have wider age rang and may collect question 13.
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #' @return A dataset with subscale scores for the Child Feeding Questionnaire
 #'

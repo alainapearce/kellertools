@@ -15,7 +15,7 @@
 #' De Vet E, De Ridder D, Stok M, Brunso K, Baban A, Gaspar T. Assessing self-regulation strategies: development and validation of the tempest self-regulation questionnaire for eating (TESQ-E) in adolescents. Int J Behav Nutr Phys Act. 2014;11(1):106. doi:10.1186/s12966-014-0106-z
 #'
 #' @param tesqe_data a data.frame all items for the Tempest Self-Regulation Questionnaire for Eating following the naming conventions described above
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #' @return A dataset with a score for the Tempest Self-Regulation Questionnaire for Eating
 #' @examples

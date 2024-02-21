@@ -12,8 +12,8 @@
 #'
 #' The databases MUST follow the naming convention: Child_V3_Lab_YYYY-MM-DD.sav
 #'
-#' @inheritParams qutil_fbs_parent_v1dat
-#' @inheritParams qutil_fbs_parent_v1dat
+#' @inheritParams util_fbs_parent_v1dat
+#' @inheritParams util_fbs_parent_v1dat
 #'
 #'
 #' @return A list containing: 1) data: data.frame with raw, cleaned data from child visit 3 Qualtrics and 2) dict: all variable descriptions

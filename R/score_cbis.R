@@ -13,7 +13,7 @@
 #' Truby H, Paxton SJ. Development of the Children’s Body Image Scale. British Journal of Clinical Psychology. 2002;41(2):185-203. doi:10.1348/014466502163967 (\href{https://pubmed.ncbi.nlm.nih.gov/12034005/}{PubMed})
 #'
 #' @param cbis_data a data.frame all items for the Children's Body Image Scale following the naming conventions described above
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #' @return A dataset with a score for the Children's Body Image Scale
 #' @examples

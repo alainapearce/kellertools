@@ -13,7 +13,7 @@
 #' Note, as long as variable names match those listed, the dataset can include other variables
 #'
 #' @param kfq_data a data.frame all items for the Kid's Food Questionnaire following the naming conventions described above
-#' @inheritParams fbs_intake
+#' @inheritParams fbs_kcal_intake
 #'
 #' @return A dataset with a score for the Kid's Food Questionnaire
 #' @examples
