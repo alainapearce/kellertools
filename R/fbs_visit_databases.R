@@ -150,8 +150,8 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
                 haven::write_sav(visit1_data, path = paste0(write_path, 'visit1_data.sav'))
                 write.csv(visit1_dict_write, file = paste0(write_path, 'dict-visit1_data.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(intake_data, path = 'visit1_data.sav')
-                write.csv(intake_dict_write, file = 'dict-visit1_data.csv', row.names = FALSE)
+                haven::write_sav(visit1_data, path = 'visit1_data.sav')
+                write.csv(visit1_dict_write, file = 'dict-visit1_data.csv', row.names = FALSE)
             }
         }
     }
@@ -191,8 +191,8 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
                 haven::write_sav(visit2_data, path = paste0(write_path, 'visit2_data.sav'))
                 write.csv(visit2_dict_write, file = paste0(write_path, 'dict-visit2_data.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(intake_data, path = 'visit2_data.sav')
-                write.csv(intake_dict_write, file = 'dict-visit2_data.csv', row.names = FALSE)
+                haven::write_sav(visit2_data, path = 'visit2_data.sav')
+                write.csv(visit2_dict_write, file = 'dict-visit2_data.csv', row.names = FALSE)
             }
         }
     }
@@ -231,8 +231,8 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
                 haven::write_sav(visit3_data, path = paste0(write_path, 'visit3_data.sav'))
                 write.csv(visit3_dict_write, file = paste0(write_path, 'dict-visit3_data.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(intake_data, path = 'visit3_data.sav')
-                write.csv(intake_dict_write, file = 'dict-visit3_data.csv', row.names = FALSE)
+                haven::write_sav(visit3_data, path = 'visit3_data.sav')
+                write.csv(visit3_dict_write, file = 'dict-visit3_data.csv', row.names = FALSE)
             }
         }
     }
@@ -270,8 +270,8 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
                 haven::write_sav(visit4_data, path = paste0(write_path, 'visit4_data.sav'))
                 write.csv(visit4_dict_write, file = paste0(write_path, 'dict-visit4_data.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(intake_data, path = 'visit4_data.sav')
-                write.csv(intake_dict_write, file = 'dict-visit4_data.csv', row.names = FALSE)
+                haven::write_sav(visit4_data, path = 'visit4_data.sav')
+                write.csv(visit4_dict_write, file = 'dict-visit4_data.csv', row.names = FALSE)
             }
         }
     }
@@ -309,8 +309,8 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
                 haven::write_sav(visit5_data, path = paste0(write_path, 'visit5_data.sav'))
                 write.csv(visit5_dict_write, file = paste0(write_path, 'dict-visit5_data.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(intake_data, path = 'visit5_data.sav')
-                write.csv(intake_dict_write, file = 'dict-visit5_data.csv', row.names = FALSE)
+                haven::write_sav(visit5_data, path = 'visit5_data.sav')
+                write.csv(visit5_dict_write, file = 'dict-visit5_data.csv', row.names = FALSE)
             }
         }
     }
@@ -348,8 +348,8 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
                 haven::write_sav(visit6_data, path = paste0(write_path, 'visit6_data.sav'))
                 write.csv(visit6_dict_write, file = paste0(write_path, 'dict-visit6_data.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(intake_data, path = 'visit6_data.sav')
-                write.csv(intake_dict_write, file = 'dict-visit6_data.csv', row.names = FALSE)
+                haven::write_sav(visit6_data, path = 'visit6_data.sav')
+                write.csv(visit6_dict_write, file = 'dict-visit6_data.csv', row.names = FALSE)
             }
         }
     }
@@ -403,8 +403,8 @@ fbs_visit_databases <- function(visit1 = FALSE, visit2 = FALSE, visit3 = FALSE, 
                 haven::write_sav(visit7_data, path = paste0(write_path, 'visit7_data.sav'))
                 write.csv(visit7_dict_write, file = paste0(write_path, 'dict-visit7_data.csv'), row.names = FALSE)
             } else {
-                haven::write_sav(intake_data, path = 'visit7_data.sav')
-                write.csv(intake_dict_write, file = 'dict-visit7_data.csv', row.names = FALSE)
+                haven::write_sav(visit7_data, path = 'visit7_data.sav')
+                write.csv(visit7_dict_write, file = 'dict-visit7_data.csv', row.names = FALSE)
             }
         }
     }
